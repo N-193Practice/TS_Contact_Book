@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router';
-import Home from './pages/Home';
-import Error from './pages/Error';
+import Home from './pages/Home.tsx';
+import Error from './pages/Error.tsx';
 
 function App() {
   return (

@@ -1,4 +1,4 @@
-import Contact from '../models/Contact';
+import Contact from '../models/Contact.ts';
 
 const STORAGE_KEY = 'contacts';
 function getContacts(): Contact[] {

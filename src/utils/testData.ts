@@ -1,5 +1,5 @@
 import { saveContacts } from './localStorage';
-import Contact from '../models/Contact';
+import Contact from '../models/Contact.ts';
 
 // テストデータを直接定義
 const testData: Contact[] = [
