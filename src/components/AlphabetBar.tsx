@@ -6,33 +6,75 @@ type AlphabetBarProps = {
 };
 
 const AlphabetBar = ({ onClick }: AlphabetBarProps) => {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const characters = [
+    'あ',
+    'か',
+    'さ',
+    'た',
+    'な',
+    'は',
+    'ま',
+    'や',
+    'ら',
+    'わ',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+  ];
+
   return (
     <Box
       sx={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        height: '100%',
-        overflowY: 'auto',
+        height: '100vh',
+        position: 'sticky',
+        top: 0,
+        right: 0,
+        bgcolor: 'white',
+        padding: 2,
+        borderRadius: 2,
       }}
     >
-      {alphabet.map((letter) => (
+      {characters.map((char) => (
         <Typography
-          key={letter}
-          variant="body1"
-          onClick={() => onClick(letter)}
+          key={char}
+          variant="h5"
+          onClick={() => onClick(char)}
           sx={{
             cursor: 'pointer',
             padding: '4px',
-            '&:hover': { fontWeight: 'bold', color: 'primary.main' },
+            '&:hover': { fontWeight: 'bold', color: 'secondary.main' },
           }}
         >
-          {letter}
+          {char}
         </Typography>
       ))}
     </Box>
   );
 };
-
 export default AlphabetBar;

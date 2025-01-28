@@ -15,6 +15,13 @@ function SearchBar({ onSearch }: SearchBarProps) {
       label="名前で検索"
       variant="outlined"
       fullWidth
+      sx={{
+        maxWidth: '60%',
+        margin: '0 auto',
+        display: 'block',
+        borderColor: 'primary.main',
+        bgcolor: 'white',
+      }}
       onChange={handleInputChange}
     />
   );
