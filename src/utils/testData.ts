@@ -21,6 +21,12 @@ const testData: Contact[] = [
     phone: '555-123-4567',
     memo: 'Gym buddy',
   },
+  {
+    id: '4',
+    name: 'やまだ たろう',
+    phone: '555-123-4567',
+    memo: 'Gym buddy',
+  },
 ];
 
 export function insertTestData() {

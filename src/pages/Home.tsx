@@ -6,6 +6,8 @@ import ContactList from '../components/ContactList';
 import AlphabetBar from '../components/AlphabetBar';
 import { Container, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
+import IconButton from '@mui/material/IconButton';
+import AddReactionIcon from '@mui/icons-material/AddReaction';
 function Home() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,6 +19,11 @@ function Home() {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+  };
+
+  const handleNewContact = () => {
+    // 新規作成の処理をここに追加
+    console.log('新規作成ボタンがクリックされました');
   };
 
   const filteredContacts = contacts
@@ -67,6 +74,14 @@ function Home() {
 
   return (
     <Container maxWidth="xl" sx={{ height: '100vh', paddingTop: 4 }}>
+      <IconButton
+        color="primary"
+        aria-label="新規作成"
+        onClick={handleNewContact}
+        sx={{ position: 'absolute', top: 16, right: 16, fontSize: '5rem' }}
+      >
+        <AddReactionIcon fontSize="inherit" />
+      </IconButton>
       <Typography variant="h1" gutterBottom textAlign="center">
         Contact Book
       </Typography>
