@@ -25,13 +25,18 @@ function Home() {
   };
 
   const handleNewContact = () => {
-    setEditContact(null); // 新規登録用にリセット
+    setEditContact(null);
     setOpenDialog(true);
   };
 
   const handleEditContact = (contact: Contact) => {
     setEditContact(contact);
     setOpenDialog(true);
+  };
+
+  const handleSaveSuccess = () => {
+    setContacts(getContacts());
+    setOpenDialog(false);
   };
 
   const filteredContacts = contacts
@@ -111,6 +116,7 @@ function Home() {
         open={openDialog}
         onClose={() => setOpenDialog(false)}
         contact={editContact}
+        onSaveSuccess={handleSaveSuccess}
       />
     </Container>
   );

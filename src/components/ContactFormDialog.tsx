@@ -14,14 +14,16 @@ import { v4 as uuidv4 } from 'uuid';
 type ContactFormDialogProps = {
   open: boolean;
   onClose: () => void;
-  contact?: Contact | null; // nullの場合は新規登録
+  contact?: Contact | null;
+  onSaveSuccess: () => void;
 };
 
-const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
+function ContactFormDialog({
   open,
   onClose,
+  onSaveSuccess,
   contact,
-}) => {
+}: ContactFormDialogProps) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [memo, setMemo] = useState('');
@@ -61,6 +63,7 @@ const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
     }
 
     saveContacts(contacts);
+    onSaveSuccess();
     onClose();
   };
 
@@ -105,6 +108,6 @@ const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
       </DialogActions>
     </Dialog>
   );
-};
+}
 
 export default ContactFormDialog;
