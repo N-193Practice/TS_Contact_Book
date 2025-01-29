@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Contact from '../models/Contact';
 import { getContacts } from '../utils/localStorage';
-import SearchBar from '../components/SearchBar';
 import ContactList from '../components/ContactList';
+import SearchBar from '../components/SearchBar';
 import AlphabetBar from '../components/AlphabetBar';
+import ContactFormDialog from '../components/ContactFormDialog';
 import { Container, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import IconButton from '@mui/material/IconButton';
@@ -12,6 +13,8 @@ function Home() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const listRefs = useRef<{ [key: string]: HTMLLIElement | null }>({});
+  const [openDialog, setOpenDialog] = useState(false);
+  const [editContact, setEditContact] = useState<Contact | null>(null);
 
   useEffect(() => {
     setContacts(getContacts());
@@ -22,8 +25,13 @@ function Home() {
   };
 
   const handleNewContact = () => {
-    // 新規作成の処理をここに追加
-    console.log('新規作成ボタンがクリックされました');
+    setEditContact(null); // 新規登録用にリセット
+    setOpenDialog(true);
+  };
+
+  const handleEditContact = (contact: Contact) => {
+    setEditContact(contact);
+    setOpenDialog(true);
   };
 
   const filteredContacts = contacts
@@ -88,12 +96,22 @@ function Home() {
       <SearchBar onSearch={handleSearch} />
       <Grid container spacing={2} sx={{ marginTop: 3 }}>
         <Grid size={{ xs: 12, md: 10 }}>
-          <ContactList contacts={groupedContacts} listRefs={listRefs} />
+          <ContactList
+            contacts={groupedContacts}
+            listRefs={listRefs}
+            onEdit={handleEditContact}
+          />
         </Grid>
         <Grid size={{ xs: 12, md: 2 }}>
           <AlphabetBar onClick={handleAlphabetClick} />
         </Grid>
       </Grid>
+      {/* ポップアップコンポーネント */}
+      <ContactFormDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        contact={editContact}
+      />
     </Container>
   );
 }

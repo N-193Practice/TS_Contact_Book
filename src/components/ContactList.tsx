@@ -1,12 +1,21 @@
 import React from 'react';
 import Contact from '../models/Contact';
-import { List, ListItem, Card, CardContent, Typography } from '@mui/material';
+import {
+  List,
+  ListItem,
+  Card,
+  CardContent,
+  Typography,
+  IconButton,
+} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 
 type ContactListProps = {
   contacts: { [key: string]: Contact[] };
   listRefs: React.MutableRefObject<{ [key: string]: HTMLLIElement | null }>;
+  onEdit: (contact: Contact) => void;
 };
-function ContactList({ contacts, listRefs }: ContactListProps) {
+function ContactList({ contacts, listRefs, onEdit }: ContactListProps) {
   return (
     <List sx={{ padding: '10px' }}>
       {Object.entries(contacts).map(([letter, group]) => (
@@ -39,6 +48,9 @@ function ContactList({ contacts, listRefs }: ContactListProps) {
                 {contact.memo && (
                   <Typography variant="h6">メモ: {contact.memo}</Typography>
                 )}
+                <IconButton color="primary" onClick={() => onEdit(contact)}>
+                  <EditIcon />
+                </IconButton>
               </CardContent>
             </Card>
           ))}
