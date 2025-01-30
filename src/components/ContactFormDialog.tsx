@@ -11,13 +11,15 @@ import Contact from '../models/Contact';
 import { saveContacts, getContacts } from '../utils/localStorage';
 import { v4 as uuidv4 } from 'uuid';
 
+// ContactFormDialogProps という名前の型を定義する
 type ContactFormDialogProps = {
   open: boolean;
   onClose: () => void;
-  contact?: Contact | null;
   onSaveSuccess: () => void;
+  contact: Contact | null;
 };
 
+// ContactFormDialogProps 型の引数を受け取る ContactFormDialog コンポーネントを定義する
 function ContactFormDialog({
   open,
   onClose,
@@ -28,6 +30,7 @@ function ContactFormDialog({
   const [phone, setPhone] = useState('');
   const [memo, setMemo] = useState('');
 
+  // contact が存在する場合は初期値を設定する
   useEffect(() => {
     if (contact) {
       setName(contact.name);
@@ -40,33 +43,51 @@ function ContactFormDialog({
     }
   }, [contact]);
 
-  const handleSave = () => {
-    if (!name || !phone) {
-      alert('名前と電話番号を入力してください');
-      return;
+  // 入力された名前と電話番号が正しいかチェックする
+  const validateInput = () => {
+    const trimmedName = name.trim();
+    const trimmedPhone = phone.trim();
+
+    if (!trimmedName || !trimmedPhone) {
+      alert('名前と電話番号は必須です');
+      return false;
     }
 
+    const contacts = getContacts();
+
+    if (!contact) {
+      // 新規登録の場合
+      if (contacts.some((c) => c.name === trimmedName)) {
+        alert('この名前の連絡先は既に存在します');
+        return false;
+      }
+    }
+    return true;
+  };
+
+  // 保存ボタンを押したときに呼び出される関数
+  const handleSave = () => {
+    if (!validateInput()) return;
+
     let contacts = getContacts();
+    const newContact: Contact = {
+      id: contact ? contact.id : uuidv4(),
+      name,
+      phone,
+      memo,
+    };
 
     if (contact) {
       // 編集モード
-      contacts = contacts.map((c) =>
-        c.id === contact.id ? { ...c, name, phone, memo } : c
-      );
+      contacts = contacts.map((c) => (c.id === contact.id ? newContact : c));
     } else {
       // 新規登録
-      if (contacts.some((c) => c.name === name)) {
-        alert('同じ名前の連絡先が既に存在します');
-        return;
-      }
-      contacts.push({ id: uuidv4(), name, phone, memo });
+      contacts.push(newContact);
     }
-
     saveContacts(contacts);
     onSaveSuccess();
     onClose();
   };
-
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
@@ -76,6 +97,7 @@ function ContactFormDialog({
         <TextField
           fullWidth
           label="名前"
+          type="text"
           variant="outlined"
           margin="normal"
           value={name}
@@ -84,6 +106,7 @@ function ContactFormDialog({
         <TextField
           fullWidth
           label="電話番号"
+          inputMode="numeric"
           variant="outlined"
           margin="normal"
           value={phone}
@@ -92,6 +115,7 @@ function ContactFormDialog({
         <TextField
           fullWidth
           label="メモ"
+          type="text"
           variant="outlined"
           margin="normal"
           value={memo}
@@ -99,9 +123,7 @@ function ContactFormDialog({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
-          キャンセル
-        </Button>
+        <Button onClick={onClose}>キャンセル</Button>
         <Button onClick={handleSave} color="primary">
           保存
         </Button>
@@ -109,5 +131,4 @@ function ContactFormDialog({
     </Dialog>
   );
 }
-
 export default ContactFormDialog;

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 
+// AlphabetBarProps という名前の型を定義する
 type AlphabetBarProps = {
   onClick: (letter: string) => void;
 };
 
+// AlphabetBarProps 型の引数を受け取る AlphabetBar コンポーネントを定義する
 const AlphabetBar = ({ onClick }: AlphabetBarProps) => {
   const characters = [
     'あ',
@@ -58,8 +60,17 @@ const AlphabetBar = ({ onClick }: AlphabetBarProps) => {
         bgcolor: 'white',
         padding: 2,
         borderRadius: 2,
+        '@media (max-width: 600px)': {
+          position: 'sticky',
+          right: 0,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          height: 'auto',
+          padding: 1,
+        },
       }}
     >
+      {/* characters 配列の各要素を表示する */}
       {characters.map((char) => (
         <Typography
           key={char}
@@ -69,6 +80,10 @@ const AlphabetBar = ({ onClick }: AlphabetBarProps) => {
             cursor: 'pointer',
             padding: '4px',
             '&:hover': { fontWeight: 'bold', color: 'secondary.main' },
+            '@media (max-width: 600px)': {
+              fontSize: '0.75rem',
+              padding: '2px',
+            },
           }}
         >
           {char}
