@@ -152,9 +152,12 @@ function Home() {
             <AddReactionIcon fontSize="large" />
           </IconButton>
         </Box>
-        <Typography className={styles.searchBarContainer}>
-          <SearchBar onSearch={handleSearch} />
+        <Typography variant="h1" className={styles.title}>
+          Contact Book
         </Typography>
+        <Box className={styles.searchBarContainer}>
+          <SearchBar onSearch={handleSearch} />
+        </Box>
       </AppBar>
       {/* メインコンテンツ */}
       <Grid container className={styles.gridContainer}>
