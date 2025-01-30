@@ -1,11 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Contact from '../models/Contact';
-import { getContacts } from '../utils/localStorage';
+import { getContacts, deleteContact } from '../utils/localStorage';
 import ContactList from '../components/ContactList';
 import SearchBar from '../components/SearchBar';
 import AlphabetBar from '../components/AlphabetBar';
 import ContactFormDialog from '../components/ContactFormDialog';
-import { Container, Typography, IconButton, AppBar } from '@mui/material';
+import {
+  Container,
+  Typography,
+  IconButton,
+  AppBar,
+  Button,
+} from '@mui/material';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Grid from '@mui/material/Grid2';
 function Home() {
@@ -14,7 +20,7 @@ function Home() {
   const listRefs = useRef<{ [key: string]: HTMLLIElement | null }>({});
   const [openDialog, setOpenDialog] = useState(false);
   const [editContact, setEditContact] = useState<Contact | null>(null);
-
+  const [selectedContacts, setSelectedContacts] = useState<string[]>([]); // 選択されたIDを管理
   // contacts をロードする
   useEffect(() => {
     setContacts(getContacts());
@@ -37,12 +43,35 @@ function Home() {
     setOpenDialog(true); //Dialog開く
   };
 
-  // TODO: 削除の処理を追加する;
-
   // Contactの保存が成功したときに、ダイアログを閉じて、contactsを更新する
   const handleSaveSuccess = () => {
     setContacts(getContacts()); //Saveの関数呼ぶ(utilsに定義)
     setOpenDialog(false); //ダイアログ閉じる
+  };
+
+  // TODO: 削除の処理を追加する;
+  const handleDeleteContact = (id: string) => {
+    deleteContact(id);
+    setContacts(getContacts());
+  };
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedContacts((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((contactId) => contactId !== id)
+        : [...prevSelected, id]
+    );
+  };
+
+  const handleDeleteMultiple = () => {
+    if (selectedContacts.length === 0) {
+      alert('削除する連絡先を選択してください');
+      return;
+    }
+
+    selectedContacts.forEach((id) => deleteContact(id));
+    setContacts(getContacts());
+    setSelectedContacts([]); // 選択リストをクリア
   };
 
   // SearchBarで使うために、名前に検索クエリを含むコンタクトをフィルタリングする
@@ -101,6 +130,21 @@ function Home() {
         position="fixed"
         sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, paddingTop: 2 }}
       >
+        <Button
+          variant="contained"
+          color="error"
+          sx={{
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            fontSize: '0.75rem',
+            padding: '4px 8px',
+          }}
+          onClick={handleDeleteMultiple}
+          disabled={selectedContacts.length === 0}
+        >
+          連絡先一括削除
+        </Button>
         <IconButton
           color="inherit"
           aria-label="新規作成"
@@ -120,6 +164,9 @@ function Home() {
             contacts={groupedContacts}
             listRefs={listRefs}
             onEdit={handleEditContact}
+            onDelete={handleDeleteContact}
+            onToggleSelect={handleToggleSelect} // 選択の切り替え関数を渡す
+            selectedContacts={selectedContacts} // 選択中のリストを渡す
           />
         </Grid>
         <Grid size={{ xs: 12, md: 2 }}>
