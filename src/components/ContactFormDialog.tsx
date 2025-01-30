@@ -10,6 +10,7 @@ import {
 import Contact from '../models/Contact';
 import { saveContacts, getContacts } from '../utils/localStorage';
 import { v4 as uuidv4 } from 'uuid';
+//TODO: CSSモジュールの定義と、コンポーネントのスタイルを定義する
 
 // ContactFormDialogProps という名前の型を定義する
 type ContactFormDialogProps = {
@@ -97,7 +98,6 @@ function ContactFormDialog({
         <TextField
           fullWidth
           label="名前"
-          type="text"
           variant="outlined"
           margin="normal"
           value={name}
@@ -106,7 +106,6 @@ function ContactFormDialog({
         <TextField
           fullWidth
           label="電話番号"
-          inputMode="numeric"
           variant="outlined"
           margin="normal"
           value={phone}
@@ -115,7 +114,6 @@ function ContactFormDialog({
         <TextField
           fullWidth
           label="メモ"
-          type="text"
           variant="outlined"
           margin="normal"
           value={memo}
@@ -131,4 +129,5 @@ function ContactFormDialog({
     </Dialog>
   );
 }
+
 export default ContactFormDialog;

@@ -5,22 +5,26 @@ import ContactList from '../components/ContactList';
 import SearchBar from '../components/SearchBar';
 import AlphabetBar from '../components/AlphabetBar';
 import ContactFormDialog from '../components/ContactFormDialog';
+import styles from '../styles/Home.module.css';
 import {
   Container,
-  Typography,
   IconButton,
-  AppBar,
   Button,
+  AppBar,
+  Box,
+  Typography,
 } from '@mui/material';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Grid from '@mui/material/Grid2';
+//TODO: CSSモジュールの定義と、コンポーネントのスタイルを定義する
+//TODO:新規登録のボタンを押すとリフレッシュされていない問題を解決する
 function Home() {
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const listRefs = useRef<{ [key: string]: HTMLLIElement | null }>({});
-  const [openDialog, setOpenDialog] = useState(false);
-  const [editContact, setEditContact] = useState<Contact | null>(null);
-  const [selectedContacts, setSelectedContacts] = useState<string[]>([]); // 選択されたIDを管理
+  const [contacts, setContacts] = useState<Contact[]>([]); // 連絡先のリスト
+  const [searchQuery, setSearchQuery] = useState(''); // 検索クエリ
+  const listRefs = useRef<{ [key: string]: HTMLLIElement | null }>({}); // アルファベットのリストをスクロールするためのリファレンス
+  const [openDialog, setOpenDialog] = useState(false); // コンタクト編集ダイアログのオープン状態
+  const [editContact, setEditContact] = useState<Contact | null>(null); // コンタクト編集ダイアログで編集する連絡先
+  const [selectedContacts, setSelectedContacts] = useState<string[]>([]); // 連絡先の複数選択(削除用)
   // contacts をロードする
   useEffect(() => {
     setContacts(getContacts());
@@ -33,45 +37,46 @@ function Home() {
 
   // Contactの新規作成ダイアログを開く
   const handleNewContact = () => {
-    setEditContact(null); //明示的に「空の値」を意味し、リセット
-    setOpenDialog(true); //Dialog開く
+    setEditContact(null);
+    setOpenDialog(true);
   };
 
   // Contactの編集ダイアログを開く
   const handleEditContact = (contact: Contact) => {
-    setEditContact(contact); //既存のcontactをセット
-    setOpenDialog(true); //Dialog開く
+    setEditContact(contact);
+    setOpenDialog(true);
   };
 
   // Contactの保存が成功したときに、ダイアログを閉じて、contactsを更新する
   const handleSaveSuccess = () => {
-    setContacts(getContacts()); //Saveの関数呼ぶ(utilsに定義)
-    setOpenDialog(false); //ダイアログ閉じる
+    setContacts(getContacts());
+    setOpenDialog(false);
   };
 
-  // TODO: 削除の処理を追加する;
-  const handleDeleteContact = (id: string) => {
+  // Contact削除の処理をする
+  const handleDeleteSelected = (id: string) => {
     deleteContact(id);
     setContacts(getContacts());
   };
 
-  const handleToggleSelect = (id: string) => {
+  // Contact複数選択する
+  const handleDeleteAll = (id: string) => {
     setSelectedContacts((prevSelected) =>
       prevSelected.includes(id)
-        ? prevSelected.filter((contactId) => contactId !== id)
+        ? prevSelected.filter((id) => id !== id)
         : [...prevSelected, id]
     );
   };
 
+  // Contact複数選択されたものを削除する
   const handleDeleteMultiple = () => {
     if (selectedContacts.length === 0) {
       alert('削除する連絡先を選択してください');
       return;
     }
-
     selectedContacts.forEach((id) => deleteContact(id));
     setContacts(getContacts());
-    setSelectedContacts([]); // 選択リストをクリア
+    setSelectedContacts([]);
   };
 
   // SearchBarで使うために、名前に検索クエリを含むコンタクトをフィルタリングする
@@ -125,54 +130,50 @@ function Home() {
   }, {} as { [key: string]: Contact[] });
 
   return (
-    <Container maxWidth="xl" sx={{ height: '100vh', paddingTop: 8 }}>
-      <AppBar
-        position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1, paddingTop: 2 }}
-      >
-        <Button
-          variant="contained"
-          color="error"
-          sx={{
-            position: 'absolute',
-            top: 16,
-            left: 16,
-            fontSize: '0.75rem',
-            padding: '4px 8px',
-          }}
-          onClick={handleDeleteMultiple}
-          disabled={selectedContacts.length === 0}
-        >
-          連絡先一括削除
-        </Button>
-        <IconButton
-          color="inherit"
-          aria-label="新規作成"
-          onClick={handleNewContact}
-          sx={{ position: 'absolute', top: 16, right: 16, fontSize: '5rem' }}
-        >
-          <AddReactionIcon fontSize="inherit" />
-        </IconButton>
-        <Typography variant="h1" gutterBottom textAlign="center">
-          Contact Book
+    <Container maxWidth="xl" className={styles.container}>
+      {/* ヘッダー (AppBar) */}
+      <AppBar className={styles.appBar}>
+        <Box className={styles.buttonContainer}>
+          {/* 左側に削除ボタンとアイコンを配置 */}
+          <Button
+            variant="contained"
+            color="error"
+            className={styles.deleteButton}
+            onClick={handleDeleteMultiple}
+            disabled={selectedContacts.length === 0}
+          >
+            連絡先一括削除
+          </Button>
+          <IconButton
+            aria-label="新規作成"
+            onClick={handleNewContact}
+            className={styles.iconButton}
+          >
+            <AddReactionIcon fontSize="large" />
+          </IconButton>
+        </Box>
+        <Typography className={styles.searchBarContainer}>
+          <SearchBar onSearch={handleSearch} />
         </Typography>
-        <SearchBar onSearch={handleSearch} />
       </AppBar>
-      <Grid container spacing={2} sx={{ marginTop: 20 }}>
+      {/* メインコンテンツ */}
+      <Grid container className={styles.gridContainer}>
         <Grid size={{ xs: 12, md: 10 }}>
           <ContactList
             contacts={groupedContacts}
             listRefs={listRefs}
             onEdit={handleEditContact}
-            onDelete={handleDeleteContact}
-            onToggleSelect={handleToggleSelect} // 選択の切り替え関数を渡す
-            selectedContacts={selectedContacts} // 選択中のリストを渡す
+            onDelete={handleDeleteSelected}
+            onToggleSelect={handleDeleteAll}
+            selectedContacts={selectedContacts}
           />
         </Grid>
         <Grid size={{ xs: 12, md: 2 }}>
           <AlphabetBar onClick={handleAlphabetClick} />
         </Grid>
       </Grid>
+
+      {/* ContactFormDialog */}
       <ContactFormDialog
         open={openDialog}
         onClose={() => setOpenDialog(false)}
@@ -182,4 +183,5 @@ function Home() {
     </Container>
   );
 }
+
 export default Home;

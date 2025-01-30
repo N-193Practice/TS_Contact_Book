@@ -1,0 +1,12 @@
+.searchBarContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.searchBar {
+  max-width: 60%;
+  background-color: white;
+  border-radius: 4px;
+}

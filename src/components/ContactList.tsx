@@ -1,5 +1,6 @@
 import React from 'react';
 import Contact from '../models/Contact';
+import styles from '../styles/ContactList.module.css';
 import {
   List,
   ListItem,
@@ -11,6 +12,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+//TODO: CSSモジュールの定義と、コンポーネントのスタイルを定義する
 
 // ContactListProps という名前の型を定義する
 type ContactListProps = {
@@ -18,8 +20,8 @@ type ContactListProps = {
   listRefs: React.MutableRefObject<{ [key: string]: HTMLLIElement | null }>;
   onEdit: (contact: Contact) => void;
   onDelete: (id: string) => void;
-  onToggleSelect: (id: string) => void; // 選択の切り替え関数
-  selectedContacts: string[]; // 選択中のリスト
+  onToggleSelect: (id: string) => void;
+  selectedContacts: string[];
 };
 
 // ContactListProps 型の引数を受け取る ContactList コンポーネントを定義する
@@ -32,36 +34,23 @@ function ContactList({
   selectedContacts,
 }: ContactListProps) {
   return (
-    <List sx={{ padding: '10px' }}>
+    <List className={styles.list}>
       {/* contactsオブジェクトの各キー (alphabet)に対応するグループをループして表示する */}
       {Object.entries(contacts).map(([letter, group]) => (
         <ListItem
           key={letter}
           ref={(el) => (listRefs.current[letter] = el)}
-          sx={{ flexDirection: 'column', alignItems: 'flex-start', mb: 4 }}
+          className={styles.listItem}
         >
-          <Typography
-            variant="h5"
-            component="h5"
-            sx={{ marginY: 2, fontWeight: 'bold' }}
-          >
+          <Typography variant="h5" className={styles.sectionTitle}>
             {letter}
           </Typography>
           {group.map((contact) => (
-            <Card
-              key={contact.id}
-              sx={{
-                marginBottom: 2,
-                width: '100%',
-                maxWidth: '100%',
-                boxShadow: 3,
-                padding: 2,
-              }}
-            >
+            <Card key={contact.id} className={styles.contactCard}>
               <Checkbox
                 checked={selectedContacts.includes(contact.id)}
                 onChange={() => onToggleSelect(contact.id)}
-                sx={{ marginRight: 2 }}
+                className={styles.checkbox}
               />
               <CardContent>
                 <Typography variant="h5">{contact.name}</Typography>
@@ -83,4 +72,5 @@ function ContactList({
     </List>
   );
 }
+
 export default ContactList;

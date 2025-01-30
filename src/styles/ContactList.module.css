@@ -1,0 +1,35 @@
+.list {
+  padding: 10px;
+}
+
+.listItem {
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  margin: 16px 0;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.contactCard {
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.checkbox {
+  margin-right: 8px;
+}
+
+.editButton {
+  color: blue;
+}
+
+.deleteButton {
+  color: red;
+}

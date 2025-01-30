@@ -1,0 +1,22 @@
+.alphabetContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  right: 0;
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.alphabetButton {
+  cursor: pointer;
+  padding: 4px;
+}
+
+.alphabetButton:hover {
+  font-weight: bold;
+  color: #f50057; /* Secondary color */
+}

@@ -1,5 +1,8 @@
 import React from 'react';
-import { TextField } from '@mui/material';
+import styles from '../styles/SearchBar.module.css';
+import { Box, TextField } from '@mui/material';
+
+//TODO: CSSモジュールの定義と、コンポーネントのスタイルを定義する
 
 // SearchBarProps という名前の型を定義する
 type SearchBarProps = {
@@ -13,19 +16,16 @@ function SearchBar({ onSearch }: SearchBarProps) {
   };
 
   return (
-    <TextField
-      label="名前で検索"
-      variant="filled"
-      fullWidth
-      sx={{
-        maxWidth: '60%',
-        margin: '0 auto',
-        display: 'block',
-        borderColor: 'primary.main',
-        bgcolor: 'white',
-      }}
-      onChange={handleInputChange}
-    />
+    <Box className={styles.searchBarContainer}>
+      <TextField
+        label="名前で検索"
+        variant="filled"
+        fullWidth
+        className={styles.searchBar}
+        onChange={handleInputChange}
+      />
+    </Box>
   );
 }
+
 export default SearchBar;
