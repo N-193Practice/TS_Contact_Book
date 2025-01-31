@@ -11,8 +11,14 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 
 function ContactFormDialog() {
-  const { openDialog, setOpenDialog, editContact, addContact, updateContact } =
-    useContacts();
+  const {
+    openDialog,
+    setOpenDialog,
+    editContact,
+    addContact,
+    updateContact,
+    contacts,
+  } = useContacts();
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -40,6 +46,13 @@ function ContactFormDialog() {
       alert('名前と電話番号は必須です');
       return false;
     }
+
+    // 名前の重複チェック（新規登録時のみ）
+    if (!editContact && contacts.some((c) => c.name === trimmedName)) {
+      alert('この名前の連絡先はすでに存在します');
+      return false;
+    }
+
     return true;
   };
 
@@ -49,15 +62,15 @@ function ContactFormDialog() {
 
     const newContact = {
       id: editContact ? editContact.id : uuidv4(),
-      name,
-      phone,
-      memo,
+      name: name.trim(),
+      phone: phone.trim(),
+      memo: memo.trim(),
     };
 
     if (editContact) {
-      updateContact(newContact); // ✅ 既存データの更新
+      updateContact(newContact); // 既存データの更新
     } else {
-      addContact(newContact); // ✅ 新規データの追加
+      addContact(newContact); // 新規データの追加
     }
 
     setOpenDialog(false);

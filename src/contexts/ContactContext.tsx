@@ -67,7 +67,12 @@ function ContactProvider({ children }: ContactProviderProps) {
 
   // 名前の先頭文字でグループ化
   const groupedContacts = useMemo(() => {
-    return filteredContacts.reduce((acc, contact) => {
+    // 名前順にソート
+    const sortedContacts = [...filteredContacts].sort((a, b) =>
+      a.name.localeCompare(b.name, 'ja')
+    );
+
+    return sortedContacts.reduce((acc, contact) => {
       const firstChar = contact.name[0].toUpperCase();
 
       // 日本語の五十音分類
@@ -97,12 +102,21 @@ function ContactProvider({ children }: ContactProviderProps) {
 
       if (!acc[firstLetter]) acc[firstLetter] = [];
       acc[firstLetter].push(contact);
+
+      // グループ内もソート
+      acc[firstLetter].sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+
       return acc;
     }, {} as { [key: string]: Contact[] });
   }, [filteredContacts]);
 
   // 連絡先を追加
   const addContact = (contact: Contact) => {
+    // 名前がすでに存在するかチェック
+    if (contacts.some((c) => c.name === contact.name)) {
+      alert('この名前の連絡先はすでに存在します');
+      return;
+    }
     const updatedContacts = [...contacts, contact];
     setContacts(updatedContacts);
     saveContacts(updatedContacts);

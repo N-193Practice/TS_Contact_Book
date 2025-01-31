@@ -41,7 +41,7 @@ function Home() {
             <AddReactionIcon fontSize="large" />
           </IconButton>
         </Box>
-        <Typography variant="h1" className={styles.title}>
+        <Typography variant="h2" className={styles.title}>
           Contact Book
         </Typography>
         <Box className={styles.searchBarContainer}>
