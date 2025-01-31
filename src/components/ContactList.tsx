@@ -1,6 +1,6 @@
 import React from 'react';
 import Contact from '../models/Contact';
-import styles from '../styles/ContactList.module.css';
+import styles from './ContactList.module.css';
 import {
   List,
   ListItem,
@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-//TODO: CSSモジュールの定義と、コンポーネントのスタイルを定義する
 
 // ContactListProps という名前の型を定義する
 type ContactListProps = {

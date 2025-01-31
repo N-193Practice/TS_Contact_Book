@@ -10,7 +10,6 @@ import {
 import Contact from '../models/Contact';
 import { saveContacts, getContacts } from '../utils/localStorage';
 import { v4 as uuidv4 } from 'uuid';
-//TODO: CSSモジュールの定義と、コンポーネントのスタイルを定義する
 
 // ContactFormDialogProps という名前の型を定義する
 type ContactFormDialogProps = {
@@ -42,7 +41,7 @@ function ContactFormDialog({
       setPhone('');
       setMemo('');
     }
-  }, [contact]);
+  }, [contact, open]);
 
   // 入力された名前と電話番号が正しいかチェックする
   const validateInput = () => {

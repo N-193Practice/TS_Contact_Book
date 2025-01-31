@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import styles from '../styles/AlphabetBar.module.css';
-//TODO: CSSモジュールの定義と、コンポーネントのスタイルを定義する
+import styles from './AlphabetBar.module.css';
 
 // AlphabetBarProps という名前の型を定義する
 type AlphabetBarProps = {

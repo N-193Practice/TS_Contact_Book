@@ -5,19 +5,17 @@ import ContactList from '../components/ContactList';
 import SearchBar from '../components/SearchBar';
 import AlphabetBar from '../components/AlphabetBar';
 import ContactFormDialog from '../components/ContactFormDialog';
-import styles from '../styles/Home.module.css';
+import styles from './Home.module.css';
 import {
   Container,
-  IconButton,
-  Button,
-  AppBar,
-  Box,
   Typography,
+  IconButton,
+  AppBar,
+  Button,
+  Box,
 } from '@mui/material';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Grid from '@mui/material/Grid2';
-//TODO: CSSモジュールの定義と、コンポーネントのスタイルを定義する
-//TODO:新規登録のボタンを押すとリフレッシュされていない問題を解決する
 function Home() {
   const [contacts, setContacts] = useState<Contact[]>([]); // 連絡先のリスト
   const [searchQuery, setSearchQuery] = useState(''); // 検索クエリ
@@ -86,11 +84,12 @@ function Home() {
     )
     .sort((a, b) => a.name.localeCompare(b.name, 'ja'));
 
-  // AlphabetBar で使うために、クリックした文字に対応するリストをスクロールする
+  // AlphabetBar で使うために、クリックした文字に対応するリストをスクロールする。
   const handleAlphabetClick = (letter: string) => {
     listRefs.current[letter]?.scrollIntoView({
       behavior: 'smooth',
-      block: 'start',
+      block: 'center', //中央に配置する
+      inline: 'nearest', //左右のスクロールが発生しないように する
     });
   };
 

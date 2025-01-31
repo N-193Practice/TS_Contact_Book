@@ -6,7 +6,8 @@
 }
 
 .searchBar {
-  max-width: 60%;
+  width: 60%; /* 検索バーの幅を調整 */
+  max-width: 800px; /* 最大幅を設定 */
   background-color: white;
   border-radius: 8px;
   padding: 12px; /* 内側の余白を増やして高さを拡大 */
