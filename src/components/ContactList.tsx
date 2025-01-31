@@ -1,6 +1,5 @@
 import React from 'react';
-import Contact from '../models/Contact';
-import styles from './ContactList.module.css';
+import { useContacts } from '../contexts/ContactContext';
 import {
   List,
   ListItem,
@@ -12,30 +11,22 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import styles from './ContactList.module.css';
 
-// ContactListProps という名前の型を定義する
-type ContactListProps = {
-  contacts: { [key: string]: Contact[] };
-  listRefs: React.MutableRefObject<{ [key: string]: HTMLLIElement | null }>;
-  onEdit: (contact: Contact) => void;
-  onDelete: (id: string) => void;
-  onToggleSelect: (id: string) => void;
-  selectedContacts: string[];
-};
+function ContactList() {
+  const {
+    groupedContacts,
+    listRefs,
+    selectedContacts,
+    handleEditContact,
+    handleDeleteSelected,
+    handleDeleteAll,
+  } = useContacts();
 
-// ContactListProps 型の引数を受け取る ContactList コンポーネントを定義する
-function ContactList({
-  contacts,
-  listRefs,
-  onEdit,
-  onDelete,
-  onToggleSelect,
-  selectedContacts,
-}: ContactListProps) {
   return (
     <List className={styles.list}>
-      {/* contactsオブジェクトの各キー (alphabet)に対応するグループをループして表示する */}
-      {Object.entries(contacts).map(([letter, group]) => (
+      {/* groupedContacts オブジェクトの各キー (alphabet) に対応するグループをループして表示 */}
+      {Object.entries(groupedContacts).map(([letter, group]) => (
         <ListItem
           key={letter}
           ref={(el) => (listRefs.current[letter] = el)}
@@ -48,7 +39,7 @@ function ContactList({
             <Card key={contact.id} className={styles.contactCard}>
               <Checkbox
                 checked={selectedContacts.includes(contact.id)}
-                onChange={() => onToggleSelect(contact.id)}
+                onChange={() => handleDeleteAll(contact.id)}
                 className={styles.checkbox}
               />
               <CardContent>
@@ -57,10 +48,16 @@ function ContactList({
                 {contact.memo && (
                   <Typography variant="h6">メモ: {contact.memo}</Typography>
                 )}
-                <IconButton color="primary" onClick={() => onEdit(contact)}>
+                <IconButton
+                  color="primary"
+                  onClick={() => handleEditContact(contact)}
+                >
                   <EditIcon />
                 </IconButton>
-                <IconButton color="error" onClick={() => onDelete(contact.id)}>
+                <IconButton
+                  color="error"
+                  onClick={() => handleDeleteSelected(contact.id)}
+                >
                   <DeleteIcon />
                 </IconButton>
               </CardContent>

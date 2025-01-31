@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useContacts } from '../contexts/ContactContext';
 import {
   Dialog,
   DialogTitle,
@@ -7,43 +8,30 @@ import {
   TextField,
   Button,
 } from '@mui/material';
-import Contact from '../models/Contact';
-import { saveContacts, getContacts } from '../utils/localStorage';
 import { v4 as uuidv4 } from 'uuid';
 
-// ContactFormDialogProps という名前の型を定義する
-type ContactFormDialogProps = {
-  open: boolean;
-  onClose: () => void;
-  onSaveSuccess: () => void;
-  contact: Contact | null;
-};
+function ContactFormDialog() {
+  const { openDialog, setOpenDialog, editContact, addContact, updateContact } =
+    useContacts();
 
-// ContactFormDialogProps 型の引数を受け取る ContactFormDialog コンポーネントを定義する
-function ContactFormDialog({
-  open,
-  onClose,
-  onSaveSuccess,
-  contact,
-}: ContactFormDialogProps) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [memo, setMemo] = useState('');
 
-  // contact が存在する場合は初期値を設定する
+  // `editContact` がある場合はデータをセット、それ以外はリセット
   useEffect(() => {
-    if (contact) {
-      setName(contact.name);
-      setPhone(contact.phone);
-      setMemo(contact.memo || '');
+    if (editContact) {
+      setName(editContact.name);
+      setPhone(editContact.phone);
+      setMemo(editContact.memo || '');
     } else {
       setName('');
       setPhone('');
       setMemo('');
     }
-  }, [contact, open]);
+  }, [editContact, openDialog]);
 
-  // 入力された名前と電話番号が正しいかチェックする
+  // 入力バリデーション
   const validateInput = () => {
     const trimmedName = name.trim();
     const trimmedPhone = phone.trim();
@@ -52,16 +40,6 @@ function ContactFormDialog({
       alert('名前と電話番号は必須です');
       return false;
     }
-
-    const contacts = getContacts();
-
-    if (!contact) {
-      // 新規登録の場合
-      if (contacts.some((c) => c.name === trimmedName)) {
-        alert('この名前の連絡先は既に存在します');
-        return false;
-      }
-    }
     return true;
   };
 
@@ -69,29 +47,31 @@ function ContactFormDialog({
   const handleSave = () => {
     if (!validateInput()) return;
 
-    let contacts = getContacts();
-    const newContact: Contact = {
-      id: contact ? contact.id : uuidv4(),
+    const newContact = {
+      id: editContact ? editContact.id : uuidv4(),
       name,
       phone,
       memo,
     };
 
-    if (contact) {
-      // 編集モード
-      contacts = contacts.map((c) => (c.id === contact.id ? newContact : c));
+    if (editContact) {
+      updateContact(newContact); // ✅ 既存データの更新
     } else {
-      // 新規登録
-      contacts.push(newContact);
+      addContact(newContact); // ✅ 新規データの追加
     }
-    saveContacts(contacts);
-    onSaveSuccess();
-    onClose();
+
+    setOpenDialog(false);
   };
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={openDialog}
+      onClose={() => setOpenDialog(false)}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>
-        {contact ? '連絡先を編集' : '新しい連絡先を追加'}
+        {editContact ? '連絡先を編集' : '新しい連絡先を追加'}
       </DialogTitle>
       <DialogContent>
         <TextField
@@ -120,7 +100,7 @@ function ContactFormDialog({
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>キャンセル</Button>
+        <Button onClick={() => setOpenDialog(false)}>キャンセル</Button>
         <Button onClick={handleSave} color="primary">
           保存
         </Button>
