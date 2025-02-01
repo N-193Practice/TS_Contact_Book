@@ -1,3 +1,4 @@
+/* 検索バーのコンテナ（中央配置） */
 .searchBarContainer {
   width: 100%;
   display: flex;
@@ -5,12 +6,27 @@
   margin-top: 16px;
 }
 
+/* 検索バーのスタイル */
 .searchBar {
-  width: 60%; /* 検索バーの幅を調整 */
-  max-width: 800px; /* 最大幅を設定 */
-  background-color: white;
-  border-radius: 8px;
-  padding: 12px; /* 内側の余白を増やして高さを拡大 */
-  height: 50px; /* 高さを明示的に指定 */
-  font-size: 1.2rem; /* 文字を少し大きくする */
+  width: 80%;
+  max-width: 1000px;
+  background-color: white; /* 背景色を白に統一 */
+  border-radius: 8px; /* 丸みをつける */
+  padding: 12px;
+  height: 50px;
+  font-size: 1.2rem;
+  box-shadow: none !important; /* 影を削除 */
+}
+
+/* MUI のデフォルトの黒い線を削除 */
+.searchBar .MuiFilledInput-root::before {
+  border-bottom: none !important;
+}
+
+.searchBar .MuiFilledInput-root::after {
+  border-bottom: none !important;
+}
+
+.searchBar .MuiInputBase-root {
+  border-bottom: none !important;
 }

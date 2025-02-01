@@ -1,51 +1,60 @@
-.container {
-  height: 100vh;
-  padding-top: 8rem;
-}
-
-.appBar {
+/* ナビバー全体(fullHD 1920×1080対応) */
+.navbar {
+  display: flex;
+  align-items: center;
+  width: 100vw; /* フルHD対応 */
+  height: 80px; /* 高さ調整 */
+  background-color: #2196f3;
+  color: white;
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 120px;
-  background-color: #1976d2;
+  padding: 0 20px;
+  z-index: 1000;
+}
+
+/* 上部のボタン＆タイトル */
+.topSection {
   display: flex;
-  align-items: center;
-  padding: 0 16px;
-}
-
-.buttonContainer {
-  display: flex;
-  align-items: center;
+  justify-content: space-between; /* 左ボタンと右タイトルを分ける */
   width: 100%;
-  gap: 16px;
+  align-items: center;
 }
 
-.deleteButton {
-  font-size: 1.5rem; /* ボタンのフォントサイズを大きくする */
-  padding: 14px 20px; /* ボタンサイズを拡大 */
+/* ボタンを左端に */
+.leftButtons {
+  display: flex;
+  gap: 8px;
 }
 
-.iconButton {
-  font-size: 3rem; /* アイコンのサイズを拡大 */
-  color: white;
-}
-
+/* タイトルを右端に */
 .title {
-  font-size: 1.5rem;
-  color: white;
-  text-align: center;
-}
-.searchBarContainer {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 0;
+  font-size: 1.75rem; /* h3相当 */
+  font-weight: bold;
+  max-width: 90%; /* 右側に少し余白を作る */
+  padding-right: 40px; /* 右に余裕を持たせる */
 }
 
+/* 検索バーを中央に配置し、幅を広げる */
+.searchBar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px; /* デフォルトの幅 */
+  max-width: 80%; /* 画面幅に応じて調整 */
+}
+
+/* メインコンテンツの余白を削除 */
 .gridContainer {
-  margin-top: 12rem;
+  margin-top: 100px; /* ナビゲーションバーより下に配置 */
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* カードを中央配置 */
+  width: 100%;
+}
+
+/* 余白の白い部分を削除 */
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* 横スクロールを防ぐ */
 }
