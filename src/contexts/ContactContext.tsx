@@ -54,6 +54,7 @@ function ContactProvider({ children }: ContactProviderProps) {
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const listRefs = useRef<{ [key: string]: HTMLLIElement | null }>({});
 
+  // ContactのCRUD処理
   useEffect(() => {
     setContacts(getContacts());
   }, []);
@@ -72,34 +73,36 @@ function ContactProvider({ children }: ContactProviderProps) {
       a.name.localeCompare(b.name, 'ja')
     );
 
+    // A-Z,日本語の五十音分類でグループ化
     return sortedContacts.reduce((acc, contact) => {
       const firstChar = contact.name[0].toUpperCase();
 
       // 日本語の五十音分類
       const firstLetter = /^[A-Z]/.test(firstChar)
         ? firstChar
-        : /^[あ-お]/.test(firstChar)
+        : /^[あ-おア-オ]/.test(firstChar)
         ? 'あ'
-        : /^[か-こ]/.test(firstChar)
+        : /^[か-こカ-コ]/.test(firstChar)
         ? 'か'
-        : /^[さ-そ]/.test(firstChar)
+        : /^[さ-そサ-ソ]/.test(firstChar)
         ? 'さ'
-        : /^[た-と]/.test(firstChar)
+        : /^[た-とタ-ト]/.test(firstChar)
         ? 'た'
-        : /^[な-の]/.test(firstChar)
+        : /^[な-のナ-ノ]/.test(firstChar)
         ? 'な'
-        : /^[は-ほ]/.test(firstChar)
+        : /^[は-ほハ-ホ]/.test(firstChar)
         ? 'は'
-        : /^[ま-も]/.test(firstChar)
+        : /^[ま-もマ-モ]/.test(firstChar)
         ? 'ま'
-        : /^[やゆよ]/.test(firstChar)
+        : /^[やゆよヤユヨ]/.test(firstChar)
         ? 'や'
-        : /^[ら-ろ]/.test(firstChar)
+        : /^[ら-ろラ-ロ]/.test(firstChar)
         ? 'ら'
-        : /^[わをん]/.test(firstChar)
+        : /^[わをんワヲン]/.test(firstChar)
         ? 'わ'
         : '#';
 
+      // グループがない場合はグループを作成
       if (!acc[firstLetter]) acc[firstLetter] = [];
       acc[firstLetter].push(contact);
 
@@ -149,7 +152,7 @@ function ContactProvider({ children }: ContactProviderProps) {
     setContacts(getContacts());
   };
 
-  // 複数選択をトグル
+  // 削除対象を選択して削除するトグル
   const handleDeleteAll = (id: string) => {
     setSelectedContacts((prevSelected) =>
       prevSelected.includes(id)
@@ -207,7 +210,7 @@ function ContactProvider({ children }: ContactProviderProps) {
   );
 }
 
-// useContacts の使用方法
+// useContacts が適切な Provider 内で使用されているかをチェックするカスタムフック
 function useContacts() {
   const context = useContext(ContactContext);
   if (context === undefined) {

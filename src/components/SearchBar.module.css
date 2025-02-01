@@ -10,23 +10,8 @@
 .searchBar {
   width: 80%;
   max-width: 1000px;
-  background-color: white; /* 背景色を白に統一 */
-  border-radius: 8px; /* 丸みをつける */
+  background-color: white;
   padding: 12px;
   height: 50px;
   font-size: 1.2rem;
-  box-shadow: none !important; /* 影を削除 */
-}
-
-/* MUI のデフォルトの黒い線を削除 */
-.searchBar .MuiFilledInput-root::before {
-  border-bottom: none !important;
-}
-
-.searchBar .MuiFilledInput-root::after {
-  border-bottom: none !important;
-}
-
-.searchBar .MuiInputBase-root {
-  border-bottom: none !important;
 }

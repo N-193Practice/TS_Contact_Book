@@ -1,3 +1,4 @@
+/* アルファベットバーのコンテナ */
 .alphabetContainer {
   display: flex;
   flex-direction: column;
@@ -11,12 +12,14 @@
   border-radius: 8px;
 }
 
+/* アルファベットボタン */
 .alphabetButton {
   cursor: pointer;
   padding: 4px;
 }
 
+/* アルファベットボタンのホバー時 */
 .alphabetButton:hover {
   font-weight: bold;
-  color: #f50057; /* Secondary color */
+  color: #f50057;
 }

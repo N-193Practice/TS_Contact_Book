@@ -1,3 +1,10 @@
+/* 余白の白い部分を削除 */
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* 横スクロールを防ぐ */
+}
+
 /* ナビバー全体(fullHD 1920×1080対応) */
 .navbar {
   display: flex;
@@ -50,11 +57,4 @@
   display: flex;
   justify-content: center; /* カードを中央配置 */
   width: 100%;
-}
-
-/* 余白の白い部分を削除 */
-body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden; /* 横スクロールを防ぐ */
 }

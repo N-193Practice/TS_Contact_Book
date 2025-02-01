@@ -34,14 +34,16 @@
   margin-top: 8px; /*  頭文字との間隔を作る */
 }
 
+/* 一括削除のチェックボックス */
 .checkbox {
   margin-right: 8px;
 }
 
+/* 編集ボタン */
 .editButton {
   color: blue;
 }
-
+/* 削除ボタン */
 .deleteButton {
   color: red;
 }
