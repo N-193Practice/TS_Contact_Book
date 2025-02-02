@@ -47,8 +47,12 @@ function ContactFormDialog() {
       return false;
     }
 
-    // 名前の重複チェック（新規登録時のみ）
-    if (!editContact && contacts.some((c) => c.name === trimmedName)) {
+    // 名前の重複チェック(新規・編集の際)
+    const isDuplicate = contacts.some(
+      (c) => c.name === trimmedName && (!editContact || c.id !== editContact.id)
+    );
+
+    if (isDuplicate) {
       alert('この名前の連絡先はすでに存在します');
       return false;
     }
