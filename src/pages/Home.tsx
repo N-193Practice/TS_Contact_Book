@@ -15,7 +15,7 @@ function Home() {
     <>
       {/* Navgation */}
       <nav className={styles.navbar}>
-        {/* 上部（ボタン2つ＋タイトル） */}
+        {/* 上部（ボタン + 検索バー + タイトル） */}
         <div className={styles.topSection}>
           <div className={styles.leftButtons}>
             <Button
@@ -34,21 +34,21 @@ function Home() {
               <AddReactionIcon fontSize="large" />
             </IconButton>
           </div>
+          {/* 検索バーを追加 */}
+          <div className={styles.searchBar}>
+            <SearchBar />
+          </div>
           <Typography variant="h3" className={styles.title}>
             Contact Book
           </Typography>
         </div>
-        {/* SearchBar */}
-        <div className={styles.searchBar}>
-          <SearchBar />
-        </div>
       </nav>
       {/* main */}
-      <Grid container className={styles.gridContainer} spacing={2}>
-        <Grid size={{ xs: 12, md: 10 }}>
+      <Grid container className={styles.gridContainer} spacing={1}>
+        <Grid size={{ xs: 12, md: 8 }} className={styles.contactListContainer}>
           <ContactList />
         </Grid>
-        <Grid size={{ xs: 12, md: 2 }}>
+        <Grid size={{ xs: 12, md: 4 }} className={styles.alphabetBarContainer}>
           <AlphabetBar />
         </Grid>
       </Grid>
