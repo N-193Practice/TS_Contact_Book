@@ -1,61 +1,69 @@
-import React from 'react';
-import { useContacts } from '../contexts/ContactContext';
-import ContactList from '../components/ContactList';
-import SearchBar from '../components/SearchBar';
-import AlphabetBar from '../components/AlphabetBar';
-import ContactFormDialog from '../components/ContactFormDialog';
+import { useContacts } from '../contexts/useContacts';
+import ContactList from '../components/ContactList/ContactList';
+import SearchBar from '../components/SearchBar/SearchBar';
+import AlphabetBar from '../components/AlphabetBar/AlphabetBar';
+import ContactFormDialog from '../components/ContactFormDialog/ContactFormDialog';
 import styles from './Home.module.css';
 import { Typography, IconButton, Button } from '@mui/material';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Grid from '@mui/material/Grid2';
-function Home() {
+
+/**
+ * `Home` コンポーネント
+ * 連絡先のメイン画面。ナビゲーション、検索バー、連絡先リスト、
+ * アルファベットフィルター、および連絡先追加・削除機能を提供する。
+ * @returns {JSX.Element} ホーム画面の UI を返す。
+ */
+function Home(): JSX.Element {
   const { handleDeleteMultiple, selectedContacts, handleNewContact } =
     useContacts();
+
   return (
-    <>
-      {/* Navgation */}
-      <nav className={styles.navbar}>
-        {/* 上部（ボタン + 検索バー + タイトル） */}
-        <div className={styles.topSection}>
-          <div className={styles.leftButtons}>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <Typography variant="h3" className={styles.title}>
+          Contact Book
+        </Typography>
+        {/* SearchBar */}
+        <div className={styles.searchBarContainer}>
+          <SearchBar />
+        </div>
+        {/* Navigation */}
+        <nav className={styles.navbar}>
+          <div className={styles.navbarLeft}>
+            {/* 一括削除ボタン（選択された連絡先がある場合に有効） */}
             <Button
               variant="contained"
-              color="error"
               onClick={handleDeleteMultiple}
               disabled={selectedContacts.length === 0}
+              className={styles.deleteButton}
+              color="error"
             >
               連絡先一括削除
             </Button>
             <IconButton
               aria-label="新規作成"
-              color="secondary"
               onClick={handleNewContact}
+              className={styles.iconButton}
             >
-              <AddReactionIcon fontSize="large" />
+              <AddReactionIcon focusable="false" fontSize="large" />
             </IconButton>
           </div>
-          {/* 検索バーを追加 */}
-          <div className={styles.searchBar}>
-            <SearchBar />
-          </div>
-          <Typography variant="h3" className={styles.title}>
-            Contact Book
-          </Typography>
-        </div>
-      </nav>
+          <div className={styles.navbarRight}></div>
+        </nav>
+      </header>
       {/* main */}
-      <Grid container className={styles.gridContainer} spacing={1}>
-        <Grid size={{ xs: 12, md: 8 }} className={styles.contactListContainer}>
-          <ContactList />
-        </Grid>
-        <Grid size={{ xs: 12, md: 4 }} className={styles.alphabetBarContainer}>
-          <AlphabetBar />
-        </Grid>
+      <Grid className={styles.contactsContainer}>
+        {/* 連絡先リスト */}
+        <ContactList />
       </Grid>
-      {/* ContactFormDialog */}
+      <Grid className={styles.alphabetContainer}>
+        {/* アルファベットナビゲーションバー */}
+        <AlphabetBar />
+      </Grid>
+      {/* 連絡先追加・編集用ダイアログ */}
       <ContactFormDialog />
-    </>
+    </div>
   );
 }
-
 export default Home;

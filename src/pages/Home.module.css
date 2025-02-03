@@ -1,82 +1,79 @@
 /* 余白の白い部分を削除 */
-body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden; /* 横スクロールを防ぐ */
+.container {
+  display: grid;
+  grid-template-areas:
+    'header header'
+    'main filter';
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.header {
+  grid-area: header;
+  background-color: #2196f3;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+}
+
+/* タイトル */
+.title {
+  font-size: 1.75rem; /* h3相当 */
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  padding: 8px;
 }
 
 /* ナビバー全体(fullHD 1920×1080対応) */
 .navbar {
-  display: flex;
-  align-items: center;
-  width: 100vw; /* フルHD対応 */
-  height: 80px; /* 高さ調整 */
-  background-color: #2196f3;
-  color: white;
-  position: fixed;
-  top: 0;
-  left: 0;
-  padding: 0 20px;
-  z-index: 1000;
-}
-
-/* 上部のボタン + 検索バー + タイトル */
-.topSection {
-  display: flex;
+  display: grid;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
-  padding: 0 20px;
-  gap: 16px; /* 要素間の間隔を調整 */
-  justify-content: flex-start; /* 左寄せ配置 */
+  padding: 5px;
+  gap: 20px;
 }
 
-/* ボタンエリア */
-.leftButtons {
+/* 左側のボタンコンテナ */
+.navbar-left {
   display: flex;
   align-items: center;
-  gap: 16px;
-  flex-shrink: 0; /* ボタンの圧縮を防ぐ */
+  gap: 10px; /* ボタンの間隔 */
 }
 
-/* 検索バーの横幅を調整 */
-.searchBar {
-  flex-grow: 0.8; /* 少し小さめにしてタイトルに余裕を持たせる */
-  max-width: 30vw; /* 幅を小さめに調整 */
-  min-width: 200px; /* 最小幅を確保 */
-}
-
-/* タイトルをナビゲーションの右端に配置 */
-.title {
-  font-size: 2.3rem;
-  font-weight: bold;
-  white-space: nowrap; /* 折り返し防止 */
-  margin-left: 10px; /* 検索バーに寄せる */
-  min-width: 180px; /* Contact Bookが消えないようにする */
-}
-
-/* メインコンテンツのレイアウト調整 */
-.gridContainer {
-  margin-top: 100px; /* ナビゲーションバーの下に配置 */
-  display: flex;
-  justify-content: flex-start; /* 左寄せ配置 */
-  width: 100%;
-  gap: 12px; /* カードとAlphabetBarの間隔を確保 */
-}
-
-/* ContactListの幅を制限 */
-.contactListContainer {
+/* 右側の空のスペース (バランス用) */
+.navbar-right {
   flex-grow: 1;
-  width: 100%; /* 左に寄せるために100%指定 */
-  max-width: none; /* 100%指定したので最大幅を解除 */
 }
 
-/* AlphabetBarの幅を確保 */
-.alphabetBarContainer {
-  width: 20%; /* 十分なスペースを確保 */
-  min-width: 150px; /* 小さすぎて潰れないようにする */
-  position: sticky;
-  top: 100px;
-  background-color: white;
-  padding: 16px;
-  border-radius: 8px;
+/* 削除ボタン */
+.deleteButton {
+  min-width: 150px;
+  margin-left: 20px; /* 左側に余白を追加 */
+  padding: 20px 20px;
+}
+
+/* 新規作成ボタン */
+.iconButton {
+  min-width: 150px;
+  color: white;
+}
+/* メインコンテンツの余白を削除 */
+.contactsContainer {
+  grid-area: main;
+  overflow-y: auto; /* 縦スクロールバーを表示 */
+  overflow-x: hidden; /* 横スクロールバーを非表示 */
+}
+
+/* アルファベットバー */
+.alphabetContainer {
+  grid-area: filter;
+  overflow-y: auto; /* 縦スクロールバーを表示 */
+  overflow-x: hidden; /* 横スクロールバーを非表示 */
 }
