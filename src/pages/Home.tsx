@@ -21,9 +21,7 @@ function Home(): JSX.Element {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <Typography variant="h3" className={styles.title}>
-          Contact Book
-        </Typography>
+        <Typography className={styles.title}>Contact Book</Typography>
         {/* SearchBar */}
         <div className={styles.searchBarContainer}>
           <SearchBar />
@@ -46,7 +44,7 @@ function Home(): JSX.Element {
               onClick={handleNewContact}
               className={styles.iconButton}
             >
-              <AddReactionIcon focusable="false" fontSize="large" />
+              <AddReactionIcon focusable="false" className={styles.icon} />
             </IconButton>
           </div>
           <div className={styles.navbarRight}></div>

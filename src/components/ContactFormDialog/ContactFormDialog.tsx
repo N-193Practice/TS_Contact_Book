@@ -22,10 +22,10 @@ function ContactFormDialog(): JSX.Element {
     useContacts();
 
   // フォームの状態管理
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [memo, setMemo] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // エラーメッセージ用の state
+  const [name, setName] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [memo, setMemo] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>(''); // エラーメッセージ用の state
 
   /**
    * `editContact` がある場合は編集モードとしてデータをセット。
@@ -45,9 +45,12 @@ function ContactFormDialog(): JSX.Element {
     setErrorMessage(''); // ダイアログを開くたびにエラーをリセット
   }, [editContact, openDialog]);
 
-  // 保存ボタンを押したときに呼び出される関数
+  /**
+   * 保存ボタンを押したときに呼び出される関数
+   * @returns {void} 成功時はダイアログを閉じる。
+   */
   const handleSave = () => {
-    // 新規作成または編集のデータを作成する。
+    // オブジェクトの作成
     const newContact = {
       id: editContact ? editContact.id : uuidv4(),
       name: name.trim(),
@@ -75,6 +78,7 @@ function ContactFormDialog(): JSX.Element {
       onClose={() => setOpenDialog(false)}
       maxWidth="sm"
       fullWidth
+      closeAfterTransition={false}
     >
       <DialogTitle>
         {editContact ? '連絡先を編集' : '新しい連絡先を追加'}

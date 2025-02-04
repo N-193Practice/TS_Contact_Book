@@ -81,7 +81,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const listRefs = useRef<{ [key: string]: HTMLLIElement | null }>({});
 
-  // ContactのCRUD処理
+  // ContactのCRUD処理(初回時ロード)
   useEffect(() => {
     setContacts(getContacts());
   }, []);
@@ -99,6 +99,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   /**
    * アルファベットのクリック イベントを処理して、関連する連絡先までスクロールする。
    * @param {string} letter - AlphabetBar でクリックされた文字。
+   * @returns {void} この関数は値を返さず、スクロールする。
    */
   const handleAlphabetClick = (letter: string) => {
     listRefs.current[letter]?.scrollIntoView({
@@ -109,8 +110,8 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   };
 
   /**
-   * 連絡先を先頭文字でグループ化して表示する。
-   * @returns {{ [key: string]: Contact[] }} - 連絡先を先頭文字でグループ化する。
+   * 連絡先を先頭文字でグループ化して表示する。(A-Z,あ-わ,#の順)
+   * @returns {{ [key: string]: Contact[] }} - その文字に分類された連絡先の配列。
    */
   const groupedContacts = useMemo<{ [key: string]: Contact[] }>(() => {
     // 名前順にソート
@@ -118,6 +119,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
       a.name.localeCompare(b.name, 'ja')
     );
 
+    // グループ化するキーの順序
     const grouppOrder = [
       ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
       'あ',
@@ -133,6 +135,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
       '#',
     ];
 
+    // グループ化する空の配列を作成し、適切なグループへ分類する。
     const groups: { [key: string]: Contact[] } = {};
     sortedContacts.forEach((contact) => {
       const firstChar = contact.name[0].toUpperCase();
@@ -162,7 +165,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
         ? 'わ'
         : '#';
 
-      // グループがない場合はグループを作成
+      // グループがない場合はグループを作成し、連絡先をグループへ追加する。
       if (!groups[firstLetter]) groups[firstLetter] = [];
       groups[firstLetter].push(contact);
     });
@@ -172,16 +175,22 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
       grouppOrder.filter((key) => groups[key]).map((key) => [key, groups[key]])
     );
     return sortedGroupedContacts;
-  }, [filteredContacts]); // 新規作成ダイアログを開く
+  }, [filteredContacts]);
 
+  /**
+   * 新規作成用の編集ダイアログを開く。
+   * フォームのデータを初期化し表示する。
+   * @returns {void} この関数は値を返さず、ダイアログを開くだけ。
+   */
   const handleNewContact = () => {
     setEditContact(null);
     setOpenDialog(true);
   };
 
   /**
-   * 編集ダイアログを開く。
-   * @param {Contact} contact - 編集対象の連絡先。
+   * 既存の連絡先情報を編集するためのダイアログを開く。
+   * @param {Contact} contact - 編集対象の連絡先情報。
+   * @returns {void} この関数は値を返さず、ダイアログを開くだけ。
    */
   const handleEditContact = (contact: Contact) => {
     setEditContact(contact);
@@ -190,8 +199,8 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
 
   /**
    * バリデーションを行い、連絡先の正当性をチェックする関数。
-   * @param {Contact} contact - バリデーション対象の連絡先。
-   * @param {boolean} [isEdit=false] - 編集時のバリデーション。(編集時はメモフィールドのバリデーションを行う)
+   * @param {Contact} contact - バリデーション対象の連絡先情報。
+   * @param {boolean} [isEdit=false] - 編集モードなのか確認(新規作成時はfalse)。
    * @returns {boolean} バリデーションが成功すれば true、失敗すれば false。
    */
   const validateContact = (
@@ -247,19 +256,21 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     saveContacts(updatedContacts);
     return true;
   };
-  /**
-   * 連絡先を削除する。
-   * @param {string} id - 削除する連絡先の ID。
-   */
 
+  /**
+   * 連絡先を削除する関数(個人のため)。
+   * @param {string} id - 削除する連絡先の ID。
+   * @returns {void} この関数は値を返さず、連絡先削除し、リストを更新する。
+   */
   const handleDeleteSelected = (id: string) => {
     deleteContact(id);
     setContacts(getContacts());
   };
 
   /**
-   * 削除対象を選択・解除する。
+   * 削除対象をセレクトボックスで選択・解除する関数(複数選択可能)。
    * @param {string} id - 操作する連絡先の ID。
+   * @returns {void} この関数は値を返さず、選択状態を更新する。
    */
   const handleDeleteAll = (id: string) => {
     setSelectedContacts((prevSelected) =>
@@ -269,7 +280,10 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     );
   };
 
-  // 選択したすべての連絡先を削除する。
+  /**
+   * セレクトボックスで選択された連絡先を削除する関数。
+   * @returns {void} この関数は値を返さず、連絡先削除し、リストを更新する。
+   */
   const handleDeleteMultiple = () => {
     if (selectedContacts.length === 0) {
       alert('削除する連絡先を選択してください');
@@ -308,5 +322,4 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     </ContactContext.Provider>
   );
 }
-
 export { ContactProvider, ContactContext };
