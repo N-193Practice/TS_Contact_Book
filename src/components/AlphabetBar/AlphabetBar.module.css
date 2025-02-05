@@ -1,0 +1,20 @@
+/* アルファベットバーのコンテナ */
+.alphabetContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: white;
+  padding: 16px;
+}
+
+/* アルファベットバーのボタン */
+.alphabetButton {
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* アルファベットバーのボタンのホバー時 */
+.alphabetButton:hover {
+  font-weight: bold;
+  color: #f50057;
+}
