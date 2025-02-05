@@ -23,7 +23,7 @@
 
 /* タイトル */
 .title {
-  font-size: 3rem; /* テキストの大きさ */
+  font-size: 3rem;
   font-weight: bold;
   color: white;
   text-align: center;
@@ -38,6 +38,22 @@
   width: 100%;
   padding: 5px;
   gap: 20px;
+}
+
+/* セレクトボックスの為のボタンの位置 */
+.selectRightButton {
+  position: absolute;
+  right: 40px;
+}
+
+.selectAllButton {
+  background-color: black;
+  color: white;
+}
+
+.deselectAllButton {
+  background-color: black;
+  color: white;
 }
 
 /* 左側のボタンコンテナ */

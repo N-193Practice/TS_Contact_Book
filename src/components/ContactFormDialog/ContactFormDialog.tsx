@@ -107,6 +107,7 @@ function ContactFormDialog(): JSX.Element {
           onChange={(e) => setPhone(e.target.value)}
         />
         <TextField
+          multiline
           fullWidth
           label="メモ"
           variant="filled"

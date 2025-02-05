@@ -43,7 +43,7 @@ function ContactList(): JSX.Element {
           <Typography variant="h5" className={styles.sectionTitle}>
             {letter}
           </Typography>
-          {/* 連��先一覧を表示 */}
+          {/* 連先一覧を表示 */}
           {group.map((contact) => (
             <Card key={contact.id} className={styles.contactCard}>
               {/* 連絡先の一括削除の選択チェックボックス */}
@@ -53,10 +53,12 @@ function ContactList(): JSX.Element {
                 className={styles.checkbox}
               />
               <CardContent>
-                <Typography variant="h5">{contact.name}</Typography>
+                <Typography variant="h5">氏名:{contact.name}</Typography>
                 <Typography variant="h5">電話番号: {contact.phone}</Typography>
                 {contact.memo && (
-                  <Typography variant="h6">メモ: {contact.memo}</Typography>
+                  <Typography variant="h6" className={styles.memo}>
+                    {contact.memo}
+                  </Typography>
                 )}
                 {/* 編集ボタン */}
                 <IconButton

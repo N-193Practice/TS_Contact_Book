@@ -8,6 +8,8 @@ import { Typography, IconButton, Button } from '@mui/material';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Grid from '@mui/material/Grid2';
 
+// TODO: 全選択ボタンの画面レイアウトの調整
+
 /**
  * `Home` コンポーネント
  * 連絡先のメイン画面。ナビゲーション、検索バー、連絡先リスト、
@@ -15,8 +17,14 @@ import Grid from '@mui/material/Grid2';
  * @returns {JSX.Element} ホーム画面の UI を返す。
  */
 function Home(): JSX.Element {
-  const { handleDeleteMultiple, selectedContacts, handleNewContact } =
-    useContacts();
+  const {
+    handleDeleteMultiple,
+    selectedContacts,
+    handleNewContact,
+    selectAllContacts,
+    deselectAllContacts,
+    contacts,
+  } = useContacts();
 
   return (
     <div className={styles.container}>
@@ -28,6 +36,25 @@ function Home(): JSX.Element {
         </div>
         {/* Navigation */}
         <nav className={styles.navbar}>
+          <div className={styles.selectRightButton}>
+            <Button
+              variant="contained"
+              onClick={selectAllContacts}
+              disabled={selectedContacts.length === contacts.length}
+              className={styles.selectAllButton}
+              color="primary"
+            >
+              全ての連絡先を✅
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={deselectAllContacts}
+              disabled={selectedContacts.length === 0}
+              className={styles.deselectAllButton}
+            >
+              全✅選択解除
+            </Button>
+          </div>
           <div className={styles.navbarLeft}>
             {/* 一括削除ボタン（選択された連絡先がある場合に有効） */}
             <Button
@@ -64,4 +91,5 @@ function Home(): JSX.Element {
     </div>
   );
 }
+
 export default Home;

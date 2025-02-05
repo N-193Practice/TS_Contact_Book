@@ -28,6 +28,10 @@
   border-radius: 8px;
 }
 
+/* メモのデザイン */
+.memo {
+  white-space: pre-wrap;
+}
 /* 一括削除のチェックボックス */
 .checkbox {
   margin-right: 8px;

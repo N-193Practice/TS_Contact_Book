@@ -34,6 +34,8 @@ import {
  * @property {() => void} handleDeleteMultiple - 選択した複数の連絡先を削除する関数。
  * @property {(letter: string) => void} handleAlphabetClick - アルファベットの選択を処理する関数。
  * @property {{ [key: string]: Contact[] }} groupedContacts - 先頭の文字でグループ化された連絡先。
+ * @property {() => void} selectAllContacts - 全選択ボタンを押したときに呼び出される関数。
+ * @property {() => void} deselectAllContacts - 全選択解除ボタンを押したときに呼び出される関数。
  */
 export type ContactContextType = {
   contacts: Contact[];
@@ -55,8 +57,11 @@ export type ContactContextType = {
   handleDeleteMultiple: () => void;
   handleAlphabetClick: (letter: string) => void;
   groupedContacts: { [key: string]: Contact[] };
+  selectAllContacts: () => void;
+  deselectAllContacts: () => void;
 };
 
+// TODO:グループ機能の実装
 // Context の作成
 const ContactContext = createContext<ContactContextType | undefined>(undefined);
 
@@ -215,6 +220,20 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
       return false;
     }
 
+    //電話番号のチェック(ハイフン除く10-11桁)
+    if (!/^[0-9-]+$/.test(trimmedPhone)) {
+      alert('電話番号は半角数字のみ入力してください');
+      return false;
+    }
+    //電話番号の先頭には0を含めることができないため、ハイフンを削除してチェックする
+    const strippedNumber = trimmedPhone.replace(/-/g, '');
+    if (!/^0\d{9,10}$/.test(strippedNumber)) {
+      alert(
+        '電話番号は半角数字0から始まる10桁以上11桁以内の数字で入力してください'
+      );
+      return false;
+    }
+
     // 名前の重複チェック(新規・編集の際)
     const currentContacts = [...contacts];
     const isDuplicate = currentContacts.some(
@@ -227,6 +246,21 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     return true;
   };
 
+  /**
+   * セレクトボックスの全選択解除を実装する関数。
+   * @returns {void} この関数は値を返さず、全リストのチェックボックスにチェックを入れる。
+   */
+  const selectAllContacts = () => {
+    setSelectedContacts(contacts.map((contact) => contact.id));
+  };
+
+  /**
+   * セレクトボックスの全選択解除を実装する関数。
+   * @returns {void} この関数は値を返さず、選択状態を更新する。
+   */
+  const deselectAllContacts = () => {
+    setSelectedContacts([]);
+  };
   /**
    * 連絡先を追加する関数。
    * @param {Contact} contact - 追加する連絡先。
@@ -268,7 +302,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   };
 
   /**
-   * 削除対象をセレクトボックスで選択・解除する関数(複数選択可能)。
+   * 削除対象をセレクトボックスで手動選択・解除する関数(複数選択可能)。
    * @param {string} id - 操作する連絡先の ID。
    * @returns {void} この関数は値を返さず、選択状態を更新する。
    */
@@ -316,10 +350,13 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
         handleDeleteMultiple,
         handleAlphabetClick,
         groupedContacts,
+        selectAllContacts,
+        deselectAllContacts,
       }}
     >
       {children}
     </ContactContext.Provider>
   );
 }
+
 export { ContactProvider, ContactContext };
