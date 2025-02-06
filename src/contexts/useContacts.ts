@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { ContactContext, ContactContextType } from './ContactContext';
-
+import { AppError } from '../utils/errors';
 /**
  * 連絡先のコンテキストを利用するカスタムフック。
  *ContactProvider の内部でない場合にエラーを出す。
@@ -9,8 +9,11 @@ import { ContactContext, ContactContextType } from './ContactContext';
 function useContacts(): ContactContextType {
   const context = useContext(ContactContext);
   if (context === undefined) {
-    throw new Error('useContacts must be used within a ContactProvider');
+    throw new AppError(
+      'useContacts must be used within a ContactProvider',
+      500
+    );
   }
   return context;
 }
-export { useContacts };
+export default useContacts;

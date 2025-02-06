@@ -1,4 +1,4 @@
-import { useContacts } from '../contexts/useContacts';
+import useContacts from '../contexts/useContacts';
 import ContactList from '../components/ContactList/ContactList';
 import SearchBar from '../components/SearchBar/SearchBar';
 import AlphabetBar from '../components/AlphabetBar/AlphabetBar';

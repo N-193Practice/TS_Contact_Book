@@ -5,8 +5,9 @@ import React, {
   useRef,
   useMemo,
   ReactNode,
+  JSX,
 } from 'react';
-import Contact from '../models/Contact';
+import { Contact } from '../models/Contact';
 import {
   getContacts,
   saveContacts,

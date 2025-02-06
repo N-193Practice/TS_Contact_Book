@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useContacts } from '../../contexts/useContacts';
+import useContacts from '../../contexts/useContacts';
 import {
   Dialog,
   DialogTitle,
