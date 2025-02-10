@@ -53,8 +53,8 @@ export type ContactContextType = {
   updateContact: (contact: Contact) => boolean;
   handleNewContact: () => void;
   handleEditContact: (contact: Contact) => void;
-  handleDeleteSelected: (id: string) => void;
-  handleDeleteAll: (id: string) => void;
+  handleDeleteContact: (id: string) => void;
+  handleMultipleSelected: (id: string) => void;
   handleDeleteMultiple: () => void;
   handleAlphabetClick: (letter: string) => void;
   groupedContacts: { [key: string]: Contact[] };
@@ -62,7 +62,6 @@ export type ContactContextType = {
   deselectAllContacts: () => void;
 };
 
-// TODO:グループ機能の実装
 // Context の作成
 const ContactContext = createContext<ContactContextType | undefined>(undefined);
 
@@ -297,7 +296,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * @param {string} id - 削除する連絡先の ID。
    * @returns {void} この関数は値を返さず、連絡先削除し、リストを更新する。
    */
-  const handleDeleteSelected = (id: string) => {
+  const handleDeleteContact = (id: string) => {
     deleteContact(id);
     setContacts(getContacts());
   };
@@ -307,7 +306,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * @param {string} id - 操作する連絡先の ID。
    * @returns {void} この関数は値を返さず、選択状態を更新する。
    */
-  const handleDeleteAll = (id: string) => {
+  const handleMultipleSelected = (id: string) => {
     setSelectedContacts((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((selectedId) => selectedId !== id)
@@ -346,8 +345,8 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
         updateContact,
         handleNewContact,
         handleEditContact,
-        handleDeleteSelected,
-        handleDeleteAll,
+        handleDeleteContact,
+        handleMultipleSelected,
         handleDeleteMultiple,
         handleAlphabetClick,
         groupedContacts,

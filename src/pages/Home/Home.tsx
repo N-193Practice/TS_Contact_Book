@@ -1,14 +1,14 @@
-import useContacts from '../contexts/useContacts';
-import ContactList from '../components/ContactList/ContactList';
-import SearchBar from '../components/SearchBar/SearchBar';
-import AlphabetBar from '../components/AlphabetBar/AlphabetBar';
-import ContactFormDialog from '../components/ContactFormDialog/ContactFormDialog';
+import { JSX } from 'react';
+import { Link } from 'react-router';
+import useContacts from '../../contexts/useContacts';
+import ContactList from '../../components/ContactList/ContactList';
+import SearchBar from '../../components/SearchBar/SearchBar';
+import AlphabetBar from '../../components/AlphabetBar/AlphabetBar';
+import ContactFormDialog from '../../components/ContactFormDialog/ContactFormDialog';
 import styles from './Home.module.css';
 import { Typography, IconButton, Button } from '@mui/material';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Grid from '@mui/material/Grid2';
-
-// TODO: 全選択ボタンの画面レイアウトの調整
 
 /**
  * `Home` コンポーネント
@@ -38,13 +38,39 @@ function Home(): JSX.Element {
         <nav className={styles.navbar}>
           <div className={styles.selectRightButton}>
             <Button
-              variant="contained"
+              variant="outlined"
+              size="large"
+              component={Link}
+              to="/groups/new"
+              className={styles.groupsButton}
+            >
+              Groupを新規作成
+            </Button>
+            <Button
+              variant="outlined"
+              size="large"
+              component={Link}
+              to="/groups/edit/:id"
+              className={styles.groupsButton}
+            >
+              Groupを編集
+            </Button>
+            <Button
+              variant="outlined"
+              size="large"
+              component={Link}
+              to="/groups/delete/:id"
+              className={styles.groupsButton}
+            >
+              Groupを削除
+            </Button>
+            <Button
+              variant="outlined"
               onClick={selectAllContacts}
               disabled={selectedContacts.length === contacts.length}
               className={styles.selectAllButton}
-              color="primary"
             >
-              全ての連絡先を✅
+              全ての連絡先を選択
             </Button>
             <Button
               variant="outlined"
@@ -52,7 +78,7 @@ function Home(): JSX.Element {
               disabled={selectedContacts.length === 0}
               className={styles.deselectAllButton}
             >
-              全✅選択解除
+              全選択解除
             </Button>
           </div>
           <div className={styles.navbarLeft}>
@@ -91,5 +117,4 @@ function Home(): JSX.Element {
     </div>
   );
 }
-
 export default Home;

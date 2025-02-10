@@ -11,5 +11,5 @@ export type Contact = {
   name: string;
   phone: string;
   memo?: string;
-  groupId?: string | null;
+  groupId: string | null;
 };
