@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, JSX } from 'react';
 import useContacts from '../../contexts/useContacts';
+import GroupSelect from '../GroupSelect/GroupSelect';
 import {
   Dialog,
   DialogTitle,
@@ -26,6 +27,7 @@ function ContactFormDialog(): JSX.Element {
   const [phone, setPhone] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>(''); // エラーメッセージ用の state
+  const [groupId, setGroupId] = useState<string | null>(null); // グループID用の state
 
   /**
    * `editContact` がある場合は編集モードとしてデータをセット。
@@ -49,13 +51,14 @@ function ContactFormDialog(): JSX.Element {
    * 保存ボタンを押したときに呼び出される関数
    * @returns {void} 成功時はダイアログを閉じる。
    */
-  const handleSave = () => {
+  const handleSave = (): void => {
     // オブジェクトの作成
     const newContact = {
       id: editContact ? editContact.id : uuidv4(),
       name: name.trim(),
       phone: phone.trim(),
       memo: memo.trim(),
+      groupId: editContact ? editContact.groupId : null,
     };
 
     let success = false;
@@ -115,6 +118,7 @@ function ContactFormDialog(): JSX.Element {
           value={memo}
           onChange={(e) => setMemo(e.target.value)}
         />
+        <GroupSelect value={groupId} onChange={(value) => setGroupId(value)} />
       </DialogContent>
       <DialogActions>
         <Button onClick={() => setOpenDialog(false)}>キャンセル</Button>

@@ -1,3 +1,4 @@
+import { JSX } from 'react';
 import useContacts from '../../contexts/useContacts';
 import {
   List,
@@ -24,8 +25,8 @@ function ContactList(): JSX.Element {
     listRefs,
     selectedContacts,
     handleEditContact,
-    handleDeleteSelected,
-    handleDeleteAll,
+    handleDeleteContact,
+    handleMultipleSelected,
   } = useContacts();
 
   return (
@@ -35,7 +36,7 @@ function ContactList(): JSX.Element {
         <ListItem
           key={letter}
           ref={(el) => {
-            if (el) listRefs.current[letter] = el;
+            if (el && listRefs.current) listRefs.current[letter] = el;
           }}
           className={styles.listItem}
         >
@@ -49,7 +50,7 @@ function ContactList(): JSX.Element {
               {/* 連絡先の一括削除の選択チェックボックス */}
               <Checkbox
                 checked={selectedContacts.includes(contact.id)}
-                onChange={() => handleDeleteAll(contact.id)}
+                onChange={() => handleMultipleSelected(contact.id)}
                 className={styles.checkbox}
               />
               <CardContent>
@@ -69,7 +70,7 @@ function ContactList(): JSX.Element {
                 </IconButton>
                 {/* 削除ボタン */}
                 <IconButton
-                  onClick={() => handleDeleteSelected(contact.id)}
+                  onClick={() => handleDeleteContact(contact.id)}
                   className={styles.deleteButton}
                 >
                   <DeleteIcon focusable="false" />

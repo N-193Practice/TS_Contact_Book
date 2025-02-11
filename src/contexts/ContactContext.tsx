@@ -42,7 +42,7 @@ export type ContactContextType = {
   contacts: Contact[];
   searchQuery: string;
   setSearchQuery: (query: string) => void;
-  listRefs: React.MutableRefObject<{ [key: string]: HTMLLIElement | null }>;
+  listRefs: React.RefObject<{ [key: string]: HTMLLIElement | null }>;
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
   editContact: Contact | null;

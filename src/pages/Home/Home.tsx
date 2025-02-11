@@ -1,5 +1,4 @@
 import { JSX } from 'react';
-import { Link } from 'react-router';
 import useContacts from '../../contexts/useContacts';
 import ContactList from '../../components/ContactList/ContactList';
 import SearchBar from '../../components/SearchBar/SearchBar';
@@ -37,33 +36,6 @@ function Home(): JSX.Element {
         {/* Navigation */}
         <nav className={styles.navbar}>
           <div className={styles.selectRightButton}>
-            <Button
-              variant="outlined"
-              size="large"
-              component={Link}
-              to="/groups/new"
-              className={styles.groupsButton}
-            >
-              Groupを新規作成
-            </Button>
-            <Button
-              variant="outlined"
-              size="large"
-              component={Link}
-              to="/groups/edit/:id"
-              className={styles.groupsButton}
-            >
-              Groupを編集
-            </Button>
-            <Button
-              variant="outlined"
-              size="large"
-              component={Link}
-              to="/groups/delete/:id"
-              className={styles.groupsButton}
-            >
-              Groupを削除
-            </Button>
             <Button
               variant="outlined"
               onClick={selectAllContacts}
@@ -117,4 +89,5 @@ function Home(): JSX.Element {
     </div>
   );
 }
+
 export default Home;

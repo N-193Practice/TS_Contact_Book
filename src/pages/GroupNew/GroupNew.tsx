@@ -40,4 +40,5 @@ function GroupNew() {
     </div>
   );
 }
+
 export default GroupNew;
