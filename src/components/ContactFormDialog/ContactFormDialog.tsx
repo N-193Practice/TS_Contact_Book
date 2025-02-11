@@ -14,7 +14,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 /**
  * `ContactFormDialog` コンポーネント
- * 連絡先の新規作成および編集用のダイアログ。フォームの入力をローカルストレージに保存する。
+ * 連絡先の新規作成および編集用のダイアログ。
+ * `useContacts` フックを使用して連絡先情報の追加・編集を管理。
  * @returns {JSX.Element} 連絡先フォームダイアログの UI を返す。
  */
 function ContactFormDialog(): JSX.Element {
@@ -27,37 +28,48 @@ function ContactFormDialog(): JSX.Element {
   const [groupId, setGroupId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
-  // フォームの状態管理
+  // ContactFormを開くたびに `localStorage` から復元
   useEffect(() => {
+    if (!openDialog) return; // フォームが開いたときだけ処理
+
     const savedData = localStorage.getItem('contactFormData');
+
     if (savedData) {
-      const { name, phone, memo, groupId } = JSON.parse(savedData);
+      const { name, phone, memo } = JSON.parse(savedData);
       setName(name);
       setPhone(phone);
       setMemo(memo);
-      setGroupId(groupId);
-      localStorage.removeItem('contactFormData');
     } else if (editContact) {
       setName(editContact.name);
       setPhone(editContact.phone);
       setMemo(editContact.memo || '');
-      setGroupId(editContact.groupId);
     } else {
       setName('');
       setPhone('');
       setMemo('');
-      setGroupId(null);
     }
+
     setErrorMessage('');
   }, [editContact, openDialog]);
 
+  // フォームを閉じたら `localStorage` のデータを削除
+  useEffect(() => {
+    if (!openDialog) {
+      localStorage.removeItem('contactFormData');
+    }
+  }, [openDialog]);
+
+  /**
+   * 保存ボタンを押したときに実行
+   * @returns {void} 成功時はダイアログを閉じる。
+   */
   const handleSave = useCallback((): void => {
     const newContact = {
       id: editContact ? editContact.id : uuidv4(),
       name: name.trim(),
       phone: phone.trim(),
       memo: memo.trim(),
-      groupId: groupId,
+      groupId: null, // 仕様上、nullにする
     };
 
     let success = false;
@@ -71,13 +83,14 @@ function ContactFormDialog(): JSX.Element {
       setErrorMessage('入力内容にエラーがあります');
       return;
     }
+
+    localStorage.removeItem('contactFormData'); // 保存時にデータ削除
     setOpenDialog(false);
   }, [
     editContact,
     name,
     phone,
     memo,
-    groupId,
     addContact,
     updateContact,
     setOpenDialog,

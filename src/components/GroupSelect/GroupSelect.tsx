@@ -9,49 +9,50 @@ type GroupSelectProps = {
 };
 
 /**
- * `GroupSelect` コンポーネント
+ * `GroupSelect` コンポーネント。
  * グループのセレクトボックスを表示し、グループを選択する。
- * @param {GroupSelectProps} props - `value` を受け取る。
- * @returns {JSX.Element} グループセレクトボックスの UI を返す。
+ * @returns {JSX.Element} 連絡先フォームダイアログの UI を返す。
  */
 function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
   const { groups } = useGroups();
   const navigate = useNavigate();
 
   /**
-   * グループの新規作成・編集・削除ボタンを押したときにフォームの入力情報をローカルストレージに保存する。
-   * @param {string} path - 画面遷移先のパス
+   * グループの新規作成・編集・削除ボタンを押したときに
+   * フォームの入力情報を一時的にローカルストレージに保存し、画面遷移する。
+   * @returns {void} この関数は値を返さず、ページ遷移する。
+   */
+  const saveFormData = () => {
+    const formData = {
+      name:
+        (document.querySelector('input[label="名前"]') as HTMLInputElement)
+          ?.value || '',
+      phone:
+        (document.querySelector('input[label="電話番号"]') as HTMLInputElement)
+          ?.value || '',
+      memo:
+        (
+          document.querySelector(
+            'textarea[label="メモ"]'
+          ) as HTMLTextAreaElement
+        )?.value || '',
+    };
+
+    localStorage.setItem('contactFormData', JSON.stringify(formData));
+  };
+
+  /**
+   * useCallbackを使用して、グループの新規作成・編集・削除ボタンを押したときに
+   * フォームの入力情報をローカルストレージに保存し、画面遷移する。
+   * @param {string} path - 画面遷移先のパス。
    * @returns {void} この関数は値を返さず、ページ遷移する。
    */
   const handleGroupAction = useCallback(
     (path: string) => {
-      // フォームの現在のデータを取得
-      const currentData = {
-        name:
-          (document.querySelector('input[label="名前"]') as HTMLInputElement)
-            ?.value || '',
-        phone:
-          (
-            document.querySelector(
-              'input[label="電話番号"]'
-            ) as HTMLInputElement
-          )?.value || '',
-        memo:
-          (
-            document.querySelector(
-              'textarea[label="メモ"]'
-            ) as HTMLTextAreaElement
-          )?.value || '',
-        groupId: value,
-      };
-
-      // `localStorage` に保存
-      localStorage.setItem('contactFormData', JSON.stringify(currentData));
-
-      // ページ遷移
+      saveFormData(); // ページ遷移前に確実に保存
       navigate(path);
     },
-    [value, navigate]
+    [navigate]
   );
 
   return (
@@ -96,5 +97,4 @@ function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
     </>
   );
 }
-
 export default GroupSelect;
