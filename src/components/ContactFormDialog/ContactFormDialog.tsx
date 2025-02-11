@@ -1,4 +1,4 @@
-import { useState, useEffect, JSX } from 'react';
+import { useState, useEffect, useCallback, JSX } from 'react';
 import useContacts from '../../contexts/useContacts';
 import GroupSelect from '../GroupSelect/GroupSelect';
 import {
@@ -14,66 +14,74 @@ import { v4 as uuidv4 } from 'uuid';
 
 /**
  * `ContactFormDialog` コンポーネント
- * 連絡先の新規作成および編集用のダイアログ。
- * `useContacts` フックを使用して連絡先情報の追加・編集を管理。
+ * 連絡先の新規作成および編集用のダイアログ。フォームの入力をローカルストレージに保存する。
  * @returns {JSX.Element} 連絡先フォームダイアログの UI を返す。
  */
 function ContactFormDialog(): JSX.Element {
   const { openDialog, setOpenDialog, editContact, addContact, updateContact } =
     useContacts();
 
-  // フォームの状態管理
   const [name, setName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
-  const [errorMessage, setErrorMessage] = useState<string>(''); // エラーメッセージ用の state
-  const [groupId, setGroupId] = useState<string | null>(null); // グループID用の state
+  const [groupId, setGroupId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  /**
-   * `editContact` がある場合は編集モードとしてデータをセット。
-   * ない場合は新規作成モードとしてリセット。
-   * `openDialog` が変わるたびに実行される。
-   */
+  // フォームの状態管理
   useEffect(() => {
-    if (editContact) {
+    const savedData = localStorage.getItem('contactFormData');
+    if (savedData) {
+      const { name, phone, memo, groupId } = JSON.parse(savedData);
+      setName(name);
+      setPhone(phone);
+      setMemo(memo);
+      setGroupId(groupId);
+      localStorage.removeItem('contactFormData');
+    } else if (editContact) {
       setName(editContact.name);
       setPhone(editContact.phone);
       setMemo(editContact.memo || '');
+      setGroupId(editContact.groupId);
     } else {
       setName('');
       setPhone('');
       setMemo('');
+      setGroupId(null);
     }
-    setErrorMessage(''); // ダイアログを開くたびにエラーをリセット
+    setErrorMessage('');
   }, [editContact, openDialog]);
 
-  /**
-   * 保存ボタンを押したときに呼び出される関数
-   * @returns {void} 成功時はダイアログを閉じる。
-   */
-  const handleSave = (): void => {
-    // オブジェクトの作成
+  const handleSave = useCallback((): void => {
     const newContact = {
       id: editContact ? editContact.id : uuidv4(),
       name: name.trim(),
       phone: phone.trim(),
       memo: memo.trim(),
-      groupId: editContact ? editContact.groupId : null,
+      groupId: groupId,
     };
 
     let success = false;
     if (editContact) {
-      success = updateContact(newContact); // 編集処理
+      success = updateContact(newContact);
     } else {
-      success = addContact(newContact); // 新規作成処理
+      success = addContact(newContact);
     }
 
     if (!success) {
-      setErrorMessage('入力内容にエラーがあります'); // エラーメッセージを表示
+      setErrorMessage('入力内容にエラーがあります');
       return;
     }
-    setOpenDialog(false); // 成功した場合のみフォームを閉じる
-  };
+    setOpenDialog(false);
+  }, [
+    editContact,
+    name,
+    phone,
+    memo,
+    groupId,
+    addContact,
+    updateContact,
+    setOpenDialog,
+  ]);
 
   return (
     <Dialog
@@ -87,7 +95,6 @@ function ContactFormDialog(): JSX.Element {
         {editContact ? '連絡先を編集' : '新しい連絡先を追加'}
       </DialogTitle>
       <DialogContent>
-        {/* エラーがある場合に表示 */}
         {errorMessage && (
           <Typography color="error" variant="body2">
             {errorMessage}
