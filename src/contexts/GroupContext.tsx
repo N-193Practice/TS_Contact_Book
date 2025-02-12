@@ -90,8 +90,15 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
    */
   const handleDeleteGroup = useCallback(async (id: string): Promise<void> => {
     try {
+      const existingGroups = getGroups();
+
+      if (!existingGroups.some((group) => group.id === id)) {
+        throw new AppError(`Group with ID ${id} not found`, 404);
+      }
+
       deleteGroup(id);
-      const updatedGroups = getGroups();
+
+      const updatedGroups = existingGroups.filter((group) => group.id !== id);
       setGroups(updatedGroups);
 
       const contacts = getContacts();
@@ -100,6 +107,7 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
       );
       saveContacts(updatedContacts);
     } catch (error) {
+      console.error(`Failed to delete group: ${error}`);
       throw new AppError(
         `Failed to delete group with ID ${id}: ${(error as Error).message}`,
         500

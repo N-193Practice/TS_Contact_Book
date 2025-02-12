@@ -98,6 +98,7 @@ function ContactFormDialog(): JSX.Element {
       maxWidth="sm"
       fullWidth
       closeAfterTransition={false}
+      disableEnforceFocus={true}
     >
       <DialogTitle>
         {editContact ? '連絡先を編集' : '新しい連絡先を追加'}

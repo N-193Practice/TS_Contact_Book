@@ -22,7 +22,7 @@ function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
     <>
       <Select
         fullWidth
-        value={value ?? ''}
+        value={groups.some((group) => group.id === value) ? value : ''}
         onChange={(e) => onChange(e.target.value || null)}
       >
         <MenuItem value="">未作成</MenuItem>
