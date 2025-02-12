@@ -1,21 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, JSX } from 'react';
 import useGroups from '../../contexts/useGroups';
 import { useNavigate, useParams } from 'react-router';
 import { TextField, Button, Typography } from '@mui/material';
-// TODO:グループ管理のページ作成
 
-function GroupEdit() {
+/**
+ * `GroupEdit` コンポーネント
+ * グループの編集画面。
+ * @returns {JSX.Element} グループの編集画面の UI を返す。
+ */
+function GroupEdit(): JSX.Element {
   const { groups, updateGroup } = useGroups();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [groupName, setGroupName] = useState('');
 
+  // グループの名前を取得する
   useEffect(() => {
     const group = groups.find((g) => g.id === id);
     if (group) setGroupName(group.name);
   }, [id, groups]);
 
-  const handleUpdate = () => {
+  /**
+   * グループを更新する。
+   * @returns {void} 成功時はグループを更新し、ホームへ遷移する。
+   */
+  const handleUpdate = (): void => {
     const group = groups.find((g) => g.id === id);
     if (group && updateGroup({ ...group, name: groupName })) {
       navigate('/');
@@ -39,4 +48,5 @@ function GroupEdit() {
     </div>
   );
 }
+
 export default GroupEdit;

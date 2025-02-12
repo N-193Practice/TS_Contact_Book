@@ -37,6 +37,7 @@ import {
  * @property {{ [key: string]: Contact[] }} groupedContacts - 先頭の文字でグループ化された連絡先。
  * @property {() => void} selectAllContacts - 全選択ボタンを押したときに呼び出される関数。
  * @property {() => void} deselectAllContacts - 全選択解除ボタンを押したときに呼び出される関数。
+ * @property {(groupId: string | null) => void} updateEditContactGroup - 編集中の連絡先のグループを更新する関数。
  */
 export type ContactContextType = {
   contacts: Contact[];
@@ -60,6 +61,7 @@ export type ContactContextType = {
   groupedContacts: { [key: string]: Contact[] };
   selectAllContacts: () => void;
   deselectAllContacts: () => void;
+  updateEditContactGroup: (groupId: string | null) => void;
 };
 
 // Context の作成
@@ -78,6 +80,7 @@ type ContactProviderProps = {
  * @param {ContactProviderProps} props - `children` を受け取る。
  * @returns {JSX.Element} プロバイダー コンポーネント。
  */
+// TODO :MUIのvalueの値修正
 function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -106,7 +109,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * @param {string} letter - AlphabetBar でクリックされた文字。
    * @returns {void} この関数は値を返さず、スクロールする。
    */
-  const handleAlphabetClick = (letter: string) => {
+  const handleAlphabetClick = (letter: string): void => {
     listRefs.current[letter]?.scrollIntoView({
       behavior: 'smooth',
       block: 'center', // 中央に配置する
@@ -187,7 +190,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * フォームのデータを初期化し表示する。
    * @returns {void} この関数は値を返さず、ダイアログを開くだけ。
    */
-  const handleNewContact = () => {
+  const handleNewContact = (): void => {
     setEditContact(null);
     setOpenDialog(true);
   };
@@ -197,7 +200,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * @param {Contact} contact - 編集対象の連絡先情報。
    * @returns {void} この関数は値を返さず、ダイアログを開くだけ。
    */
-  const handleEditContact = (contact: Contact) => {
+  const handleEditContact = (contact: Contact): void => {
     setEditContact(contact);
     setOpenDialog(true);
   };
@@ -250,7 +253,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * セレクトボックスの全選択解除を実装する関数。
    * @returns {void} この関数は値を返さず、全リストのチェックボックスにチェックを入れる。
    */
-  const selectAllContacts = () => {
+  const selectAllContacts = (): void => {
     setSelectedContacts(contacts.map((contact) => contact.id));
   };
 
@@ -258,7 +261,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * セレクトボックスの全選択解除を実装する関数。
    * @returns {void} この関数は値を返さず、選択状態を更新する。
    */
-  const deselectAllContacts = () => {
+  const deselectAllContacts = (): void => {
     setSelectedContacts([]);
   };
   /**
@@ -296,7 +299,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * @param {string} id - 削除する連絡先の ID。
    * @returns {void} この関数は値を返さず、連絡先削除し、リストを更新する。
    */
-  const handleDeleteContact = (id: string) => {
+  const handleDeleteContact = (id: string): void => {
     deleteContact(id);
     setContacts(getContacts());
   };
@@ -306,7 +309,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * @param {string} id - 操作する連絡先の ID。
    * @returns {void} この関数は値を返さず、選択状態を更新する。
    */
-  const handleMultipleSelected = (id: string) => {
+  const handleMultipleSelected = (id: string): void => {
     setSelectedContacts((prevSelected) =>
       prevSelected.includes(id)
         ? prevSelected.filter((selectedId) => selectedId !== id)
@@ -318,7 +321,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * セレクトボックスで選択された連絡先を削除する関数。
    * @returns {void} この関数は値を返さず、連絡先削除し、リストを更新する。
    */
-  const handleDeleteMultiple = () => {
+  const handleDeleteMultiple = (): void => {
     if (selectedContacts.length === 0) {
       alert('削除する連絡先を選択してください');
       return;
@@ -326,6 +329,17 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     selectedContacts.forEach((id) => deleteContact(id));
     setContacts(getContacts());
     setSelectedContacts([]);
+  };
+
+  /**
+   * グループの編集を開始する関数。
+   * @param {string} groupId グループID
+   * @returns {void} この関数は値を返さず、グループの編集を開始し、リストを更新する。
+   */
+  const updateEditContactGroup = (groupId: string | null): void => {
+    if (editContact && editContact.groupId === groupId) {
+      setEditContact({ ...editContact, groupId: null });
+    }
   };
 
   return (
@@ -352,6 +366,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
         groupedContacts,
         selectAllContacts,
         deselectAllContacts,
+        updateEditContactGroup,
       }}
     >
       {children}

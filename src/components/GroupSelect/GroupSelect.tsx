@@ -1,8 +1,9 @@
-import { JSX, useCallback } from 'react';
+import { JSX } from 'react';
 import useGroups from '../../contexts/useGroups';
-import { useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { Select, MenuItem, Button } from '@mui/material';
 
+// GroupSelect コンポーネントの型定義
 type GroupSelectProps = {
   value: string | null;
   onChange: (groupId: string | null) => void;
@@ -11,49 +12,11 @@ type GroupSelectProps = {
 /**
  * `GroupSelect` コンポーネント。
  * グループのセレクトボックスを表示し、グループを選択する。
- * @returns {JSX.Element} 連絡先フォームダイアログの UI を返す。
+ * @returns {JSX.Element} 選択したグループの UI を返す。
  */
+// TODO :MUIのvalueの値修正
 function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
   const { groups } = useGroups();
-  const navigate = useNavigate();
-
-  /**
-   * グループの新規作成・編集・削除ボタンを押したときに
-   * フォームの入力情報を一時的にローカルストレージに保存し、画面遷移する。
-   * @returns {void} この関数は値を返さず、ページ遷移する。
-   */
-  const saveFormData = () => {
-    const formData = {
-      name:
-        (document.querySelector('input[label="名前"]') as HTMLInputElement)
-          ?.value || '',
-      phone:
-        (document.querySelector('input[label="電話番号"]') as HTMLInputElement)
-          ?.value || '',
-      memo:
-        (
-          document.querySelector(
-            'textarea[label="メモ"]'
-          ) as HTMLTextAreaElement
-        )?.value || '',
-    };
-
-    localStorage.setItem('contactFormData', JSON.stringify(formData));
-  };
-
-  /**
-   * useCallbackを使用して、グループの新規作成・編集・削除ボタンを押したときに
-   * フォームの入力情報をローカルストレージに保存し、画面遷移する。
-   * @param {string} path - 画面遷移先のパス。
-   * @returns {void} この関数は値を返さず、ページ遷移する。
-   */
-  const handleGroupAction = useCallback(
-    (path: string) => {
-      saveFormData(); // ページ遷移前に確実に保存
-      navigate(path);
-    },
-    [navigate]
-  );
 
   return (
     <>
@@ -73,28 +36,32 @@ function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
         <Button
           variant="outlined"
           size="large"
-          onClick={() => handleGroupAction('/groups/new')}
+          component={Link}
+          to="/groups/new"
         >
-          GROUPを新規作成
+          Groupを新規作成
         </Button>
         <Button
           variant="outlined"
           size="large"
-          onClick={() => handleGroupAction(`/groups/edit/${value}`)}
+          component={Link}
+          to={value ? `/groups/edit/${value}` : ''}
           disabled={!value}
         >
-          GROUPを編集
+          Groupを編集
         </Button>
         <Button
           variant="outlined"
           size="large"
-          onClick={() => handleGroupAction(`/groups/delete/${value}`)}
+          component={Link}
+          to={value ? `/groups/delete/${value}` : ''}
           disabled={!value}
         >
-          GROUPを削除
+          Groupを削除
         </Button>
       </>
     </>
   );
 }
+
 export default GroupSelect;
