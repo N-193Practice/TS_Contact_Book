@@ -20,7 +20,7 @@ export type GroupContextType = {
   groups: Group[];
   addGroup: (group: Group) => boolean;
   updateGroup: (group: Group) => boolean;
-  handleDeleteGroup: (id: string) => void;
+  handleDeleteGroup: (id: string) => Promise<void>;
   recentlyCreatedGroupId: string | null;
   clearRecentlyCreatedGroupId: () => void;
 };
@@ -88,7 +88,7 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
    * @param {string} id - 削除するグループの ID。
    * @returns {void} この関数は値を返さず、連絡先削除し、リストを更新する。
    */
-  const handleDeleteGroup = useCallback((id: string): void => {
+  const handleDeleteGroup = useCallback(async (id: string): Promise<void> => {
     try {
       deleteGroup(id);
       const updatedGroups = getGroups();

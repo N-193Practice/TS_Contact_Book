@@ -6,6 +6,7 @@ import GroupEdit from './pages/GroupEdit/GroupEdit';
 import GroupDelete from './pages/GroupDelete/GroupDelete';
 import Error from './pages/Error';
 import { GroupProvider } from './contexts/GroupContext';
+
 function App() {
   return (
     <GroupProvider>

@@ -14,34 +14,27 @@ const GroupDelete = (): null => {
   const navigate = useNavigate();
   const [isDeleting, setIsDeleting] = useState<boolean>(true);
 
-  // TODO:グループを削除する非同期処理の修正
-  // TODO:MUIエラーの処理
   useEffect(() => {
     if (!id || !handleDeleteGroup) {
       navigate('/');
       return;
     }
 
-    const deleteGroupAndNavigate = async () => {
+    const deleteGroupAndNavigate = async (): Promise<void> => {
       try {
         await handleDeleteGroup(id);
-        if (isDeleting) {
-          navigate('/');
-        }
+        setIsDeleting(false); // 削除成功後に isDeleting を false に
+        navigate('/');
+        alert('削除しました');
       } catch (error) {
-        alert('削除するグループがありません');
         throw new AppError(
-          `Group with ID ${id} not found:${(error as Error).message}`,
+          `Group with ID ${id} not found${(error as Error).message}`,
           404
         );
       }
     };
 
     deleteGroupAndNavigate();
-
-    return () => {
-      setIsDeleting(false); // クリーンアップ時にフラグを変更
-    };
   }, [id, handleDeleteGroup, navigate, isDeleting]);
 
   return null;
