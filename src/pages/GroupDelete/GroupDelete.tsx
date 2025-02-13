@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from 'react-router';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import useGroups from '../../contexts/useGroups';
-import { AppError } from '../../utils/errors';
 
 /**
  * `GroupDelete` コンポーネント
@@ -12,30 +11,21 @@ const GroupDelete = (): null => {
   const { id } = useParams<{ id: string }>();
   const { handleDeleteGroup } = useGroups();
   const navigate = useNavigate();
+  const hasDeleted = useRef(false);
 
-  // TODO:削除の処理修正
+  // 削除処理を実行する
   useEffect(() => {
-    if (!id || !handleDeleteGroup) {
+    if (hasDeleted.current) return; // 2回目以降はスキップ
+    hasDeleted.current = true;
+
+    if (id && handleDeleteGroup) {
+      handleDeleteGroup(id);
+      alert('削除しました');
       navigate('/');
-      return;
+    } else {
+      alert('削除するグループがありません');
+      navigate('/error'); // エラーページにナビゲート
     }
-
-    const deleteGroupAndNavigate = async (): Promise<void> => {
-      try {
-        await handleDeleteGroup(id);
-        navigate('/');
-        alert('削除しました');
-        return;
-      } catch (error) {
-        navigate('/');
-        throw new AppError(
-          `Error saving groups to localStorage: ${(error as Error).message}`,
-          500
-        );
-      }
-    };
-
-    deleteGroupAndNavigate();
   }, [id, handleDeleteGroup, navigate]);
 
   return null;

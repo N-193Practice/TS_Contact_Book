@@ -80,7 +80,6 @@ type ContactProviderProps = {
  * @param {ContactProviderProps} props - `children` を受け取る。
  * @returns {JSX.Element} プロバイダー コンポーネント。
  */
-// TODO :MUIのvalueの値修正
 function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');

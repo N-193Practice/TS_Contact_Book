@@ -98,19 +98,27 @@ function deleteGroup(id: string): void {
   const groups = getGroups();
   const updatedGroups = groups.filter((group) => group.id !== id);
 
-  // グループが存在しない場合はエラーを返す
+  // グループがない場合は処理を終了する。
   if (groups.length === updatedGroups.length) {
     throw new AppError(`Group with ID ${id} not found`, 404);
   }
   saveGroups(updatedGroups);
 
-  // 連絡先がグループから削除された場合、グループに所属する連絡先のグループIDを nullにする
+  // 連絡先がグループから削除された場合、連絡先のグループIDを nullにする
+  resetGroupIdInContacts(id);
+}
+
+/**
+ * `groupId` を持つ連絡先の groupId を null にする
+ * @param {string} groupId - null にする対象のグループ ID
+ * @returns {void}
+ */
+function resetGroupIdInContacts(groupId: string): void {
   const contacts = getContacts();
   const updatedContacts = contacts.map((contact) =>
-    contact.groupId === id ? { ...contact, groupId: null } : contact
+    contact.groupId === groupId ? { ...contact, groupId: null } : contact
   );
 
-  // 連絡先がグループから削除された場合、連絡先のグループIDを nullにする
   if (JSON.stringify(contacts) !== JSON.stringify(updatedContacts)) {
     saveContacts(updatedContacts);
   }
@@ -123,4 +131,5 @@ export {
   getGroups,
   saveGroups,
   deleteGroup,
+  resetGroupIdInContacts,
 };

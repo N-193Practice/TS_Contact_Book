@@ -14,7 +14,6 @@ type GroupSelectProps = {
  * グループのセレクトボックスを表示し、グループを選択する。
  * @returns {JSX.Element} 選択したグループの UI を返す。
  */
-// TODO :MUIのvalueの値修正
 function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
   const { groups } = useGroups();
 

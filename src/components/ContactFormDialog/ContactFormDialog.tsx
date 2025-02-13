@@ -19,7 +19,7 @@ import {
  * `useContacts` フックを使用して連絡先情報の追加・編集を管理。
  * @returns {JSX.Element} 連絡先フォームダイアログの UI を返す。
  */
-// TODO :MUIのvalueの値修正
+
 function ContactFormDialog(): JSX.Element {
   const { openDialog, setOpenDialog, editContact, addContact, updateContact } =
     useContacts();

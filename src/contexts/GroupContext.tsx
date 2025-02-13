@@ -20,7 +20,7 @@ export type GroupContextType = {
   groups: Group[];
   addGroup: (group: Group) => boolean;
   updateGroup: (group: Group) => boolean;
-  handleDeleteGroup: (id: string) => Promise<void>;
+  handleDeleteGroup: (id: string) => void;
   recentlyCreatedGroupId: string | null;
   clearRecentlyCreatedGroupId: () => void;
 };
@@ -84,33 +84,26 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
   };
 
   /**
-   * グループを削除する関数。
+   * useCallbackを使用し、グループを削除する関数。
    * @param {string} id - 削除するグループの ID。
    * @returns {void} この関数は値を返さず、連絡先削除し、リストを更新する。
    */
-  const handleDeleteGroup = useCallback(async (id: string): Promise<void> => {
+  const handleDeleteGroup = useCallback((id: string): void => {
     try {
-      const existingGroups = getGroups();
-
-      if (!existingGroups.some((group) => group.id === id)) {
-        throw new AppError(`Group with ID ${id} not found`, 404);
-      }
-
       deleteGroup(id);
-
-      const updatedGroups = existingGroups.filter((group) => group.id !== id);
+      const updatedGroups = getGroups();
       setGroups(updatedGroups);
 
       const contacts = getContacts();
       const updatedContacts = contacts.map((contact) =>
         contact.groupId === id ? { ...contact, groupId: null } : contact
       );
+
       saveContacts(updatedContacts);
     } catch (error) {
-      console.error(`Failed to delete group: ${error}`);
       throw new AppError(
-        `Failed to delete group with ID ${id}: ${(error as Error).message}`,
-        500
+        `Group with ID ${id} not found:${(error as Error).message}`,
+        404
       );
     }
   }, []);
@@ -119,7 +112,7 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
    * グループの編集を開始する関数。
    * @returns {void} この関数は値を返さず、グループの編集を開始し、リストを更新する。
    */
-  const clearRecentlyCreatedGroupId = (): void => {
+  const clearRecentlyCreatedGroupId = () => {
     setRecentlyCreatedGroupId(null);
   };
 
