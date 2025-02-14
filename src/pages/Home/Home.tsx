@@ -4,6 +4,8 @@ import ContactList from '../../components/ContactList/ContactList';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import AlphabetBar from '../../components/AlphabetBar/AlphabetBar';
 import ContactFormDialog from '../../components/ContactFormDialog/ContactFormDialog';
+import CSVExport from '../../components/CSVExport/CSVExport';
+import CSVImport from '../../components/CSVImport/CSVImport';
 import styles from './Home.module.css';
 import { Typography, IconButton, Button } from '@mui/material';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
@@ -29,6 +31,10 @@ function Home(): JSX.Element {
     <div className={styles.container}>
       <header className={styles.header}>
         <Typography className={styles.title}>Contact Book</Typography>
+        <div className={styles.exportButton}>
+          <CSVExport />
+          <CSVImport />
+        </div>
         {/* SearchBar */}
         <div className={styles.searchBarContainer}>
           <SearchBar />

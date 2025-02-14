@@ -110,7 +110,7 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
 
   /**
    * グループの編集を開始する関数。
-   * @returns {void} この関数は値を返さず、グループの編集を開始し、リストを更新する。
+   * @returns {void} この関数は値を返さず、グループの編集を開始し、リストを更新する。また、最後に作成したグループの ID を記憶する。
    */
   const clearRecentlyCreatedGroupId = () => {
     setRecentlyCreatedGroupId(null);

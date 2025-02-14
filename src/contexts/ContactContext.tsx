@@ -12,11 +12,13 @@ import {
   getContacts,
   saveContacts,
   deleteContact,
+  resetGroupIdInContacts,
 } from '../utils/localStorage';
 
 /**
  * ContactContextType は、連絡先コンテキストの構造を定義する。
  * @property {Contact[]} contacts - すべての連絡先のリスト。
+ * @property {void} setContacts - 連絡先を設定する関数。
  * @property {string} searchQuery - 現在の検索クエリ。
  * @property {(query: string) => void} setSearchQuery - 検索クエリを更新する関数。
  * @property {React.MutableRefObject<{ [key: string]: HTMLLIElement | null }>} listRefs - 連絡先リスト要素への参照。
@@ -41,6 +43,7 @@ import {
  */
 export type ContactContextType = {
   contacts: Contact[];
+  setContacts: (contacts: Contact[]) => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   listRefs: React.RefObject<{ [key: string]: HTMLLIElement | null }>;
@@ -274,6 +277,9 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     const updatedContacts = [...contacts, contact];
     setContacts(updatedContacts);
     saveContacts(updatedContacts);
+    if (contact.groupId) {
+      resetGroupIdInContacts(contact.groupId); //groupId を null にする
+    }
     return true;
   };
 
@@ -290,6 +296,9 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     );
     setContacts(updatedContacts);
     saveContacts(updatedContacts);
+    if (updatedContact.groupId) {
+      resetGroupIdInContacts(updatedContact.groupId); //groupId を null にする
+    }
     return true;
   };
 
@@ -345,6 +354,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     <ContactContext.Provider
       value={{
         contacts,
+        setContacts,
         searchQuery,
         setSearchQuery,
         listRefs,

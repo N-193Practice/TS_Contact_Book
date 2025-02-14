@@ -2,48 +2,70 @@ import { Contact } from '../models/Contact';
 import { Group } from '../models/Group';
 import { AppError } from './errors';
 
-//ローカルストレージに保存されている連絡先、グループのデータを保持するためのキー。
+// ローカルストレージ用のキー
 const CONTACTS_STORAGE_KEY = 'contacts';
 const GROUPS_STORAGE_KEY = 'groups';
 
 /**
- * ローカルストレージから連絡先を取得する。
- * @returns {Contact[]} ローカルストレージに保存されている連絡先の配列、または存在しない場合は空の配列。
+ * ローカルストレージからデータを取得
+ * @param key ローカルストレージのキー
+ * @returns {T[]} 取得したデータ（存在しない場合は空配列）
  */
-function getContacts(): Contact[] {
-  const data = localStorage.getItem(CONTACTS_STORAGE_KEY);
+function getFromStorage<T>(key: string): T[] {
+  const data = localStorage.getItem(key);
   if (!data) return [];
 
   try {
-    return JSON.parse(data);
+    return JSON.parse(data) as T[];
   } catch (error) {
     throw new AppError(
-      `Error parsing contacts from localStorage: ${(error as Error).message}`,
+      `Error parsing data from localStorage (key: ${key}): ${
+        (error as Error).message
+      }`,
       500
     );
   }
 }
 
 /**
- * 連絡先をローカルストレージに保存する。
+ * ローカルストレージにデータを保存
+ * @param key ローカルストレージのキー
+ * @param data 保存するデータ
+ */
+function saveToStorage<T>(key: string, data: T[]): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    throw new AppError(
+      `Error saving data to localStorage (key: ${key}): ${
+        (error as Error).message
+      }`,
+      500
+    );
+  }
+}
+
+/**
+ * ローカルストレージから連絡先を取得
+ * @returns {Contact[]} ローカルストレージに保存されている連絡先の配列、または存在しない場合は空の配列。
+ */
+function getContacts(): Contact[] {
+  return getFromStorage<Contact>(CONTACTS_STORAGE_KEY);
+}
+
+/**
+ * 連絡先をローカルストレージに保存
  * @param {Contact[]} contacts - 保存する連絡先の配列。
  * @returns {void} この関数は値を返さず、ローカルストレージに保存する。
  */
 function saveContacts(contacts: Contact[]): void {
-  try {
-    localStorage.setItem(CONTACTS_STORAGE_KEY, JSON.stringify(contacts));
-  } catch (error) {
-    throw new AppError(
-      `Error saving contacts to localStorage: ${(error as Error).message}`,
-      500
-    );
-  }
+  saveToStorage(CONTACTS_STORAGE_KEY, contacts);
 }
 
 /**
- * ローカルストレージから ID で連絡先を削除する。
- * @param {string} id - 削除する連絡先の ID。
- * @returns {void} この関数は値を返さず、ローカルストレージから連絡先を削除し、リストを更新する。
+ * 連絡先を削除する
+ * @param {string} id - 削除する連絡先の ID
+ * @returns {void} この関数は値を返さず、ローカルストレージに保存する。
  */
 function deleteContact(id: string): void {
   const contacts = getContacts();
@@ -56,70 +78,57 @@ function deleteContact(id: string): void {
 }
 
 /**
- * グループをローカルストレージから取得する。
- * @returns {Group[]} この関数はローカルストレージからグループを取得し、それらを返す。
+ * ローカルストレージからグループを取得
+ * @returns {Group[]} ローカルストレージに保存されているグループの配列、または存在しない場合は空の配列。
  */
 function getGroups(): Group[] {
-  const data = localStorage.getItem(GROUPS_STORAGE_KEY);
-  if (!data) return [];
-
-  try {
-    return JSON.parse(data);
-  } catch (error) {
-    throw new AppError(
-      `Error parsing groups from localStorage: ${(error as Error).message}`,
-      500
-    );
-  }
+  return getFromStorage<Group>(GROUPS_STORAGE_KEY);
 }
 
 /**
- * グループをローカルストレージに保存する。
+ * グループをローカルストレージに保存
  * @param {Group[]} groups - 保存するグループの配列。
- * @returns {void} この関数は値を返さず、ローカルストレージにグループを保存する。
+ * @returns {void} この関数は値を返さず、ローカルストレージに保存する。
  */
 function saveGroups(groups: Group[]): void {
-  try {
-    localStorage.setItem(GROUPS_STORAGE_KEY, JSON.stringify(groups));
-  } catch (error) {
-    throw new AppError(
-      `Error saving groups to localStorage: ${(error as Error).message}`,
-      500
-    );
-  }
+  saveToStorage(GROUPS_STORAGE_KEY, groups);
 }
 
 /**
- * グループをローカルストレージから削除する。
- * @param {string} id - 削除するグループの ID。
- * @returns {void} この関数は値を返さず、ローカルストレージからグループを削除し、リストを更新する。
+ * IDでグループを削除し、関連する連絡先の `groupId` をリセット
+ * @param {string} id - 削除するグループの ID
+ * @returns {void} この関数は値を返さず、グループの削除と連絡先の `groupId` のリセットを行う。
  */
 function deleteGroup(id: string): void {
   const groups = getGroups();
   const updatedGroups = groups.filter((group) => group.id !== id);
 
-  // グループがない場合は処理を終了する。
   if (groups.length === updatedGroups.length) {
     throw new AppError(`Group with ID ${id} not found`, 404);
   }
   saveGroups(updatedGroups);
 
-  // 連絡先がグループから削除された場合、連絡先のグループIDを nullにする
   resetGroupIdInContacts(id);
 }
 
 /**
- * `groupId` を持つ連絡先の groupId を null にする
- * @param {string} groupId - null にする対象のグループ ID
- * @returns {void}
+ * 連絡先内の `groupId` を null にリセット
+ * @param {string} groupId - リセットするグループの ID
+ * @returns {void} この関数は値を返さず、連絡先の `groupId` をリセットする。
  */
 function resetGroupIdInContacts(groupId: string): void {
   const contacts = getContacts();
-  const updatedContacts = contacts.map((contact) =>
-    contact.groupId === groupId ? { ...contact, groupId: null } : contact
-  );
+  let hasUpdated = false;
 
-  if (JSON.stringify(contacts) !== JSON.stringify(updatedContacts)) {
+  const updatedContacts = contacts.map((contact) => {
+    if (contact.groupId === groupId) {
+      hasUpdated = true;
+      return { ...contact, groupId: null };
+    }
+    return contact;
+  });
+
+  if (hasUpdated) {
     saveContacts(updatedContacts);
   }
 }
