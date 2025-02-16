@@ -14,6 +14,7 @@ import {
   getContacts,
   saveContacts,
 } from '../utils/localStorage';
+import { validateGroup } from '../utils/validation';
 import { AppError } from '../utils/errors';
 
 export type GroupContextType = {
@@ -58,9 +59,9 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
    * @returns {boolean} 登録に成功すれば true、失敗すれば false。
    */
   const addGroup = (group: Group): boolean => {
-    if (groups.some((g) => g.name === group.name)) return false; // 重複チェック
-    const updatedGroups = [...groups, group];
+    if (!validateGroup(group, groups)) return false; // バリデーション適用
 
+    const updatedGroups = [...groups, group];
     setGroups(updatedGroups);
     saveGroups(updatedGroups);
     setRecentlyCreatedGroupId(group.id);
@@ -73,8 +74,7 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
    * @returns {boolean} 更新に成功すれば true、失敗すれば false。
    */
   const updateGroup = (group: Group): boolean => {
-    if (groups.some((g) => g.name === group.name && g.id !== group.id))
-      return false; // 重複チェック
+    if (!validateGroup(group, groups)) return false; // バリデーション適用
     const updatedGroups = groups.map((g) =>
       g.id === group.id ? { ...g, name: group.name } : g
     );

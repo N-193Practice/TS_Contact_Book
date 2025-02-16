@@ -14,6 +14,7 @@ import {
   deleteContact,
   resetGroupIdInContacts,
 } from '../utils/localStorage';
+import { validateContact } from '../utils/validation';
 
 /**
  * ContactContextType は、連絡先コンテキストの構造を定義する。
@@ -208,50 +209,6 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   };
 
   /**
-   * バリデーションを行い、連絡先の正当性をチェックする関数。
-   * @param {Contact} contact - バリデーション対象の連絡先情報。
-   * @param {boolean} [isEdit=false] - 編集モードなのか確認(新規作成時はfalse)。
-   * @returns {boolean} バリデーションが成功すれば true、失敗すれば false。
-   */
-  const validateContact = (
-    contact: Contact,
-    isEdit: boolean = false
-  ): boolean => {
-    // 空白のチェック
-    const trimmedName = contact.name.trim();
-    const trimmedPhone = contact.phone.trim();
-    if (!trimmedName || !trimmedPhone) {
-      alert('名前と電話番号は必須です');
-      return false;
-    }
-
-    //電話番号のチェック(ハイフン除く10-11桁)
-    if (!/^[0-9-]+$/.test(trimmedPhone)) {
-      alert('電話番号は半角数字のみ入力してください');
-      return false;
-    }
-    //電話番号の先頭には0を含めることができないため、ハイフンを削除してチェックする
-    const strippedNumber = trimmedPhone.replace(/-/g, '');
-    if (!/^0\d{9,10}$/.test(strippedNumber)) {
-      alert(
-        '電話番号は半角数字0から始まる10桁以上11桁以内の数字で入力してください'
-      );
-      return false;
-    }
-
-    // 名前の重複チェック(新規・編集の際)
-    const currentContacts = [...contacts];
-    const isDuplicate = currentContacts.some(
-      (c) => c.name === trimmedName && (!isEdit || c.id !== contact.id)
-    );
-    if (isDuplicate) {
-      alert('この名前の連絡先はすでに存在します');
-      return false;
-    }
-    return true;
-  };
-
-  /**
    * セレクトボックスの全選択解除を実装する関数。
    * @returns {void} この関数は値を返さず、全リストのチェックボックスにチェックを入れる。
    */
@@ -272,7 +229,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * @returns {boolean} 追加に成功すれば true、失敗すれば false。
    */
   const addContact = (contact: Contact): boolean => {
-    if (!validateContact(contact)) return false;
+    if (!validateContact(contact, contacts)) return false; // バリデーション適用
 
     const updatedContacts = [...contacts, contact];
     setContacts(updatedContacts);
@@ -289,7 +246,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * @returns {boolean} 更新に成功すれば true、失敗すれば false。
    */
   const updateContact = (updatedContact: Contact): boolean => {
-    if (!validateContact(updatedContact, true)) return false;
+    if (!validateContact(updatedContact, contacts, true)) return false; // バリデーション適用
 
     const updatedContacts = contacts.map((c) =>
       c.id === updatedContact.id ? updatedContact : c
