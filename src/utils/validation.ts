@@ -1,5 +1,5 @@
-import { Contact } from '../models/Contact';
-import { Group } from '../models/Group';
+import { Contact } from '../models/types';
+import { Group } from '../models/types';
 
 /**
  * グループのバリデーションを行う

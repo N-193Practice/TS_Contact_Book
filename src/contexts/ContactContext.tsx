@@ -1,4 +1,5 @@
 import React, {
+  useContext,
   createContext,
   useState,
   useEffect,
@@ -6,8 +7,10 @@ import React, {
   useMemo,
   ReactNode,
   JSX,
+  useCallback,
 } from 'react';
 import { Contact } from '../models/types';
+import { GroupContext } from './GroupContext';
 import {
   getContacts,
   saveContacts,
@@ -91,10 +94,18 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const listRefs = useRef<{ [key: string]: HTMLLIElement | null }>({});
 
+  // GroupContextからグループ情報を受け取る
+  const groupContext = useContext(GroupContext);
+  const groups = useMemo(() => groupContext?.groups ?? [], [groupContext]);
+
   // ContactのCRUD処理(初回時ロード)
-  useEffect(() => {
+  const updateContacts = useCallback(() => {
     setContacts(getContacts());
   }, []);
+
+  useEffect(() => {
+    updateContacts();
+  }, [groups, updateContacts]);
 
   /**
    * 検索クエリに基づいて連絡先をフィルタリングする。

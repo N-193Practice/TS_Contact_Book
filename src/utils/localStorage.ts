@@ -102,7 +102,6 @@ function saveGroups(groups: Group[]): void {
  */
 function deleteGroup(id: string): void {
   const groups = getGroups();
-  console.log(`deleteGroup is called with id: ${id}`); //デバッグ
   const updatedGroups = groups.filter((group) => group.id !== id);
 
   // グループがない場合は処理を終了する。
@@ -111,7 +110,6 @@ function deleteGroup(id: string): void {
   }
   saveGroups(updatedGroups);
 
-  console.log(`Calling resetGroupIdInContacts with id: ${id}`); //デバッグ
   // 連絡先がグループから削除された場合、連絡先のグループIDを nullにする
   resetGroupIdInContacts(id);
 }
@@ -122,14 +120,11 @@ function deleteGroup(id: string): void {
  * @returns {void} この関数は値を返さず、連絡先の `groupId` をnullに上書きする。
  */
 function resetGroupIdInContacts(groupId: string): void {
-  console.log(`resetGroupIdInContacts is called with groupId: ${groupId}`); //デバッグ
   const contacts = getContacts();
-  console.log('Contacts before update:', JSON.stringify(contacts, null, 2)); //デバッグ
   let hasUpdated = false;
 
   const updatedContacts = contacts.map((contact) => {
     if (String(contact.groupId ?? '').trim() === String(groupId ?? '').trim()) {
-      console.log(`Updating contact: ${contact.id}, name: ${contact.name}`); //デバッグ
       hasUpdated = true;
       return { ...contact, groupId: null };
     }
@@ -137,9 +132,6 @@ function resetGroupIdInContacts(groupId: string): void {
   });
   if (hasUpdated) {
     saveContacts(updatedContacts);
-    console.log('After save:', JSON.stringify(updatedContacts, null, 2)); //デバッグ
-  } else {
-    console.warn(`No contacts updated for groupId: ${groupId}`); //デバッグ
   }
 }
 
