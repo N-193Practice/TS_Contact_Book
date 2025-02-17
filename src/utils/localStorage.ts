@@ -1,8 +1,8 @@
-import { Contact } from '../models/Contact';
-import { Group } from '../models/Group';
+import { Contact } from '../models/types';
+import { Group } from '../models/types';
 import { AppError } from './errors';
 
-// ローカルストレージ用のキー
+//ローカルストレージに保存されている連絡先、グループのデータを保持するためのキー。
 const CONTACTS_STORAGE_KEY = 'contacts';
 const GROUPS_STORAGE_KEY = 'groups';
 
@@ -31,6 +31,7 @@ function getFromStorage<T>(key: string): T[] {
  * ローカルストレージにデータを保存
  * @param key ローカルストレージのキー
  * @param data 保存するデータ
+ * @returns {void} この関数は値を返さず、ローカルストレージにデータを保存する。
  */
 function saveToStorage<T>(key: string, data: T[]): void {
   try {
@@ -46,7 +47,7 @@ function saveToStorage<T>(key: string, data: T[]): void {
 }
 
 /**
- * ローカルストレージから連絡先を取得
+ * ローカルストレージから連絡先を取得する。
  * @returns {Contact[]} ローカルストレージに保存されている連絡先の配列、または存在しない場合は空の配列。
  */
 function getContacts(): Contact[] {
@@ -54,7 +55,7 @@ function getContacts(): Contact[] {
 }
 
 /**
- * 連絡先をローカルストレージに保存
+ * 連絡先をローカルストレージに保存する。
  * @param {Contact[]} contacts - 保存する連絡先の配列。
  * @returns {void} この関数は値を返さず、ローカルストレージに保存する。
  */
@@ -63,9 +64,9 @@ function saveContacts(contacts: Contact[]): void {
 }
 
 /**
- * 連絡先を削除する
- * @param {string} id - 削除する連絡先の ID
- * @returns {void} この関数は値を返さず、ローカルストレージに保存する。
+ * ローカルストレージから ID で連絡先を削除する。
+ * @param {string} id - 削除する連絡先の ID。
+ * @returns {void} この関数は値を返さず、ローカルストレージから連絡先を削除し、リストを更新する。
  */
 function deleteContact(id: string): void {
   const contacts = getContacts();
@@ -78,48 +79,49 @@ function deleteContact(id: string): void {
 }
 
 /**
- * ローカルストレージからグループを取得
- * @returns {Group[]} ローカルストレージに保存されているグループの配列、または存在しない場合は空の配列。
+ * グループをローカルストレージから取得する。
+ * @returns {Group[]} この関数はローカルストレージからグループを取得し、それらを返す。
  */
 function getGroups(): Group[] {
   return getFromStorage<Group>(GROUPS_STORAGE_KEY);
 }
 
 /**
- * グループをローカルストレージに保存
+ * グループをローカルストレージに保存する。
  * @param {Group[]} groups - 保存するグループの配列。
- * @returns {void} この関数は値を返さず、ローカルストレージに保存する。
+ * @returns {void} この関数は値を返さず、ローカルストレージにグループを保存する。
  */
 function saveGroups(groups: Group[]): void {
   saveToStorage(GROUPS_STORAGE_KEY, groups);
 }
 
 /**
- * IDでグループを削除し、関連する連絡先の `groupId` をリセット
- * @param {string} id - 削除するグループの ID
- * @returns {void} この関数は値を返さず、グループの削除と連絡先の `groupId` のリセットを行う。
+ * グループをローカルストレージから削除する。
+ * @param {string} id - 削除するグループの ID。
+ * @returns {void} この関数は値を返さず、ローカルストレージからグループを削除し、リストを更新する。
  */
 function deleteGroup(id: string): void {
   const groups = getGroups();
   const updatedGroups = groups.filter((group) => group.id !== id);
 
+  // グループがない場合は処理を終了する。
   if (groups.length === updatedGroups.length) {
     throw new AppError(`Group with ID ${id} not found`, 404);
   }
   saveGroups(updatedGroups);
 
+  // 連絡先がグループから削除された場合、連絡先のグループIDを nullにする
   resetGroupIdInContacts(id);
 }
 
 /**
- * 連絡先内の `groupId` を null にリセット
- * @param {string} groupId - リセットするグループの ID
- * @returns {void} この関数は値を返さず、連絡先の `groupId` をリセットする。
+ * `groupId` を持つ連絡先の groupId を null にする
+ * @param {string} groupId - null にする対象のグループ ID
+ * @returns {void} この関数は値を返さず、連絡先の `groupId` をnullに上書きする。
  */
 function resetGroupIdInContacts(groupId: string): void {
   const contacts = getContacts();
   let hasUpdated = false;
-
   const updatedContacts = contacts.map((contact) => {
     if (contact.groupId === groupId) {
       hasUpdated = true;
@@ -127,9 +129,10 @@ function resetGroupIdInContacts(groupId: string): void {
     }
     return contact;
   });
-
   if (hasUpdated) {
+    console.log('Before save:', JSON.stringify(updatedContacts, null, 2)); //デバッグ
     saveContacts(updatedContacts);
+    console.log('After save:', JSON.stringify(updatedContacts, null, 2)); //デバッグ
   }
 }
 

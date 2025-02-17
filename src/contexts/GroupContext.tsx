@@ -6,7 +6,7 @@ import {
   JSX,
   useCallback,
 } from 'react';
-import { Group } from '../models/Group';
+import { Group } from '../models/types';
 import {
   getGroups,
   saveGroups,
@@ -17,6 +17,15 @@ import {
 import { validateGroup } from '../utils/validation';
 import { AppError } from '../utils/errors';
 
+/**
+ * グループのコンテキスト。
+ * @property {Group[]} groups - グループの配列。
+ * @property {(group: Group) => boolean} addGroup - グループの追加を行う関数。
+ * @property {(group: Group) => boolean} updateGroup - グループの更新を行う関数。
+ * @property {(id: string) => void} handleDeleteGroup - グループの削除を行う関数。
+ * @property {string | null} recentlyCreatedGroupId - 最近作成したグループの ID。
+ * @property {() => void} clearRecentlyCreatedGroupId - 最近作成したグループの ID をクリアする関数。
+ */
 export type GroupContextType = {
   groups: Group[];
   addGroup: (group: Group) => boolean;
@@ -59,7 +68,7 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
    * @returns {boolean} 登録に成功すれば true、失敗すれば false。
    */
   const addGroup = (group: Group): boolean => {
-    if (!validateGroup(group, groups)) return false; // バリデーション適用
+    if (!validateGroup(group, groups)) return false;
 
     const updatedGroups = [...groups, group];
     setGroups(updatedGroups);
@@ -74,7 +83,8 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
    * @returns {boolean} 更新に成功すれば true、失敗すれば false。
    */
   const updateGroup = (group: Group): boolean => {
-    if (!validateGroup(group, groups)) return false; // バリデーション適用
+    if (!validateGroup(group, groups, true)) return false;
+
     const updatedGroups = groups.map((g) =>
       g.id === group.id ? { ...g, name: group.name } : g
     );
@@ -110,9 +120,9 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
 
   /**
    * グループの編集を開始する関数。
-   * @returns {void} この関数は値を返さず、グループの編集を開始し、リストを更新する。また、最後に作成したグループの ID を記憶する。
+   * @returns {void} この関数は値を返さず、グループの編集を開始し、リストを更新する。
    */
-  const clearRecentlyCreatedGroupId = () => {
+  const clearRecentlyCreatedGroupId = (): void => {
     setRecentlyCreatedGroupId(null);
   };
 

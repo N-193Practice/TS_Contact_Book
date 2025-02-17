@@ -7,7 +7,7 @@ import React, {
   ReactNode,
   JSX,
 } from 'react';
-import { Contact } from '../models/Contact';
+import { Contact } from '../models/types';
 import {
   getContacts,
   saveContacts,
@@ -19,7 +19,6 @@ import { validateContact } from '../utils/validation';
 /**
  * ContactContextType は、連絡先コンテキストの構造を定義する。
  * @property {Contact[]} contacts - すべての連絡先のリスト。
- * @property {void} setContacts - 連絡先を設定する関数。
  * @property {string} searchQuery - 現在の検索クエリ。
  * @property {(query: string) => void} setSearchQuery - 検索クエリを更新する関数。
  * @property {React.MutableRefObject<{ [key: string]: HTMLLIElement | null }>} listRefs - 連絡先リスト要素への参照。
@@ -229,7 +228,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * @returns {boolean} 追加に成功すれば true、失敗すれば false。
    */
   const addContact = (contact: Contact): boolean => {
-    if (!validateContact(contact, contacts)) return false; // バリデーション適用
+    if (!validateContact(contact, contacts)) return false;
 
     const updatedContacts = [...contacts, contact];
     setContacts(updatedContacts);
@@ -246,7 +245,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * @returns {boolean} 更新に成功すれば true、失敗すれば false。
    */
   const updateContact = (updatedContact: Contact): boolean => {
-    if (!validateContact(updatedContact, contacts, true)) return false; // バリデーション適用
+    if (!validateContact(updatedContact, contacts, true)) return false;
 
     const updatedContacts = contacts.map((c) =>
       c.id === updatedContact.id ? updatedContact : c
