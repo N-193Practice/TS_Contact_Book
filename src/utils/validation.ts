@@ -19,7 +19,6 @@ export const validateGroup = (
     alert('グループ名は必須です');
     return false;
   }
-
   // 名前の重複チェック
   const isDuplicate = existingGroups.some(
     (g) => g.name === trimmedName && (!isEdit || g.id !== group.id)
@@ -28,23 +27,22 @@ export const validateGroup = (
     alert('このグループ名はすでに存在します');
     return false;
   }
-
   return true;
 };
 
 /**
- * 連絡先のバリデーションを行う
- * @param {Contact} contact - バリデーション対象の連絡先
- * @param {Contact[]} existingContacts - 既存の連絡先リスト
- * @param {boolean} [isEdit=false] - 編集モードかどうか (新規作成時はfalse)
- * @returns {boolean} バリデーションが成功すれば true、失敗すれば false
+ * 連絡先の正当性をチェックする関数。
+ * @param {Contact} contact - バリデーション対象の連絡先情報。
+ * @param {boolean} [isEdit=false] - 編集モードなのか確認(新規作成時はfalse)。
+ * @returns {boolean} バリデーションが成功すれば true、失敗すれば false。
  */
 export const validateContact = (
   contact: Contact,
-  existingContacts: Contact[],
-  isEdit: boolean = false
+  exisitingContacts: Contact[] = [],
+  isEdit: boolean = false,
+  isUpdate: boolean = false
 ): boolean => {
-  // 空白チェック
+  // 空白のチェック
   const trimmedName = contact.name.trim();
   const trimmedPhone = contact.phone.trim();
   if (!trimmedName || !trimmedPhone) {
@@ -52,13 +50,12 @@ export const validateContact = (
     return false;
   }
 
-  // 電話番号のチェック (半角数字とハイフンのみ)
+  //電話番号のチェック(ハイフン除く10-11桁)
   if (!/^[0-9-]+$/.test(trimmedPhone)) {
     alert('電話番号は半角数字のみ入力してください');
     return false;
   }
-
-  // 電話番号のフォーマット (0から始まり10~11桁)
+  //電話番号の先頭には0を含めることができないため、ハイフンを削除してチェックする
   const strippedNumber = trimmedPhone.replace(/-/g, '');
   if (!/^0\d{9,10}$/.test(strippedNumber)) {
     alert(
@@ -67,14 +64,27 @@ export const validateContact = (
     return false;
   }
 
-  // 名前の重複チェック
-  const isDuplicate = existingContacts.some(
+  // IDのチェック(CSVのため)
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!uuidRegex.test(contact.id)) {
+    alert('IDの形式が正しくありません');
+    return false;
+  }
+
+  // IDの重複チェック(CSVのため)
+  if (!isUpdate && exisitingContacts.some((c) => c.id === contact.id)) {
+    alert('このIDの連絡先はすでに存在します');
+    return false;
+  }
+
+  // 名前の重複チェック(新規・編集の際)
+  const isDuplicate = exisitingContacts.some(
     (c) => c.name === trimmedName && (!isEdit || c.id !== contact.id)
   );
   if (isDuplicate) {
     alert('この名前の連絡先はすでに存在します');
     return false;
   }
-
   return true;
 };

@@ -14,7 +14,7 @@ import { Button } from '@mui/material';
  * @returns {JSX.Element | null} 読み込みに成功した場合は UI を返す。
  */
 function CSVImport(): JSX.Element | null {
-  const { addContact, contacts } = useContacts();
+  const { contacts, addContact, updateContact } = useContacts();
   const { groups, addGroup } = useGroups();
   const { readString } = usePapaParse(); // CSVをJSONに変換するライブラリ
   const [file, setFile] = useState<File | null>(null); // ファイルのセット
@@ -59,7 +59,9 @@ function CSVImport(): JSX.Element | null {
 
           (results.data as CSVContact[]).forEach((csvRow, index) => {
             const contact = csvToContact(csvRow, contacts, groups, addGroup);
-            if (!validateContact(contact, contacts, false)) {
+            // 新規or更新のバリデーション適用する
+            const isUpdate = contacts.some((c) => c.id === contact.id);
+            if (!validateContact(contact, contacts, isUpdate)) {
               newErrors.push(`Row ${index + 1}: 連絡先データが無効です`);
             } else {
               validContacts.push(contact);
@@ -69,7 +71,14 @@ function CSVImport(): JSX.Element | null {
           setErrors(newErrors);
 
           if (newErrors.length === 0) {
-            validContacts.forEach((contact) => addContact(contact));
+            validContacts.forEach((contact) => {
+              const isUpdate = contacts.some((c) => c.id === contact.id);
+              if (isUpdate) {
+                updateContact(contact);
+              } else {
+                addContact(contact);
+              }
+            });
             alert('ファイルの読み込みが完了しました');
             setFile(null);
           }

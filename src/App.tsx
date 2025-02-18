@@ -5,7 +5,7 @@ import Home from './pages/Home/Home';
 import GroupNew from './pages/GroupNew/GroupNew';
 import GroupEdtit from './pages/GroupEdit/GroupEdit';
 import GroupDelete from './pages/GroupDelete/GroupDelete';
-import Error from './pages/Error';
+import Error from './pages/Error/Error';
 
 function App() {
   return (

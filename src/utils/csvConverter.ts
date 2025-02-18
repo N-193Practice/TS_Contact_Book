@@ -1,8 +1,6 @@
 import { Contact, Group, CSVContact } from '../models/types';
 import { v4 as uuidv4 } from 'uuid';
 
-// TODO:連絡先のId作成によるユニークなIDの生成(既存の場合は上書き,ない場合は新規作成)
-// TODO:グループの存在チェック(もし同一のグループ名がある場合は上書き、ない場合は新規作成)
 /**
  * `CSVContact` を `Contact` に変換する(インポート時)。
  * @param {CSVContact} csvData - CSVファイルのデータ。
@@ -16,17 +14,27 @@ export const csvToContact = (
   groups: Group[],
   addGroup: (newGroup: Group) => void
 ): Contact => {
-  // 既存の連絡先を検索(IDが一致すれば更新)
-  const exisitingContact = contacts.find((c) => c.id === csvData.contactId);
+  // 既存の連絡先を検索
+  const existingContact = contacts.find((c) => c.id === csvData.contactId);
   // 既存の連絡先がない場合は新規作成
-  const contactId: string = exisitingContact ? exisitingContact.id : uuidv4();
+  let contactId: string;
+  if (existingContact) {
+    // 既存の連絡先がある場合 → 更新
+    contactId = existingContact.id;
+  } else if (csvData.contactId) {
+    // 既存データがなく、CSV に contactId がある場合 → CSV の ID を使用
+    contactId = csvData.contactId;
+  } else {
+    // 既存データがなく、CSV に contactId がない場合 → 新しい UUID を生成
+    contactId = uuidv4();
+  }
 
-  // グループ名の検索
+  // 既存のグループ名を検索
   let group = Array.isArray(groups)
     ? groups.find((g) => g.name === csvData.groupName)
     : null;
   if (!group && csvData.groupName) {
-    // グループ名がある場合はグループを新規作成
+    // グループ名のない場合は新規作成
     group = { id: uuidv4(), name: csvData.groupName };
     addGroup(group); // グループリストに追加
   }
