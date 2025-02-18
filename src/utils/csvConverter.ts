@@ -1,4 +1,5 @@
 import { Contact, Group, CSVContact } from '../models/types';
+import { v4 as uuidv4 } from 'uuid';
 
 // TODO:CSVContact → Contact (インポート時)
 export const csvToContact = (
@@ -9,7 +10,7 @@ export const csvToContact = (
   let group = groups.find((g) => g.name === csvData.groupName);
   if (!group && csvData.groupName) {
     // グループが存在しない場合、新規作成
-    group = { id: crypto.randomUUID(), name: csvData.groupName };
+    group = { id: uuidv4(), name: csvData.groupName };
     addGroup(group); // グループリストに追加
   }
   return {

@@ -42,7 +42,6 @@ import { validateContact } from '../utils/validation';
  * @property {{ [key: string]: Contact[] }} groupedContacts - 先頭の文字でグループ化された連絡先。
  * @property {() => void} selectAllContacts - 全選択ボタンを押したときに呼び出される関数。
  * @property {() => void} deselectAllContacts - 全選択解除ボタンを押したときに呼び出される関数。
- * @property {(groupId: string | null) => void} updateEditContactGroup - 編集中の連絡先のグループを更新する関数。
  */
 export type ContactContextType = {
   contacts: Contact[];
@@ -67,7 +66,6 @@ export type ContactContextType = {
   groupedContacts: { [key: string]: Contact[] };
   selectAllContacts: () => void;
   deselectAllContacts: () => void;
-  updateEditContactGroup: (groupId: string | null) => void;
 };
 
 // Context の作成
@@ -306,17 +304,6 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     setSelectedContacts([]);
   };
 
-  /**
-   * グループの編集を開始する関数。
-   * @param {string} groupId グループID
-   * @returns {void} この関数は値を返さず、グループの編集を開始し、リストを更新する。
-   */
-  const updateEditContactGroup = (groupId: string | null): void => {
-    if (editContact && editContact.groupId === groupId) {
-      setEditContact({ ...editContact, groupId: null });
-    }
-  };
-
   return (
     <ContactContext.Provider
       value={{
@@ -342,7 +329,6 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
         groupedContacts,
         selectAllContacts,
         deselectAllContacts,
-        updateEditContactGroup,
       }}
     >
       {children}
