@@ -5,9 +5,9 @@ import React, {
   useEffect,
   useRef,
   useMemo,
+  useCallback,
   ReactNode,
   JSX,
-  useCallback,
 } from 'react';
 import { Contact } from '../models/types';
 import { GroupContext } from './GroupContext';
@@ -22,6 +22,7 @@ import { validateContact } from '../utils/validation';
 /**
  * ContactContextType は、連絡先コンテキストの構造を定義する。
  * @property {Contact[]} contacts - すべての連絡先のリスト。
+ * @property {(contacts: Contact[]) => void} setContacts - 連絡先のリストを更新する関数。
  * @property {string} searchQuery - 現在の検索クエリ。
  * @property {(query: string) => void} setSearchQuery - 検索クエリを更新する関数。
  * @property {React.MutableRefObject<{ [key: string]: HTMLLIElement | null }>} listRefs - 連絡先リスト要素への参照。
@@ -92,7 +93,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const listRefs = useRef<{ [key: string]: HTMLLIElement | null }>({});
 
-  // GroupContextからグループ情報を受け取る
+  // グループのコンテキストを取得
   const groupContext = useContext(GroupContext);
   const groups = useMemo(() => groupContext?.groups ?? [], [groupContext]);
 

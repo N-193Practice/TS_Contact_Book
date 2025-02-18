@@ -58,7 +58,7 @@ function CSVImport(): JSX.Element | null {
           const validContacts: Contact[] = [];
 
           (results.data as CSVContact[]).forEach((csvRow, index) => {
-            const contact = csvToContact(csvRow, groups, addGroup);
+            const contact = csvToContact(csvRow, contacts, groups, addGroup);
             if (!validateContact(contact, contacts, false)) {
               newErrors.push(`Row ${index + 1}: 連絡先データが無効です`);
             } else {

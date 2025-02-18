@@ -99,6 +99,7 @@ function ContactFormDialog(): JSX.Element {
       fullWidth
       closeAfterTransition={false}
       disableEnforceFocus={true}
+      aria-hidden={false}
     >
       <DialogTitle>
         {editContact ? '連絡先を編集' : '新しい連絡先を追加'}

@@ -126,7 +126,7 @@ function resetGroupIdInContacts(groupId: string): void {
   const updatedContacts = contacts.map((contact) => {
     if (String(contact.groupId ?? '').trim() === String(groupId ?? '').trim()) {
       hasUpdated = true;
-      return { ...contact, groupId: null };
+      return { ...contact, groupId: null }; // null に上書き
     }
     return contact;
   });
