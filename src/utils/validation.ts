@@ -1,5 +1,6 @@
 import { Contact } from '../models/types';
 import { Group } from '../models/types';
+import { CSVContact } from '../models/types';
 
 /**
  * グループのバリデーションを行う
@@ -63,14 +64,6 @@ export const validateContact = (
     return false;
   }
 
-  // IDのチェック(CSVのため)
-  const uuidRegex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(contact.id)) {
-    alert('IDの形式が正しくありません');
-    return false;
-  }
-
   // 連絡先名前の重複チェック(新規・編集の際)
   const isDuplicate = exisitingContacts.some(
     (c) => c.name === trimmedName && (!isEdit || c.id !== contact.id)
@@ -78,6 +71,86 @@ export const validateContact = (
   if (isDuplicate) {
     alert('この名前の連絡先はすでに存在します');
     return false;
+  }
+  return true;
+};
+
+// TODO：CSVのデータのバリデーション
+/**
+ * CSVの1行分のバリデーションを行う
+ * @param {Contact} row - CSVの1行データ
+ * @param {Contact[]} existingContacts - 既存の連絡先リスト
+ * @param {Group[]} existingGroups - 既存のグループリスト
+ * @returns {boolean} バリデーション成功なら true、失敗なら false
+ */
+export const validateCSVRow = (
+  row: CSVContact,
+  existingContacts: Contact[],
+  existingGroups: Group[]
+): boolean => {
+  const trimmedName = row.fullName.trim(); // 修正: name → fullName
+  const trimmedPhone = row.phone.trim();
+
+  if (!trimmedName || !trimmedPhone) {
+    alert(`エラー: 名前または電話番号が空欄です (ID: ${row.contactId})`);
+    return false;
+  }
+
+  if (!/^[0-9-]+$/.test(trimmedPhone)) {
+    alert(`エラー: 電話番号が不正です (ID: ${row.contactId})`);
+    return false;
+  }
+
+  const strippedNumber = trimmedPhone.replace(/-/g, '');
+  if (!/^0\d{9,10}$/.test(strippedNumber)) {
+    alert(
+      `エラー: 電話番号は0から始まる10桁以上11桁以内の数字で入力してください (ID: ${row.contactId})`
+    );
+    return false;
+  }
+
+  // IDのUUIDフォーマットチェック
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (row.contactId && !uuidRegex.test(row.contactId)) {
+    alert(`エラー: IDの形式が正しくありません (ID: ${row.contactId})`);
+    return false;
+  }
+
+  // 連絡先の重複チェック
+  const isDuplicate = existingContacts.some((c) => c.name === trimmedName);
+  if (isDuplicate) {
+    alert(`エラー: 連絡先の名前が重複しています (${trimmedName})`);
+    return false;
+  }
+
+  // グループの存在チェック
+  if (row.groupName && !existingGroups.some((g) => g.name === row.groupName)) {
+    alert(
+      `エラー: 指定されたグループが存在しません (グループ名: ${row.groupName})`
+    );
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * CSVのデータ全体をバリデーションする
+ * @param {CSVContact[]} csvContacts - CSVのデータリスト
+ * @param {Contact[]} existingContacts - 既存の連絡先リスト
+ * @param {Group[]} existingGroups - 既存のグループリスト
+ * @returns {boolean} 全データが正しい場合 true、それ以外は false
+ */
+export const validateContactsFromCSV = (
+  csvContacts: CSVContact[],
+  existingContacts: Contact[],
+  existingGroups: Group[]
+): boolean => {
+  for (const row of csvContacts) {
+    if (!validateCSVRow(row, existingContacts, existingGroups)) {
+      return false;
+    }
   }
   return true;
 };

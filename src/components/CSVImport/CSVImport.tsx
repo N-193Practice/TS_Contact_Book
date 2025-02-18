@@ -2,82 +2,77 @@ import { JSX, useState } from 'react';
 import { usePapaParse } from 'react-papaparse';
 import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
-import { Contact, CSVContact } from '../../models/types';
+import { CSVContact } from '../../models/types';
 import { csvToContact } from '../../utils/csvConverter';
-import { validateContact } from '../../utils/validation';
+import { validateContactsFromCSV } from '../../utils/validation';
 import { Button } from '@mui/material';
 
-// TODO:CSVImportの実装(CSVContact → Contact)
 /**
- * `CSVImport` コンポーネント。
+ * `CSVImport` コンポーネント
  * CSVファイルを読み込み、連絡先を追加する。
- * @returns {JSX.Element | null} 読み込みに成功した場合は UI を返す。
+ * @returns {JSX.Element | null} UIコンポーネントを返す。
  */
 function CSVImport(): JSX.Element | null {
   const { contacts, addContact, updateContact } = useContacts();
   const { groups, addGroup } = useGroups();
-  const { readString } = usePapaParse(); // CSVをJSONに変換するライブラリ
-  const [file, setFile] = useState<File | null>(null); // ファイルのセット
-  const [errors, setErrors] = useState<string[]>([]); // 読み込み時のエラーメッセージ
+  const { readString } = usePapaParse(); // CSVをJSONに変換
+  const [file, setFile] = useState<File | null>(null);
+  const [errors, setErrors] = useState<string[]>([]); // バリデーションエラー
 
   /**
    * CSVファイルを選択する関数。
    * @param {React.ChangeEvent<HTMLInputElement>} e - ファイルの選択イベント。
-   * @returns {void} この関数は値を返さず、ファイルを選択したときに呼び出される。
    */
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) {
       alert('ファイルを選択してください');
       return;
     }
-    setFile(file);
+    setFile(selectedFile);
+    setErrors([]); // エラーリセット
   };
 
   /**
-   * CSVインポートする関数。
-   * @returns {void} この関数は値を返さず、ファイルを選択したときに呼び出される。
+   * CSVファイルをインポートする関数。
    */
   const handleImport = (): void => {
     if (!file) {
       alert('ファイルを選択してください');
       return;
     }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       if (!e.target?.result) {
         alert('ファイルの読み込みに失敗しました');
         return;
       }
-      // CSVをJSONに変換
+
+      // CSVデータをJSONへ変換
       readString(e.target.result as string, {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          const newErrors: string[] = [];
-          const validContacts: Contact[] = [];
+          const csvContacts = results.data as CSVContact[];
 
-          (results.data as CSVContact[]).forEach((csvRow, index) => {
-            const contact = csvToContact(csvRow, contacts, groups, addGroup);
-            // 新規or更新のバリデーション適用する
-            const isUpdate = contacts.some((c) => c.id === contact.id);
-            const isValid = validateContact(contact, contacts, isUpdate);
-
-            if (!isValid) {
-              newErrors.push(`Row ${index + 1}: 連絡先データが無効です`);
-            } else {
-              validContacts.push(contact);
-            }
-          });
-
-          // エラーがある場合、処理を中断
-          if (newErrors.length > 0) {
-            setErrors(newErrors);
-            alert('エラーが発生したため、インポートを中断しました');
-            return; // ここで処理を終了
+          // 一括バリデーション
+          const isValid = validateContactsFromCSV(
+            csvContacts,
+            contacts,
+            groups
+          );
+          if (!isValid) {
+            alert('CSVにエラーがあるため、インポートを中断しました');
+            return;
           }
 
-          // エラーがなかった場合のみ、データを追加
+          // CSVデータを `Contact` 型に変換
+          const validContacts = csvContacts.map((csvRow) =>
+            csvToContact(csvRow, contacts, groups, addGroup)
+          );
+
+          // データを追加・更新
           validContacts.forEach((contact) => {
             const isUpdate = contacts.some((c) => c.id === contact.id);
             if (isUpdate) {
@@ -87,20 +82,29 @@ function CSVImport(): JSX.Element | null {
             }
           });
 
-          alert('ファイルの読み込みが完了しました');
+          alert('CSVのインポートが完了しました');
           setFile(null);
         },
       });
     };
+
     reader.readAsText(file);
   };
 
   return (
-    <>
-      <Button onClick={handleImport}>CSVImport</Button>
-      <input type="file" onChange={handleFileChange} />
+    <div>
+      <input type="file" accept=".csv" onChange={handleFileChange} />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleImport}
+        disabled={!file}
+      >
+        CSVImport
+      </Button>
+
       {errors.length > 0 && (
-        <div style={{ color: 'red' }}>
+        <div style={{ color: 'red', marginTop: '10px' }}>
           <h4>バリデーションエラー:</h4>
           <ul>
             {errors.map((err, i) => (
@@ -109,7 +113,7 @@ function CSVImport(): JSX.Element | null {
           </ul>
         </div>
       )}
-    </>
+    </div>
   );
 }
 

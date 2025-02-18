@@ -240,12 +240,15 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const addContact = (contact: Contact): boolean => {
     if (!validateContact(contact, contacts)) return false;
 
-    const updatedContacts = [...contacts, contact];
-    setContacts(updatedContacts);
-    saveContacts(updatedContacts);
+    let updatedContacts = [...contacts, contact];
+
     if (contact.groupId) {
-      resetGroupIdInContacts(contact.groupId); //groupId を null にする
+      updatedContacts = resetGroupIdInContacts(contact.groupId); // groupId を null にする
     }
+
+    setContacts(updatedContacts); // React の state を更新
+    saveContacts(updatedContacts);
+
     return true;
   };
 
@@ -257,14 +260,17 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const updateContact = (updatedContact: Contact): boolean => {
     if (!validateContact(updatedContact, contacts, true)) return false;
 
-    const updatedContacts = contacts.map((c) =>
+    let updatedContacts = contacts.map((c) =>
       c.id === updatedContact.id ? updatedContact : c
     );
-    setContacts(updatedContacts);
-    saveContacts(updatedContacts);
+
     if (updatedContact.groupId) {
-      resetGroupIdInContacts(updatedContact.groupId); //groupId を null にする
+      updatedContacts = resetGroupIdInContacts(updatedContact.groupId); // groupId を null にする
     }
+
+    setContacts(updatedContacts); // React の state を更新
+    saveContacts(updatedContacts);
+
     return true;
   };
 
