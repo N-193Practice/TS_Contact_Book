@@ -1,7 +1,7 @@
 import { useState, useEffect, JSX } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import useContacts from '../../contexts/useContacts';
-import useGroups from '../../contexts/useGroups';
+import { useContacts } from '../../contexts/useContacts';
+import { useGroups } from '../../contexts/useGroups';
 import GroupSelect from '../GroupSelect/GroupSelect';
 import {
   Dialog,

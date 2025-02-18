@@ -1,5 +1,5 @@
 import { JSX } from 'react';
-import useContacts from '../../contexts/useContacts';
+import { useContacts } from '../../contexts/useContacts';
 import { Box, Typography } from '@mui/material';
 import styles from './AlphabetBar.module.css';
 

@@ -1,5 +1,5 @@
 import { JSX } from 'react';
-import useGroups from '../../contexts/useGroups';
+import { useGroups } from '../../contexts/useGroups';
 import { Link } from 'react-router';
 import { Select, MenuItem, Button } from '@mui/material';
 

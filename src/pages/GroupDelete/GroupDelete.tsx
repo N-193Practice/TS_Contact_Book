@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router';
 import { useEffect, useRef } from 'react';
-import useGroups from '../../contexts/useGroups';
+import { useGroups } from '../../contexts/useGroups';
 
 /**
  * `GroupDelete` コンポーネント

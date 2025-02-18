@@ -1,7 +1,7 @@
 import { JSX, useState } from 'react';
 import { usePapaParse } from 'react-papaparse';
-import useContacts from '../../contexts/useContacts';
-import useGroups from '../../contexts/useGroups';
+import { useContacts } from '../../contexts/useContacts';
+import { useGroups } from '../../contexts/useGroups';
 import { Contact, CSVContact } from '../../models/types';
 import { csvToContact } from '../../utils/csvConverter';
 import { validateContact } from '../../utils/validation';
@@ -61,27 +61,34 @@ function CSVImport(): JSX.Element | null {
             const contact = csvToContact(csvRow, contacts, groups, addGroup);
             // 新規or更新のバリデーション適用する
             const isUpdate = contacts.some((c) => c.id === contact.id);
-            if (!validateContact(contact, contacts, isUpdate)) {
+            const isValid = validateContact(contact, contacts, isUpdate);
+
+            if (!isValid) {
               newErrors.push(`Row ${index + 1}: 連絡先データが無効です`);
             } else {
               validContacts.push(contact);
             }
           });
 
-          setErrors(newErrors);
-
-          if (newErrors.length === 0) {
-            validContacts.forEach((contact) => {
-              const isUpdate = contacts.some((c) => c.id === contact.id);
-              if (isUpdate) {
-                updateContact(contact);
-              } else {
-                addContact(contact);
-              }
-            });
-            alert('ファイルの読み込みが完了しました');
-            setFile(null);
+          // エラーがある場合、処理を中断
+          if (newErrors.length > 0) {
+            setErrors(newErrors);
+            alert('エラーが発生したため、インポートを中断しました');
+            return; // ここで処理を終了
           }
+
+          // エラーがなかった場合のみ、データを追加
+          validContacts.forEach((contact) => {
+            const isUpdate = contacts.some((c) => c.id === contact.id);
+            if (isUpdate) {
+              updateContact(contact);
+            } else {
+              addContact(contact);
+            }
+          });
+
+          alert('ファイルの読み込みが完了しました');
+          setFile(null);
         },
       });
     };

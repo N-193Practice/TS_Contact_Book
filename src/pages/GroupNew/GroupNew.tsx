@@ -1,5 +1,5 @@
 import { useState, JSX } from 'react';
-import useGroups from '../../contexts/useGroups';
+import { useGroups } from '../../contexts/useGroups';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router';
 import { TextField, Button, Typography } from '@mui/material';

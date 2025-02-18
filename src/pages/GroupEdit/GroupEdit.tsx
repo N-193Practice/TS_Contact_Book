@@ -1,5 +1,5 @@
 import { useState, useEffect, JSX } from 'react';
-import useGroups from '../../contexts/useGroups';
+import { useGroups } from '../../contexts/useGroups';
 import { useNavigate, useParams } from 'react-router';
 import { TextField, Button, Typography } from '@mui/material';
 

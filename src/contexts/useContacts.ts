@@ -6,7 +6,7 @@ import { AppError } from '../utils/errors';
  *ContactProvider の内部でない場合にエラーを出す。
  * @returns {object} - 連絡先のコンテキスト。
  */
-function useContacts(): ContactContextType {
+export function useContacts(): ContactContextType {
   const context = useContext(ContactContext);
   if (context === undefined) {
     throw new AppError(
@@ -16,4 +16,3 @@ function useContacts(): ContactContextType {
   }
   return context;
 }
-export default useContacts;

@@ -19,7 +19,7 @@ export const validateGroup = (
     alert('グループ名は必須です');
     return false;
   }
-  // 名前の重複チェック
+  // グループの名前の重複チェック
   const isDuplicate = existingGroups.some(
     (g) => g.name === trimmedName && (!isEdit || g.id !== group.id)
   );
@@ -39,8 +39,7 @@ export const validateGroup = (
 export const validateContact = (
   contact: Contact,
   exisitingContacts: Contact[] = [],
-  isEdit: boolean = false,
-  isUpdate: boolean = false
+  isEdit: boolean = false
 ): boolean => {
   // 空白のチェック
   const trimmedName = contact.name.trim();
@@ -72,13 +71,7 @@ export const validateContact = (
     return false;
   }
 
-  // IDの重複チェック(CSVのため)
-  if (!isUpdate && exisitingContacts.some((c) => c.id === contact.id)) {
-    alert('このIDの連絡先はすでに存在します');
-    return false;
-  }
-
-  // 名前の重複チェック(新規・編集の際)
+  // 連絡先名前の重複チェック(新規・編集の際)
   const isDuplicate = exisitingContacts.some(
     (c) => c.name === trimmedName && (!isEdit || c.id !== contact.id)
   );

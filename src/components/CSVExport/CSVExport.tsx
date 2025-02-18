@@ -1,7 +1,7 @@
 import { useState, JSX } from 'react';
 import { usePapaParse } from 'react-papaparse';
-import useContacts from '../../contexts/useContacts';
-import useGroups from '../../contexts/useGroups';
+import { useContacts } from '../../contexts/useContacts';
+import { useGroups } from '../../contexts/useGroups';
 import { CSVContact } from '../../models/types';
 import { contactToCSV } from '../../utils/csvConverter';
 import { validateContact } from '../../utils/validation';

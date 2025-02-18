@@ -1,5 +1,5 @@
 import { JSX } from 'react';
-import useContacts from '../../contexts/useContacts';
+import { useContacts } from '../../contexts/useContacts';
 import styles from './SearchBar.module.css';
 import { TextField } from '@mui/material';
 
