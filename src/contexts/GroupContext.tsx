@@ -57,7 +57,7 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
     string | null
   >(null);
 
-  // ContactのCRUD処理(初回時ロード)
+  // GroupのCRUD処理(初回時ロード)
   useEffect(() => {
     setGroups(getGroups());
   }, []);
@@ -70,9 +70,12 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
   const addGroup = (group: Group): boolean => {
     if (!validateGroup(group, groups)) return false;
 
-    const updatedGroups = [...groups, group];
-    setGroups(updatedGroups);
-    saveGroups(updatedGroups);
+    setGroups((prevGroups) => {
+      const updatedGroups = [...prevGroups, group];
+      saveGroups(updatedGroups);
+      return updatedGroups;
+    });
+
     setRecentlyCreatedGroupId(group.id);
     return true;
   };

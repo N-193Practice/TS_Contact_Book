@@ -67,6 +67,7 @@ export type ContactContextType = {
   groupedContacts: { [key: string]: Contact[] };
   selectAllContacts: () => void;
   deselectAllContacts: () => void;
+  bulkImportContacts: (newContacts: Contact[]) => void;
 };
 
 // Context の作成
@@ -274,6 +275,36 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     return true;
   };
 
+  //CSVの一括処理できるようにする(新規、更新)
+  const bulkImportContacts = (newContacts: Contact[]) => {
+    setContacts((prevContacts) => {
+      // 既存の `Contact` を更新するロジック
+      const updatedContacts = newContacts.map((newContact) => {
+        const existingContact = prevContacts.find(
+          (c) => c.id === newContact.id
+        );
+
+        return existingContact
+          ? {
+              ...existingContact,
+              name: newContact.name,
+              phone: newContact.phone,
+              memo: newContact.memo,
+              groupId: null, // Contact の groupId のみ null にする
+            }
+          : { ...newContact, groupId: null }; // 新規追加の Contact も groupId を null にする
+      });
+
+      // LocalStorage に保存
+      localStorage.setItem('contacts', JSON.stringify(updatedContacts));
+
+      return updatedContacts;
+    });
+    // グループデータはそのまま維持する
+    const storedGroups = JSON.parse(localStorage.getItem('groups') || '[]');
+    localStorage.setItem('groups', JSON.stringify(storedGroups));
+  };
+
   /**
    * 連絡先を削除する関数(個人のため)。
    * @param {string} id - 削除する連絡先の ID。
@@ -336,6 +367,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
         groupedContacts,
         selectAllContacts,
         deselectAllContacts,
+        bulkImportContacts,
       }}
     >
       {children}

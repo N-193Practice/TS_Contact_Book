@@ -30,20 +30,19 @@ export const csvToContact = (
   }
 
   // 既存のグループ名を検索
-  let group = Array.isArray(groups)
-    ? groups.find((g) => g.name === csvData.groupName)
-    : null;
-  if (!group && csvData.groupName) {
-    // グループ名のない場合は新規作成
+  let group = groups.find((g) => g.name === csvData.groupName);
+  if (!group && csvData.groupName && csvData.groupName.trim() !== '') {
     group = { id: uuidv4(), name: csvData.groupName };
-    addGroup(group); // グループリストに追加
+    addGroup(group);
   }
+
+  // `Contact` `groupId` の値を `null` に変換する
   return {
     id: contactId,
     name: csvData.fullName,
     phone: csvData.phone,
     memo: csvData.memo || '',
-    groupId: group ? group.id : null, // 既存 or 新規作成したグループのID
+    groupId: group ? group.id : null,
   };
 };
 
@@ -52,9 +51,9 @@ export const contactToCSV = (contact: Contact, groups: Group[]): CSVContact => {
   const group = groups.find((g) => g.id === contact.groupId);
   return {
     contactId: contact.id,
-    groupName: group?.name || '',
     fullName: contact.name,
     phone: contact.phone,
     memo: contact.memo || '',
+    groupName: group?.name || '',
   };
 };

@@ -75,7 +75,6 @@ export const validateContact = (
   return true;
 };
 
-// TODO：CSVのデータのバリデーション
 /**
  * CSVの1行分のバリデーションを行う
  * @param {Contact} row - CSVの1行データ

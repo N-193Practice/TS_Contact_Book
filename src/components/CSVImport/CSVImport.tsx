@@ -1,4 +1,4 @@
-import { JSX, useState } from 'react';
+import { JSX, useState, useEffect } from 'react';
 import { usePapaParse } from 'react-papaparse';
 import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
@@ -13,11 +13,15 @@ import { Button } from '@mui/material';
  * @returns {JSX.Element | null} UIコンポーネントを返す。
  */
 function CSVImport(): JSX.Element | null {
-  const { contacts, addContact, updateContact } = useContacts();
+  const { contacts, bulkImportContacts } = useContacts();
   const { groups, addGroup } = useGroups();
   const { readString } = usePapaParse(); // CSVをJSONに変換
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<string[]>([]); // バリデーションエラー
+
+  useEffect(() => {
+    console.log('Contacts Updated:', contacts);
+  }, [contacts]);
 
   /**
    * CSVファイルを選択する関数。
@@ -64,19 +68,12 @@ function CSVImport(): JSX.Element | null {
           }
 
           // CSVデータを `Contact` 型に変換
-          const validContacts = csvContacts.map((csvRow) =>
-            csvToContact(csvRow, contacts, groups, addGroup)
-          );
+          const validContacts = csvContacts
+            .map((csvRow) => csvToContact(csvRow, contacts, groups, addGroup))
+            .filter(Boolean); // 無効データは除外
 
-          // データを追加・更新
-          validContacts.forEach((contact) => {
-            const isUpdate = contacts.some((c) => c.id === contact.id);
-            if (isUpdate) {
-              updateContact(contact);
-            } else {
-              addContact(contact);
-            }
-          });
+          // 一括登録処理を実行（forEach ではなく、まとめて setContacts する）
+          bulkImportContacts(validContacts);
 
           alert('CSVのインポートが完了しました');
           setFile(null);
