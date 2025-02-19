@@ -4,7 +4,7 @@ import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import { CSVContact } from '../../models/types';
 import { contactToCSV } from '../../utils/csvConverter';
-import { validateContact } from '../../utils/validation';
+import { validateCSVRow } from '../../utils/validation';
 import { Button } from '@mui/material';
 
 /**
@@ -39,38 +39,50 @@ function CSVExport(): JSX.Element {
    * @returns {void} この関数は値を返さず、ローカルストレージからファイルを読み込む際に呼び出される。
    */
   const handleExport = (): void => {
+    console.log('📤 エクスポート前のデータ:', contacts);
+    // まずは全てのデータを CSVContact に変換
+    const csvContacts: CSVContact[] = contacts.map((contact) =>
+      contactToCSV(contact, groups)
+    );
+
+    console.log('📋 変換後の CSVContacts:', csvContacts);
+
+    // バリデーションチェック
     const newErrors: string[] = [];
-    const validContacts: CSVContact[] = contacts
-      .filter((contact, index) => {
-        if (!validateContact(contact, contacts, true)) {
+    const validContacts: CSVContact[] = csvContacts.filter(
+      (csvContact, index) => {
+        if (!validateCSVRow(csvContact, contacts)) {
+          // ✅ `csvContacts` に変更
+          console.log('❌ バリデーションエラー:', csvContact);
           newErrors.push(
-            `Row ${index + 1}: 不正なデータを含むためエクスポートされません`
+            `Row ${index + 1}: 不正なデータを含むためエクスポートされません (${
+              csvContact.fullName
+            })`
           );
           return false;
         }
         return true;
-      })
-      .map((contact) => contactToCSV(contact, groups));
+      }
+    );
 
-    setErrors(newErrors);
-
-    if (validContacts.length === 0) {
+    // エラーがある場合は処理を中断
+    if (newErrors.length > 0) {
+      setErrors(newErrors);
       alert('エクスポート可能なデータがありません');
       return;
     }
 
-    // CSVに変換してダウンロードする
+    // CSV に変換してダウンロード
     let csv = jsonToCSV(validContacts, {
-      header: true, //オプション設定
+      header: true,
       newline: '\r\n',
       columns: ['contactId', 'fullName', 'phone', 'memo', 'groupName'],
     });
 
-    csv = '\uFEFF' + csv; //Excel で開いたときの文字化けを防止する
+    csv = '\uFEFF' + csv; // Excel の文字化け対策
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    // ファイルの生成
     const fileName = `contact_data_${getFormattedDate()}.csv`;
     link.download = fileName;
     document.body.appendChild(link);

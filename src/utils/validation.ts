@@ -86,16 +86,19 @@ export const validateCSVRow = (
   row: CSVContact,
   existingContacts: Contact[]
 ): boolean => {
-  const trimmedName = row.fullName.trim(); // 修正: name → fullName
+  console.log('🔍 バリデーション開始:', row);
+  const trimmedName = row.fullName.trim(); // name → fullName
   const trimmedPhone = row.phone.trim();
 
   if (!trimmedName || !trimmedPhone) {
     alert(`エラー: 名前または電話番号が空欄です (ID: ${row.contactId})`);
+    console.log('❌ 名前または電話番号が空です:', row);
     return false;
   }
 
   if (!/^[0-9-]+$/.test(trimmedPhone)) {
     alert(`エラー: 電話番号が不正です (ID: ${row.contactId})`);
+    console.log('❌ 電話番号の形式が不正:', row);
     return false;
   }
 
@@ -104,6 +107,7 @@ export const validateCSVRow = (
     alert(
       `エラー: 電話番号は0から始まる10桁以上11桁以内の数字で入力してください (ID: ${row.contactId})`
     );
+    console.log('❌ 電話番号が 0 から始まる 10 桁以上 11 桁以内でない:', row);
     return false;
   }
 
@@ -112,6 +116,7 @@ export const validateCSVRow = (
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (row.contactId && !uuidRegex.test(row.contactId)) {
     alert(`エラー: IDの形式が正しくありません (ID: ${row.contactId})`);
+    console.log('❌ UUID のフォーマットが不正:', row);
     return false;
   }
 
@@ -119,6 +124,7 @@ export const validateCSVRow = (
   const isDuplicate = existingContacts.some((c) => c.name === trimmedName);
   if (isDuplicate) {
     alert(`エラー: 連絡先の名前が重複しています (${trimmedName})`);
+    console.log('❌ 名前が重複:', row);
     return false;
   }
 
