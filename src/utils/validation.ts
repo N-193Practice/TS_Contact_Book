@@ -85,8 +85,7 @@ export const validateContact = (
  */
 export const validateCSVRow = (
   row: CSVContact,
-  existingContacts: Contact[],
-  existingGroups: Group[]
+  existingContacts: Contact[]
 ): boolean => {
   const trimmedName = row.fullName.trim(); // 修正: name → fullName
   const trimmedPhone = row.phone.trim();
@@ -124,14 +123,6 @@ export const validateCSVRow = (
     return false;
   }
 
-  // グループの存在チェック
-  if (row.groupName && !existingGroups.some((g) => g.name === row.groupName)) {
-    alert(
-      `エラー: 指定されたグループが存在しません (グループ名: ${row.groupName})`
-    );
-    return false;
-  }
-
   return true;
 };
 
@@ -139,16 +130,14 @@ export const validateCSVRow = (
  * CSVのデータ全体をバリデーションする
  * @param {CSVContact[]} csvContacts - CSVのデータリスト
  * @param {Contact[]} existingContacts - 既存の連絡先リスト
- * @param {Group[]} existingGroups - 既存のグループリスト
  * @returns {boolean} 全データが正しい場合 true、それ以外は false
  */
 export const validateContactsFromCSV = (
   csvContacts: CSVContact[],
-  existingContacts: Contact[],
-  existingGroups: Group[]
+  existingContacts: Contact[]
 ): boolean => {
   for (const row of csvContacts) {
-    if (!validateCSVRow(row, existingContacts, existingGroups)) {
+    if (!validateCSVRow(row, existingContacts)) {
       return false;
     }
   }
