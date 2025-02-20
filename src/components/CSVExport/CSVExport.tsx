@@ -51,7 +51,7 @@ function CSVExport(): JSX.Element {
     const newErrors: string[] = [];
     const validContacts: CSVContact[] = csvContacts.filter(
       (csvContact, index) => {
-        if (!validateCSVRow(csvContact, contacts)) {
+        if (!validateCSVRow) {
           // ✅ `csvContacts` に変更
           console.log('❌ バリデーションエラー:', csvContact);
           newErrors.push(

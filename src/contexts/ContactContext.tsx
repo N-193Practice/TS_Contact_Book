@@ -278,21 +278,24 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   //CSVの一括処理できるようにする(新規、更新)
   const bulkImportContacts = (newContacts: Contact[]) => {
     setContacts((prevContacts) => {
-      // 既存の `Contact` を更新するロジック
-      const updatedContacts = newContacts.map((newContact) => {
-        const existingContact = prevContacts.find(
+      // IDが重複しないように既存データと新規データをマージ
+      const updatedContacts = [...prevContacts];
+
+      newContacts.forEach((newContact) => {
+        const existingIndex = updatedContacts.findIndex(
           (c) => c.id === newContact.id
         );
 
-        return existingContact
-          ? {
-              ...existingContact,
-              name: newContact.name,
-              phone: newContact.phone,
-              memo: newContact.memo,
-              groupId: null, // Contact の groupId のみ null にする
-            }
-          : { ...newContact, groupId: null }; // 新規追加の Contact も groupId を null にする
+        if (existingIndex !== -1) {
+          // 既存データがある場合は更新
+          updatedContacts[existingIndex] = {
+            ...updatedContacts[existingIndex],
+            ...newContact,
+          };
+        } else {
+          // 既存データがない場合は新規追加
+          updatedContacts.push(newContact);
+        }
       });
 
       // LocalStorage に保存

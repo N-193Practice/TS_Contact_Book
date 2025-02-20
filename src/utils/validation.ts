@@ -87,7 +87,7 @@ export const validateCSVRow = (
   existingContacts: Contact[]
 ): boolean => {
   console.log('🔍 バリデーション開始:', row);
-  const trimmedName = row.fullName.trim(); // name → fullName
+  const trimmedName = row.fullName.trim();
   const trimmedPhone = row.phone.trim();
 
   if (!trimmedName || !trimmedPhone) {
@@ -120,9 +120,11 @@ export const validateCSVRow = (
     return false;
   }
 
-  // 連絡先の重複チェック
-  const isDuplicate = existingContacts.some((c) => c.name === trimmedName);
-  if (isDuplicate) {
+  // 連絡先の氏名の重複チェック
+  const isDuplicateContact = existingContacts.some(
+    (c) => c.name === trimmedName
+  );
+  if (isDuplicateContact) {
     alert(`エラー: 連絡先の名前が重複しています (${trimmedName})`);
     console.log('❌ 名前が重複:', row);
     return false;
