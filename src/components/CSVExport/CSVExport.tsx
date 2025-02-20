@@ -4,7 +4,10 @@ import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import { CSVContact } from '../../models/types';
 import { contactToCSV } from '../../utils/csvConverter';
-import { validateCSVRow } from '../../utils/validation';
+import {
+  validateContactData,
+  ValidatableContact,
+} from '../../utils/validation';
 import { Button } from '@mui/material';
 
 /**
@@ -33,13 +36,13 @@ function CSVExport(): JSX.Element {
     return `${y}${M}${d}${H}${m}${s}`;
   };
 
-  //
   /**
    * エクスポートする関数(ローカルストレージから取得→CSVに変換)
    * @returns {void} この関数は値を返さず、ローカルストレージからファイルを読み込む際に呼び出される。
    */
   const handleExport = (): void => {
     console.log('📤 エクスポート前のデータ:', contacts);
+
     // まずは全てのデータを CSVContact に変換
     const csvContacts: CSVContact[] = contacts.map((contact) =>
       contactToCSV(contact, groups)
@@ -47,13 +50,30 @@ function CSVExport(): JSX.Element {
 
     console.log('📋 変換後の CSVContacts:', csvContacts);
 
+    // `CSVContact[]` を `ValidatableContact[]` に変換
+    const validatableContacts: ValidatableContact[] = csvContacts.map(
+      (csvContact) => ({
+        name: csvContact.fullName, // `fullName` を `name` に変換
+        phone: csvContact.phone,
+      })
+    );
+
     // バリデーションチェック
     const newErrors: string[] = [];
     const validContacts: CSVContact[] = csvContacts.filter(
       (csvContact, index) => {
-        if (!validateCSVRow) {
-          // ✅ `csvContacts` に変更
-          console.log('❌ バリデーションエラー:', csvContact);
+        // fullName を name に変換してバリデーションを行う
+        const tempContact: ValidatableContact = {
+          name: csvContact.fullName, // fullName を name として扱う
+          phone: csvContact.phone,
+        };
+
+        // バリデーション実行
+        if (!validateContactData(tempContact, validatableContacts)) {
+          console.error(
+            `❌ バリデーションエラー (Row ${index + 1}):`,
+            csvContact
+          );
           newErrors.push(
             `Row ${index + 1}: 不正なデータを含むためエクスポートされません (${
               csvContact.fullName

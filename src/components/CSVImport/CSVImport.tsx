@@ -61,7 +61,11 @@ function CSVImport(): JSX.Element | null {
           const csvContacts = results.data as CSVContact[];
 
           // 一括バリデーション
-          const isValid = validateContactsFromCSV(csvContacts, contacts);
+          const isValid = validateContactsFromCSV(
+            csvContacts,
+            contacts,
+            groups
+          );
           if (!isValid) {
             alert('CSVにエラーがあるため、インポートを中断しました');
             return;
