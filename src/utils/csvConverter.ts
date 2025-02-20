@@ -50,13 +50,15 @@ export const csvToContact = (
 export const contactToCSV = (contact: Contact, groups: Group[]): CSVContact => {
   console.log('📤 Contact から CSVContact へ変換開始:', contact);
 
-  const group = groups.find((g) => g.id === contact.groupId);
+  // グループのテーブルからグループを検索
+  const group = groups.find((g) => g.name === contact.name);
+  console.log('📤 Contact から CSVContact へ変換開始後:', group);
   const csvContact: CSVContact = {
     contactId: contact.id,
     fullName: contact.name, // nameをfullNameに変換
     phone: contact.phone,
     memo: contact.memo || '',
-    groupName: group?.name || '',
+    groupName: group ? group.name : '',
   };
 
   console.log('✅ CSVContact へ変換完了:', csvContact);
