@@ -44,6 +44,13 @@ function GroupNew(): JSX.Element {
       <Button onClick={handleCreate} variant="contained" color="primary">
         作成
       </Button>
+      <Button
+        onClick={() => navigate('/')}
+        variant="contained"
+        color="secondary"
+      >
+        キャンセル
+      </Button>
     </div>
   );
 }

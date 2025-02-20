@@ -45,6 +45,13 @@ function GroupEdit(): JSX.Element {
       <Button onClick={handleUpdate} variant="contained" color="primary">
         更新
       </Button>
+      <Button
+        onClick={() => navigate('/')}
+        variant="contained"
+        color="secondary"
+      >
+        キャンセル
+      </Button>
     </div>
   );
 }

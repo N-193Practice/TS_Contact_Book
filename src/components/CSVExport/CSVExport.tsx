@@ -4,6 +4,7 @@ import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import { CSVContact } from '../../models/types';
 import { contactToCSV } from '../../utils/csvConverter';
+import ErrorBanner from '../ErrorBanner/ErrorBanner';
 import { Button } from '@mui/material';
 
 /**
@@ -37,20 +38,20 @@ function CSVExport(): JSX.Element {
    * @returns {void} この関数は値を返さず、ローカルストレージからファイルを読み込む際に呼び出される。
    */
   const handleExport = (): void => {
-    console.log('📤 エクスポート前のデータ:', contacts);
+    console.log('エクスポート前のデータ:', contacts);
 
     const csvContacts: CSVContact[] = contacts.map((contact) =>
       contactToCSV(contact, groups)
     );
 
-    console.log('📋 変換後の CSVContacts:', csvContacts);
+    console.log('変換後の CSVContacts:', csvContacts);
 
     // バリデーションチェック（必要な場合）
     const newErrors: string[] = [];
     const validContacts: CSVContact[] = csvContacts.filter(
       (csvContact, index) => {
         if (!csvContact.fullName || !csvContact.phone) {
-          console.log('❌ バリデーションエラー:', csvContact);
+          console.log('バリデーションエラー:', csvContact);
           newErrors.push(
             `Row ${
               index + 1
@@ -91,17 +92,12 @@ function CSVExport(): JSX.Element {
 
   return (
     <>
-      <Button onClick={handleExport}>CSVExport</Button>
-      {errors.length > 0 && (
-        <div style={{ color: 'red' }}>
-          <h4>バリデーションエラー:</h4>
-          <ul>
-            {errors.map((err, i) => (
-              <li key={i}>{err}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <Button onClick={handleExport}>データを出力する</Button>
+      <ErrorBanner
+        message={errors[0]}
+        severity="error"
+        onClose={() => setErrors([])}
+      />
     </>
   );
 }

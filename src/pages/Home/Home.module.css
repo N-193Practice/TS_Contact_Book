@@ -30,6 +30,16 @@
   padding: 8px;
 }
 
+/* CSVボタン */
+.csvNutton {
+  margin-top: 20px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
 /* ナビバー全体(fullHD 1920×1080対応) */
 .navbar {
   display: grid;
@@ -46,14 +56,14 @@
   right: 40px;
 }
 
+/* 全選択ボタン */
 .selectAllButton {
-  background-color: black;
-  color: white;
+  color: black;
 }
 
+/* 全選択解除ボタン */
 .deselectAllButton {
-  background-color: black;
-  color: white;
+  color: black;
 }
 
 /* 左側のボタンコンテナ */

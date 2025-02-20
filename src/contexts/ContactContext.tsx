@@ -331,7 +331,6 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
       return updatedContacts;
     });
   };
-
   /**
    * 連絡先を削除する関数(個人のため)。
    * @param {string} id - 削除する連絡先の ID。

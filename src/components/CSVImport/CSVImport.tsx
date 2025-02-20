@@ -5,6 +5,7 @@ import { useGroups } from '../../contexts/useGroups';
 import { CSVContact } from '../../models/types';
 import { csvToContact } from '../../utils/csvConverter';
 import { validateContactsFromCSV } from '../../utils/validation';
+import ErrorBanner from '../ErrorBanner/ErrorBanner';
 import { Button } from '@mui/material';
 
 /**
@@ -93,19 +94,13 @@ function CSVImport(): JSX.Element | null {
         onClick={handleImport}
         disabled={!file}
       >
-        CSVImport
+        データを取り込む
       </Button>
-
-      {errors.length > 0 && (
-        <div style={{ color: 'red', marginTop: '10px' }}>
-          <h4>バリデーションエラー:</h4>
-          <ul>
-            {errors.map((err, i) => (
-              <li key={i}>{err}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <ErrorBanner
+        message={errors[0]}
+        severity="error"
+        onClose={() => setErrors([])}
+      />
     </div>
   );
 }

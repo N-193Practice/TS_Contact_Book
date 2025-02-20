@@ -15,7 +15,7 @@ export const csvToContact = (
   groups: Group[],
   addGroup: (newGroup: Group) => void
 ): Contact => {
-  console.log('🔄 CSV から Contact へ変換開始:', csvData);
+  console.log('CSV から Contact へ変換開始:', csvData);
 
   // 既存の連絡先を検索 (IDが一致する場合は既存データ)
   const existingContact = contacts.find((c) => c.id === csvData.contactId);
@@ -37,7 +37,7 @@ export const csvToContact = (
     groupId: group ? group.id : null, // **グループがある場合はIDをセット**
   };
 
-  console.log('✅ Contact へ変換完了:', contact);
+  console.log('Contact へ変換完了:', contact);
   return contact;
 };
 
@@ -48,11 +48,11 @@ export const csvToContact = (
  * @returns {CSVContact} 変換後の `CSVContact` データ。
  */
 export const contactToCSV = (contact: Contact, groups: Group[]): CSVContact => {
-  console.log('📤 Contact から CSVContact へ変換開始:', contact);
+  console.log('Contact から CSVContact へ変換開始:', contact);
 
   // グループのテーブルからグループを検索
   const group = groups.find((g) => g.name === contact.name);
-  console.log('📤 Contact から CSVContact へ変換開始後:', group);
+  console.log('Contact から CSVContact へ変換開始後:', group);
   const csvContact: CSVContact = {
     contactId: contact.id,
     fullName: contact.name, // nameをfullNameに変換
@@ -61,6 +61,6 @@ export const contactToCSV = (contact: Contact, groups: Group[]): CSVContact => {
     groupName: group ? group.name : '',
   };
 
-  console.log('✅ CSVContact へ変換完了:', csvContact);
+  console.log('CSVContact へ変換完了:', csvContact);
   return csvContact;
 };

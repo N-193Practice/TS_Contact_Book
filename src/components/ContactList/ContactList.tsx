@@ -1,5 +1,6 @@
 import { JSX } from 'react';
 import { useContacts } from '../../contexts/useContacts';
+import CSVExport from '../../components/CSVExport/CSVExport';
 import {
   List,
   ListItem,
@@ -75,6 +76,8 @@ function ContactList(): JSX.Element {
                 >
                   <DeleteIcon focusable="false" />
                 </IconButton>
+                {/* CSVエクスポートボタン */}
+                <CSVExport />
               </CardContent>
             </Card>
           ))}

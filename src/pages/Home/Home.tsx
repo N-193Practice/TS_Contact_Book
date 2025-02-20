@@ -4,7 +4,7 @@ import ContactList from '../../components/ContactList/ContactList';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import AlphabetBar from '../../components/AlphabetBar/AlphabetBar';
 import ContactFormDialog from '../../components/ContactFormDialog/ContactFormDialog';
-import CSVExport from '../../components/CSVExport/CSVExport';
+
 import CSVImport from '../../components/CSVImport/CSVImport';
 import styles from './Home.module.css';
 import { Typography, IconButton, Button } from '@mui/material';
@@ -31,8 +31,7 @@ function Home(): JSX.Element {
     <div className={styles.container}>
       <header className={styles.header}>
         <Typography className={styles.title}>Contact Book</Typography>
-        <div className={styles.exportButton}>
-          <CSVExport />
+        <div className={styles.csvButton}>
           <CSVImport />
         </div>
         {/* SearchBar */}
@@ -48,7 +47,7 @@ function Home(): JSX.Element {
               disabled={selectedContacts.length === contacts.length}
               className={styles.selectAllButton}
             >
-              全ての連絡先を選択
+              連絡先の全選択
             </Button>
             <Button
               variant="outlined"
@@ -56,7 +55,7 @@ function Home(): JSX.Element {
               disabled={selectedContacts.length === 0}
               className={styles.deselectAllButton}
             >
-              全選択解除
+              全選択の解除
             </Button>
           </div>
           <div className={styles.navbarLeft}>
@@ -64,7 +63,6 @@ function Home(): JSX.Element {
             <Button
               variant="contained"
               onClick={handleDeleteMultiple}
-              disabled={selectedContacts.length === 0}
               className={styles.deleteButton}
               color="error"
             >
