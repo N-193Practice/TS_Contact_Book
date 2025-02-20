@@ -20,20 +20,21 @@ export const csvToContact = (
   // 既存の連絡先を検索 (IDが一致する場合は既存データ)
   const existingContact = contacts.find((c) => c.id === csvData.contactId);
 
-  // グループ名が存在する場合、既存のグループを探す
+  // **グループの処理**
   let group = groups.find((g) => g.name === csvData.groupName);
   if (!group && csvData.groupName && csvData.groupName.trim() !== '') {
-    // 存在しないグループなら新規作成
+    // グループが存在しない場合、新規作成して登録
     group = { id: uuidv4(), name: csvData.groupName };
     addGroup(group);
   }
 
+  // **新しい Contact オブジェクトの作成**
   const contact: Contact = {
     id: existingContact ? existingContact.id : csvData.contactId || uuidv4(),
     name: csvData.fullName, // fullNameをnameに変換
     phone: csvData.phone,
     memo: csvData.memo || existingContact?.memo || '',
-    groupId: group ? group.id : existingContact?.groupId || null,
+    groupId: group ? group.id : null, // **グループがある場合はIDをセット**
   };
 
   console.log('✅ Contact へ変換完了:', contact);

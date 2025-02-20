@@ -278,8 +278,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   //CSVの一括処理できるようにする(新規、更新)
   const bulkImportContacts = (newContacts: Contact[]) => {
     setContacts((prevContacts) => {
-      // IDが重複しないように既存データと新規データをマージ
-      const updatedContacts = [...prevContacts];
+      let updatedContacts = [...prevContacts];
 
       newContacts.forEach((newContact) => {
         const existingIndex = updatedContacts.findIndex(
@@ -287,25 +286,50 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
         );
 
         if (existingIndex !== -1) {
-          // 既存データがある場合は更新
+          // **既存の連絡先がある場合、新しい groupId をセット**
           updatedContacts[existingIndex] = {
             ...updatedContacts[existingIndex],
             ...newContact,
+            groupId: newContact.groupId, // **一旦 newContact の groupId を保持**
           };
         } else {
-          // 既存データがない場合は新規追加
-          updatedContacts.push(newContact);
+          // **新規追加する場合、新しい groupId をセット**
+          updatedContacts.push({
+            ...newContact,
+            groupId: newContact.groupId, // **新規作成の際も groupId を設定**
+          });
         }
       });
 
-      // LocalStorage に保存
+      // **グループを更新 (既存グループを削除しない)**
+      const storedGroups = JSON.parse(localStorage.getItem('groups') || '[]');
+      const uniqueGroups = [...storedGroups]; // **既存グループを維持**
+
+      newContacts.forEach((contact) => {
+        if (
+          contact.groupId &&
+          !uniqueGroups.find((g) => g.id === contact.groupId)
+        ) {
+          uniqueGroups.push({
+            id: contact.groupId,
+            name: `Group ${contact.groupId}`,
+          });
+        }
+      });
+
+      localStorage.setItem('groups', JSON.stringify(uniqueGroups));
+
+      // **Contact のみ `groupId` を null にする**
+      updatedContacts = updatedContacts.map((contact) => ({
+        ...contact,
+        groupId: null, // **LocalStorage では `groupId` を null に上書き**
+      }));
+
+      // **ローカルストレージに保存**
       localStorage.setItem('contacts', JSON.stringify(updatedContacts));
 
       return updatedContacts;
     });
-    // グループデータはそのまま維持する
-    const storedGroups = JSON.parse(localStorage.getItem('groups') || '[]');
-    localStorage.setItem('groups', JSON.stringify(storedGroups));
   };
 
   /**
