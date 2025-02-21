@@ -59,11 +59,13 @@
 /* 全選択ボタン */
 .selectAllButton {
   color: black;
+  background-color: antiquewhite;
 }
 
 /* 全選択解除ボタン */
 .deselectAllButton {
   color: black;
+  background-color: antiquewhite;
 }
 
 /* 左側のボタンコンテナ */

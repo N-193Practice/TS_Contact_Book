@@ -1,11 +1,14 @@
-import { JSX, useState, useEffect } from 'react';
+import { JSX, useState, useEffect, useRef } from 'react';
 import { usePapaParse } from 'react-papaparse';
 import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import { CSVContact } from '../../models/types';
 import { csvToContact } from '../../utils/csvConverter';
 import { validateContactsFromCSV } from '../../utils/validation';
-import { Button } from '@mui/material';
+import styles from './CSVImport.module.css';
+import { Button, TextField, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 /**
  * `CSVImport` コンポーネント
@@ -18,10 +21,10 @@ function CSVImport(): JSX.Element | null {
   const { groups, addGroup } = useGroups();
   const { readString } = usePapaParse(); // CSVをJSONに変換
   const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  useEffect(() => {
-    console.log('Contacts Updated:', contacts);
-  }, [contacts]);
+  // 最後に読み込みした CSVの contactsの監視をする。
+  useEffect(() => {}, [contacts]);
 
   /**
    * CSVファイルを選択する関数。
@@ -37,7 +40,19 @@ function CSVImport(): JSX.Element | null {
   };
 
   /**
+   * ファイルを削除し、`input`の値もリセットする関数。
+   * @returns {void} この関数は値を返さず、ファイル選択をリセットする。
+   */
+  const handleRemoveFile = (): void => {
+    setFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  /**
    * CSVファイルをインポートする関数。
+   * @returns {void} この関数は値を返さず、インポートし、メッセージを表示する。
    */
   const handleImport = (): void => {
     if (!file) {
@@ -90,7 +105,34 @@ function CSVImport(): JSX.Element | null {
 
   return (
     <div>
-      <input type="file" accept=".csv" onChange={handleFileChange} />
+      {/* ファイル選択 */}
+      <Button
+        variant="contained"
+        component="label"
+        startIcon={<CloudUploadIcon />}
+      >
+        ファイルを選択
+        <input type="file" accept=".csv" hidden onChange={handleFileChange} />
+      </Button>
+      {/* 選択したファイル名を表示 */}
+      <TextField
+        variant="outlined"
+        size="small"
+        value={file ? file.name : ''}
+        placeholder="ファイルなし"
+        InputProps={{
+          readOnly: true,
+          endAdornment: file && (
+            <IconButton onClick={handleRemoveFile}>
+              <DeleteIcon color="error" />
+            </IconButton>
+          ),
+        }}
+        inputRef={fileInputRef}
+        className={styles.fileInput}
+      />
+
+      {/* 取り込みボタン */}
       <Button
         variant="contained"
         color="primary"

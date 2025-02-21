@@ -37,7 +37,7 @@ function ContactFormDialog(): JSX.Element {
   const [name, setName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
-  const [groupId, setGroupId] = useState<string | null>(null); // グループID用の state
+  const [groupId, setGroupId] = useState<string | null>(null);
 
   /**
    * `editContact` がある場合は編集モードとしてデータをセット。
@@ -110,8 +110,9 @@ function ContactFormDialog(): JSX.Element {
 
   /**
    * 閉じるボタンを押したときに呼び出される関数。
+   * @returns {void} この関数はフォームを閉じ、フォームをリセットする。
    */
-  const handleClose = () => {
+  const handleClose = (): void => {
     setOpenDialog(false);
     clearRecentlyCreatedGroupId();
   };

@@ -28,7 +28,7 @@ function GroupNew(): JSX.Element {
    * 新規グループを作成する。
    * @returns {void} 成功時はグループを作成し、ホームへ遷移する。
    */
-  const handleCreate = () => {
+  const handleCreate = (): void => {
     if (!groupName.trim()) {
       alert('グループ名を入力してください');
       return;

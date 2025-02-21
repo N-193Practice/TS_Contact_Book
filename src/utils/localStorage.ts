@@ -117,7 +117,7 @@ function deleteGroup(id: string): void {
 /**
  * `groupId` を持つ連絡先の groupId を null にする
  * @param {string} groupId - null にする対象のグループ ID
- * @returns {void} この関数は値を返さず、連絡先の `groupId` をnullに上書きする。
+ * @returns {Contact[]} 連絡先の `groupId` をnullに上書きする。
  */
 function resetGroupIdInContacts(groupId: string): Contact[] {
   const contacts = getContacts();

@@ -32,6 +32,10 @@ import { validateContact } from '../utils/validation';
  * @property {(contact: Contact | null) => void} setEditContact - 現在編集中の連絡先を設定する関数。
  * @property {string[]} selectedContacts - 選択された連絡先 ID の配列。
  * @property {React.Dispatch<React.SetStateAction<string[]>>} setSelectedContacts - 選択された連絡先を設定する関数。
+ * @property {string | null} errorMessage - エラーメッセージ。
+ * @property {(message: string | null) => void} setErrorMessage -エラーメッセージを設定する関数。
+ * @property {string | null} successMessage - 成功メッセージ。
+ * @property {(message: string | null) => void} setSuccessMessage - 成功メッセージを設定する関数。
  * @property {(contact: Contact) => boolean} addContact - 新しい連絡先を追加する関数。
  * @property {(contact: Contact) => boolean} updateContact - 既存の連絡先を更新する関数。
  * @property {() => void} handleNewContact - 新しい連絡先の作成を処理する関数。
@@ -43,6 +47,7 @@ import { validateContact } from '../utils/validation';
  * @property {{ [key: string]: Contact[] }} groupedContacts - 先頭の文字でグループ化された連絡先。
  * @property {() => void} selectAllContacts - 全選択ボタンを押したときに呼び出される関数。
  * @property {() => void} deselectAllContacts - 全選択解除ボタンを押したときに呼び出される関数。
+ * @property {(newContacts: Contact[]) => void;} bulkImportContacts - CSVのインポートを実行する関数。
  */
 export type ContactContextType = {
   contacts: Contact[];
@@ -104,7 +109,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const groupContext = useContext(GroupContext);
   const groups = useMemo(() => groupContext?.groups ?? [], [groupContext]);
 
-  // ContactのCRUD処理(初回時ロード)
+  // ContactのCRUD処理(初回時ロード、更新時など)
   const updateContacts = useCallback(() => {
     setContacts(getContacts());
   }, []);
@@ -281,8 +286,12 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     return true;
   };
 
-  //CSVの一括処理できるようにする(新規、更新)
-  const bulkImportContacts = (newContacts: Contact[]) => {
+  /**
+   * CSV操作の時に新規作成、更新処理をする関数。
+   * @param {Contact} newContacts - 更新する連絡先。
+   * @returns {void} この関数は値を返さず、CSV操作の際にContact,Groupテーブルにそれぞれデータを投入する。
+   */
+  const bulkImportContacts = (newContacts: Contact[]): void => {
     setContacts((prevContacts) => {
       let updatedContacts = [...prevContacts];
 

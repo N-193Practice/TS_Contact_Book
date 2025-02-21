@@ -12,7 +12,7 @@ import { Button } from '@mui/material';
  * @returns {JSX.Element} エクスポートした場合は UI を返す。
  */
 function CSVExport(): JSX.Element {
-  const { contacts, setErrorMessage, setSuccessMessage } = useContacts(); // ✅ エラーと成功メッセージを管理
+  const { contacts, setErrorMessage, setSuccessMessage } = useContacts();
   const { groups } = useGroups();
   const { jsonToCSV } = usePapaParse();
 
@@ -81,7 +81,7 @@ function CSVExport(): JSX.Element {
 
   return (
     <>
-      <Button variant="contained" color="primary" onClick={handleExport}>
+      <Button color="primary" onClick={handleExport}>
         データを出力する
       </Button>
     </>

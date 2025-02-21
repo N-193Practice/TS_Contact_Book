@@ -35,7 +35,9 @@ export const validateGroup = (
 /**
  * 連絡先の正当性をチェックする関数。
  * @param {Contact} contact - バリデーション対象の連絡先情報。
+ * @param {Contact[]} existingContacts - 既存の連絡先リスト
  * @param {boolean} [isEdit=false] - 編集モードなのか確認(新規作成時はfalse)。
+ * @param {setErrorMessage} setErrorMessage - エラーメッセージを表示する関数
  * @returns {boolean} バリデーションが成功すれば true、失敗すれば false。
  */
 export const validateContact = (
@@ -81,7 +83,7 @@ export const validateContact = (
  * CSVの1行分のバリデーションを行う
  * @param {Contact} row - CSVの1行データ
  * @param {Contact[]} existingContacts - 既存の連絡先リスト
- * @param {Group[]} existingGroups - 既存のグループリスト
+ * @param {setErrorMessage} setErrorMessage - エラーメッセージを表示する関数
  * @returns {boolean} バリデーション成功なら true、失敗なら false
  */
 export const validateCSVRow = (
@@ -136,6 +138,7 @@ export const validateCSVRow = (
  * CSVのデータ全体をバリデーションする
  * @param {CSVContact[]} csvContacts - CSVのデータリスト
  * @param {Contact[]} existingContacts - 既存の連絡先リスト
+ * @param {setErrorMessage} setErrorMessage -エラーメッセージを表示する関数
  * @returns {boolean} 全データが正しい場合 true、それ以外は false
  */
 export const validateContactsFromCSV = (
