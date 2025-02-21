@@ -56,6 +56,10 @@ export type ContactContextType = {
   setEditContact: (contact: Contact | null) => void;
   selectedContacts: string[];
   setSelectedContacts: React.Dispatch<React.SetStateAction<string[]>>;
+  errorMessage: string | null;
+  setErrorMessage: (message: string | null) => void;
+  successMessage: string | null;
+  setSuccessMessage: (message: string | null) => void;
   addContact: (contact: Contact) => boolean;
   updateContact: (contact: Contact) => boolean;
   handleNewContact: () => void;
@@ -93,6 +97,8 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const [editContact, setEditContact] = useState<Contact | null>(null);
   const [selectedContacts, setSelectedContacts] = useState<string[]>([]);
   const listRefs = useRef<{ [key: string]: HTMLLIElement | null }>({});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // グループのコンテキストを取得
   const groupContext = useContext(GroupContext);
@@ -360,12 +366,13 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    */
   const handleDeleteMultiple = (): void => {
     if (selectedContacts.length === 0) {
-      alert('削除する連絡先を選択してください');
+      setErrorMessage('削除する連絡先を選択してください');
       return;
     }
     selectedContacts.forEach((id) => deleteContact(id));
     setContacts(getContacts());
     setSelectedContacts([]);
+    setErrorMessage(null);
   };
 
   return (
@@ -382,6 +389,10 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
         setEditContact,
         selectedContacts,
         setSelectedContacts,
+        errorMessage,
+        setErrorMessage,
+        successMessage,
+        setSuccessMessage,
         addContact,
         updateContact,
         handleNewContact,

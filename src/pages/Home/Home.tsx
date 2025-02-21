@@ -4,8 +4,8 @@ import ContactList from '../../components/ContactList/ContactList';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import AlphabetBar from '../../components/AlphabetBar/AlphabetBar';
 import ContactFormDialog from '../../components/ContactFormDialog/ContactFormDialog';
-
 import CSVImport from '../../components/CSVImport/CSVImport';
+import NotificationBanner from '../../components/NotificationBanner/NotificationBanner';
 import styles from './Home.module.css';
 import { Typography, IconButton, Button } from '@mui/material';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
@@ -25,6 +25,10 @@ function Home(): JSX.Element {
     selectAllContacts,
     deselectAllContacts,
     contacts,
+    errorMessage,
+    setErrorMessage,
+    successMessage,
+    setSuccessMessage,
   } = useContacts();
 
   return (
@@ -34,6 +38,22 @@ function Home(): JSX.Element {
         <div className={styles.csvButton}>
           <CSVImport />
         </div>
+        {/* エラーメッセージの表示 */}
+        {errorMessage && (
+          <NotificationBanner
+            message={errorMessage}
+            severity="error"
+            onClose={() => setErrorMessage(null)}
+          />
+        )}
+        {/* 成功メッセージの表示 */}
+        {successMessage && (
+          <NotificationBanner
+            message={successMessage}
+            severity="success"
+            onClose={() => setSuccessMessage(null)}
+          />
+        )}
         {/* SearchBar */}
         <div className={styles.searchBarContainer}>
           <SearchBar />

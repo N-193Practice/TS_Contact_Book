@@ -1,7 +1,17 @@
 import { useState, useEffect, JSX } from 'react';
 import { useGroups } from '../../contexts/useGroups';
 import { useNavigate, useParams } from 'react-router';
-import { TextField, Button, Typography } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Typography,
+  Paper,
+  Box,
+  InputAdornment,
+} from '@mui/material';
+import styles from './GroupEdit.module.css';
+import Grid from '@mui/material/Grid2';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 
 /**
  * `GroupEdit` コンポーネント
@@ -34,24 +44,52 @@ function GroupEdit(): JSX.Element {
   };
 
   return (
-    <div>
-      <Typography variant="h4">グループを編集</Typography>
-      <TextField
-        label="グループ名"
-        variant="filled"
-        value={groupName}
-        onChange={(e) => setGroupName(e.target.value)}
-      />
-      <Button onClick={handleUpdate} variant="contained" color="primary">
-        更新
-      </Button>
-      <Button
-        onClick={() => navigate('/')}
-        variant="contained"
-        color="secondary"
-      >
-        キャンセル
-      </Button>
+    <div className={styles.container}>
+      <Paper elevation={3} className={styles.formContainer}>
+        <Typography variant="h1" className={styles.title}>
+          グループを編集
+        </Typography>
+        <Box component="form" className={styles.form}>
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <TextField
+                label="グループ名"
+                variant="standard"
+                fullWidth
+                value={groupName}
+                onChange={(e) => setGroupName(e.target.value)}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <AccountCircle />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+            </Grid>
+          </Grid>
+          <Box className={styles.buttonContainer}>
+            <Button
+              onClick={handleUpdate}
+              variant="contained"
+              color="primary"
+              fullWidth
+            >
+              更新
+            </Button>
+            <Button
+              onClick={() => navigate('/')}
+              variant="outlined"
+              color="secondary"
+              fullWidth
+            >
+              キャンセル
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
     </div>
   );
 }

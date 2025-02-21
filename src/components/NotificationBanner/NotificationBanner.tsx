@@ -2,17 +2,17 @@ import { JSX } from 'react';
 import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-type ErrorBannerProps = {
+type NotificationBannerProps = {
   message: string;
   severity: 'error' | 'warning' | 'info' | 'success';
   onClose: () => void;
 };
 
-function ErrorBanner({
+function NotificationBanner({
   message,
   severity,
   onClose,
-}: ErrorBannerProps): JSX.Element {
+}: NotificationBannerProps): JSX.Element {
   return (
     <Collapse in={!!message}>
       <Alert
@@ -29,4 +29,4 @@ function ErrorBanner({
   );
 }
 
-export default ErrorBanner;
+export default NotificationBanner;

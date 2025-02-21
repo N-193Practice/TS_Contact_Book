@@ -2,7 +2,9 @@ import { useState, useEffect, JSX } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
+import { validateContact } from '../../utils/validation';
 import GroupSelect from '../GroupSelect/GroupSelect';
+import NotificationBanner from '../NotificationBanner/NotificationBanner';
 import {
   Dialog,
   DialogTitle,
@@ -10,19 +12,24 @@ import {
   DialogActions,
   TextField,
   Button,
-  Typography,
 } from '@mui/material';
 
 /**
  * `ContactFormDialog` コンポーネント
  * 連絡先の新規作成および編集用のダイアログ。
- * `useContacts` フックを使用して連絡先情報の追加・編集を管理。
- * @returns {JSX.Element} 連絡先フォームダイアログの UI を返す。
  */
-
 function ContactFormDialog(): JSX.Element {
-  const { openDialog, setOpenDialog, editContact, addContact, updateContact } =
-    useContacts();
+  const {
+    openDialog,
+    setOpenDialog,
+    editContact,
+    addContact,
+    updateContact,
+    errorMessage,
+    setErrorMessage,
+    successMessage,
+    setSuccessMessage,
+  } = useContacts();
   const { groups, recentlyCreatedGroupId, clearRecentlyCreatedGroupId } =
     useGroups();
 
@@ -31,12 +38,10 @@ function ContactFormDialog(): JSX.Element {
   const [phone, setPhone] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
   const [groupId, setGroupId] = useState<string | null>(null); // グループID用の state
-  const [errorMessage, setErrorMessage] = useState<string>(''); // エラーメッセージ用の state
 
   /**
    * `editContact` がある場合は編集モードとしてデータをセット。
    * ない場合は新規作成モードとしてリセット。
-   * `openDialog` が変わるたびに実行される。
    */
   useEffect(() => {
     const selectedGroup =
@@ -52,15 +57,21 @@ function ContactFormDialog(): JSX.Element {
       setMemo('');
       setGroupId(selectedGroup);
     }
-    setErrorMessage(''); // ダイアログを開くたびにエラーをリセット
-  }, [editContact, openDialog, recentlyCreatedGroupId, groups]);
+    setErrorMessage(null); // ダイアログを開くたびにエラーをリセット
+    setSuccessMessage(null); // 成功メッセージもリセット
+  }, [
+    editContact,
+    openDialog,
+    recentlyCreatedGroupId,
+    groups,
+    setErrorMessage,
+    setSuccessMessage,
+  ]);
 
   /**
    * 保存ボタンを押したときに呼び出される関数
-   * @returns {void} 成功時はダイアログを閉じる。
    */
   const handleSave = (): void => {
-    // オブジェクトの作成
     const newContact = {
       id: editContact ? editContact.id : uuidv4(),
       name: name.trim(),
@@ -68,23 +79,37 @@ function ContactFormDialog(): JSX.Element {
       memo: memo.trim(),
       groupId: groupId,
     };
+
+    // バリデーションを実行 (エラー時は `setErrorMessage` に渡す)
+    const isValid = validateContact(
+      newContact,
+      [],
+      !!editContact,
+      setErrorMessage
+    );
+    if (!isValid) return;
+
     let success = false;
     if (editContact) {
       success = updateContact(newContact); // 編集処理
     } else {
       success = addContact(newContact); // 新規作成処理
     }
+
     if (!success) {
-      setErrorMessage('入力内容にエラーがあります'); // エラーメッセージを表示
+      setErrorMessage('入力内容にエラーがあります');
       return;
     }
+
+    setSuccessMessage(
+      editContact ? '連絡先を更新しました' : '新しい連絡先を追加しました'
+    );
     clearRecentlyCreatedGroupId();
     setOpenDialog(false); // 成功した場合のみフォームを閉じる
   };
 
   /**
    * 閉じるボタンを押したときに呼び出される関数。
-   * @returns {void} この関数は値を返さず、ダイアログを閉じる。
    */
   const handleClose = () => {
     setOpenDialog(false);
@@ -105,11 +130,21 @@ function ContactFormDialog(): JSX.Element {
         {editContact ? '連絡先を編集' : '新しい連絡先を追加'}
       </DialogTitle>
       <DialogContent>
-        {/* エラーがある場合に表示 */}
+        {/* エラー表示 */}
         {errorMessage && (
-          <Typography color="error" variant="body2">
-            {errorMessage}
-          </Typography>
+          <NotificationBanner
+            message={errorMessage}
+            severity="error"
+            onClose={() => setErrorMessage(null)}
+          />
+        )}
+        {/* 成功メッセージ */}
+        {successMessage && (
+          <NotificationBanner
+            message={successMessage}
+            severity="success"
+            onClose={() => setSuccessMessage(null)}
+          />
         )}
         <TextField
           fullWidth
@@ -147,4 +182,5 @@ function ContactFormDialog(): JSX.Element {
     </Dialog>
   );
 }
+
 export default ContactFormDialog;

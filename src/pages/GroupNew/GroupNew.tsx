@@ -1,8 +1,18 @@
 import { useState, JSX } from 'react';
 import { useGroups } from '../../contexts/useGroups';
+import styles from './GroupNew.module.css';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router';
-import { TextField, Button, Typography } from '@mui/material';
+import {
+  TextField,
+  Button,
+  Typography,
+  Paper,
+  Box,
+  InputAdornment,
+} from '@mui/material';
+import Grid from '@mui/material/Grid2';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 
 /**
  * `GroupNew` コンポーネント
@@ -33,24 +43,54 @@ function GroupNew(): JSX.Element {
   };
 
   return (
-    <div>
-      <Typography variant="h4">新しいグループを作成</Typography>
-      <TextField
-        label="グループ名"
-        variant="filled"
-        value={groupName}
-        onChange={(e) => setGroupName(e.target.value)}
-      />
-      <Button onClick={handleCreate} variant="contained" color="primary">
-        作成
-      </Button>
-      <Button
-        onClick={() => navigate('/')}
-        variant="contained"
-        color="secondary"
-      >
-        キャンセル
-      </Button>
+    <div className={styles.container}>
+      <Paper elevation={3} className={styles.formContainer}>
+        <Typography variant="h1" className={styles.title}>
+          新しいグループを作成
+        </Typography>
+
+        <Box component="form" className={styles.form}>
+          <Grid container spacing={2}>
+            <Grid size={12}>
+              <TextField
+                label="グループ名"
+                variant="standard"
+                fullWidth
+                value={groupName}
+                onChange={(e) => setGroupName(e.target.value)}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <AccountCircle />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+            </Grid>
+          </Grid>
+
+          <Box className={styles.buttonContainer}>
+            <Button
+              onClick={handleCreate}
+              variant="contained"
+              color="primary"
+              fullWidth
+            >
+              作成
+            </Button>
+            <Button
+              onClick={() => navigate('/')}
+              variant="outlined"
+              color="secondary"
+              fullWidth
+            >
+              キャンセル
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
     </div>
   );
 }

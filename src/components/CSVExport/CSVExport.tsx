@@ -1,10 +1,9 @@
-import { useState, JSX } from 'react';
+import { JSX } from 'react';
 import { usePapaParse } from 'react-papaparse';
 import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import { CSVContact } from '../../models/types';
 import { contactToCSV } from '../../utils/csvConverter';
-import ErrorBanner from '../ErrorBanner/ErrorBanner';
 import { Button } from '@mui/material';
 
 /**
@@ -13,10 +12,9 @@ import { Button } from '@mui/material';
  * @returns {JSX.Element} エクスポートした場合は UI を返す。
  */
 function CSVExport(): JSX.Element {
-  const { contacts } = useContacts();
+  const { contacts, setErrorMessage, setSuccessMessage } = useContacts(); // ✅ エラーと成功メッセージを管理
   const { groups } = useGroups();
   const { jsonToCSV } = usePapaParse();
-  const [errors, setErrors] = useState<string[]>([]);
 
   /**
    * 現在の日付と時刻を "yyMMddHHmmss" 形式で取得
@@ -40,35 +38,24 @@ function CSVExport(): JSX.Element {
   const handleExport = (): void => {
     console.log('エクスポート前のデータ:', contacts);
 
+    if (contacts.length === 0) {
+      setErrorMessage('エクスポートできる連絡先がありません');
+      return;
+    }
+
     const csvContacts: CSVContact[] = contacts.map((contact) =>
       contactToCSV(contact, groups)
     );
 
     console.log('変換後の CSVContacts:', csvContacts);
 
-    // バリデーションチェック（必要な場合）
-    const newErrors: string[] = [];
+    // バリデーションチェック
     const validContacts: CSVContact[] = csvContacts.filter(
-      (csvContact, index) => {
-        if (!csvContact.fullName || !csvContact.phone) {
-          console.log('バリデーションエラー:', csvContact);
-          newErrors.push(
-            `Row ${
-              index + 1
-            }: 名前または電話番号が不足しているため、エクスポートされません (${
-              csvContact.fullName
-            })`
-          );
-          return false;
-        }
-        return true;
-      }
+      (csvContact) => csvContact.fullName && csvContact.phone
     );
 
-    // エラーがある場合は処理を中断
-    if (newErrors.length > 0) {
-      setErrors(newErrors);
-      alert('エクスポート可能なデータがありません');
+    if (validContacts.length === 0) {
+      setErrorMessage('有効なデータがないため、エクスポートを中断しました');
       return;
     }
 
@@ -88,16 +75,15 @@ function CSVExport(): JSX.Element {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+
+    setSuccessMessage(`CSVエクスポートが完了しました！ (${fileName})`);
   };
 
   return (
     <>
-      <Button onClick={handleExport}>データを出力する</Button>
-      <ErrorBanner
-        message={errors[0]}
-        severity="error"
-        onClose={() => setErrors([])}
-      />
+      <Button variant="contained" color="primary" onClick={handleExport}>
+        データを出力する
+      </Button>
     </>
   );
 }

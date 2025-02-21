@@ -5,7 +5,6 @@ import { useGroups } from '../../contexts/useGroups';
 import { CSVContact } from '../../models/types';
 import { csvToContact } from '../../utils/csvConverter';
 import { validateContactsFromCSV } from '../../utils/validation';
-import ErrorBanner from '../ErrorBanner/ErrorBanner';
 import { Button } from '@mui/material';
 
 /**
@@ -14,11 +13,11 @@ import { Button } from '@mui/material';
  * @returns {JSX.Element | null} UIコンポーネントを返す。
  */
 function CSVImport(): JSX.Element | null {
-  const { contacts, bulkImportContacts } = useContacts();
+  const { contacts, bulkImportContacts, setErrorMessage, setSuccessMessage } =
+    useContacts();
   const { groups, addGroup } = useGroups();
   const { readString } = usePapaParse(); // CSVをJSONに変換
   const [file, setFile] = useState<File | null>(null);
-  const [errors, setErrors] = useState<string[]>([]); // バリデーションエラー
 
   useEffect(() => {
     console.log('Contacts Updated:', contacts);
@@ -31,11 +30,10 @@ function CSVImport(): JSX.Element | null {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) {
-      alert('ファイルを選択してください');
+      setErrorMessage('ファイルを選択してください');
       return;
     }
     setFile(selectedFile);
-    setErrors([]); // エラーリセット
   };
 
   /**
@@ -43,14 +41,14 @@ function CSVImport(): JSX.Element | null {
    */
   const handleImport = (): void => {
     if (!file) {
-      alert('ファイルを選択してください');
+      setErrorMessage('ファイルを選択してください');
       return;
     }
 
     const reader = new FileReader();
     reader.onload = (e) => {
       if (!e.target?.result) {
-        alert('ファイルの読み込みに失敗しました');
+        setErrorMessage('ファイルの読み込みに失敗しました');
         return;
       }
 
@@ -62,9 +60,13 @@ function CSVImport(): JSX.Element | null {
           const csvContacts = results.data as CSVContact[];
 
           // 一括バリデーション
-          const isValid = validateContactsFromCSV(csvContacts, contacts);
+          const isValid = validateContactsFromCSV(
+            csvContacts,
+            contacts,
+            setErrorMessage
+          );
           if (!isValid) {
-            alert('CSVにエラーがあるため、インポートを中断しました');
+            setErrorMessage('CSVにエラーがあるため、インポートを中断しました');
             return;
           }
 
@@ -76,7 +78,8 @@ function CSVImport(): JSX.Element | null {
           // 一括登録処理を実行（forEach ではなく、まとめて setContacts する）
           bulkImportContacts(validContacts);
 
-          alert('CSVのインポートが完了しました');
+          setSuccessMessage('CSVのインポートが完了しました');
+          setErrorMessage(null);
           setFile(null);
         },
       });
@@ -96,11 +99,6 @@ function CSVImport(): JSX.Element | null {
       >
         データを取り込む
       </Button>
-      <ErrorBanner
-        message={errors[0]}
-        severity="error"
-        onClose={() => setErrors([])}
-      />
     </div>
   );
 }
