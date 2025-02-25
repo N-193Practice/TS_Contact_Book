@@ -9,7 +9,7 @@ import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 
 import styles from './Groups.module.css';
-import { Group } from '../../models/types';
+import { Group } from '../../../models/types';
 
 function Groups() {
   const groups = useLoaderData<Group[]>();

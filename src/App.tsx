@@ -1,11 +1,12 @@
 import { createBrowserRouter, RouterProvider } from 'react-router';
 import { ContactProvider } from './contexts/ContactContext';
 import { GroupProvider } from './contexts/GroupContext';
-import Root from './pages/RootLayout/Root';
-import Contacts from './pages/Home/Home';
-import GroupNew from './pages/GroupNew/GroupNew';
-import GroupEdtit from './pages/GroupEdit/GroupEdit';
-import Error from './pages/Error/Error';
+import RootLayout from './pages/RootLayout/RootLayout';
+import Groups from './pages/Groups/Groups/Groups';
+import Contacts from './pages/Contacts/Contacts';
+import GroupNew from './pages/Groups/GroupNew/GroupNew';
+import GroupEdtit from './pages/Groups/GroupEdit/GroupEdit';
+import ErrorPage from './pages/ErrorPage/ErrorPage';
 import {
   getContactsList,
   getContactsEdit,
@@ -14,14 +15,13 @@ import {
   groupAction,
   getGroupEdit,
 } from './utils/contactServices';
-import Groups from './pages/Groups/Groups';
 
 // ルーターの作成
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Root />,
-    errorElement: <Error />,
+    element: <RootLayout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         path: '/',

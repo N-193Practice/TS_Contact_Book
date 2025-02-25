@@ -32,7 +32,10 @@
 
 .searchContacts {
   grid-area: searchContacts;
-  justify-content: right;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  width: 110%;
 }
 
 .newContactButton {
@@ -43,17 +46,19 @@
   align-items: center;
 }
 
+/* アイコンの位置を変更 */
 .iconButton {
   padding: 5px;
   align-items: center;
   justify-content: center;
   vertical-align: middle;
+  width: 100px; /* アイコンのサイズを変更 */
+  height: 100px; /* アイコンのサイズを変更 */
 }
-
+/* アイコンのサイズを変更 */
 .addContactIcon {
   color: white;
-  width: 40px;
-  height: 40px;
+  font-size: 80px !important;
 }
 
 .contactsImportExport {

@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router';
-import styles from './Root.module.css';
+import styles from './RootLayout.module.css';
 import ApplicationHeader from '../../components/ApplicationHeader/ApplicationHeader';
 
 function RootLayout() {

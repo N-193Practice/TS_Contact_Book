@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import { validateContact } from '../../utils/validation';
-import GroupSelect from '../GroupSelect/GroupSelect';
 import NotificationBanner from '../NotificationBanner/NotificationBanner';
 import {
   Dialog,
@@ -171,7 +170,6 @@ function ContactFormDialog(): JSX.Element {
           value={memo}
           onChange={(e) => setMemo(e.target.value)}
         />
-        <GroupSelect value={groupId} onChange={setGroupId} />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>キャンセル</Button>

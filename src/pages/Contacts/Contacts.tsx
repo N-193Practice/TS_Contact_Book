@@ -6,16 +6,16 @@ import AlphabetBar from '../../components/AlphabetBar/AlphabetBar';
 import ContactFormDialog from '../../components/ContactFormDialog/ContactFormDialog';
 import CSVImport from '../../components/CSVImport/CSVImport';
 import CSVExport from '../../components/CSVExport/CSVExport';
-import styles from './Home.module.css';
+import styles from './Contacts.module.css';
 import { IconButton, Button, Alert, AlertTitle } from '@mui/material';
-import AddReactionIcon from '@mui/icons-material/AddReaction';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import Grid from '@mui/material/Grid2';
 import { NavLink } from 'react-router';
 import { useLoaderData } from 'react-router';
 
 /**
- * `Home` コンポーネント
- * 連絡先のメイン画面。ナビゲーション、検索バー、連絡先リスト、
+ * `Contacts` コンポーネント(このアプリケーションのホーム画面)
+ * 連絡先の一覧画面。ナビゲーション、検索バー、エラーメッセージを表示する。
  * アルファベットフィルター、および連絡先追加・削除機能を提供する。
  * @returns {JSX.Element} ホーム画面の UI を返す。
  */
@@ -63,7 +63,7 @@ function Contacts(): JSX.Element {
               component={NavLink}
               to={'/contacts/new'}
             >
-              <AddReactionIcon
+              <PersonAddAlt1Icon
                 className={styles.addContactIcon}
                 focusable="false"
               />

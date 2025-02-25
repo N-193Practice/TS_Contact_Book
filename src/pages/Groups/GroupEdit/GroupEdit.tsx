@@ -1,8 +1,6 @@
-import { useState, JSX } from 'react';
-import { useGroups } from '../../contexts/useGroups';
-import styles from './GroupNew.module.css';
-import { v4 as uuidv4 } from 'uuid';
-import { useNavigate } from 'react-router';
+import { useState, useEffect, JSX } from 'react';
+import { useGroups } from '../../../contexts/useGroups';
+import { useNavigate, useLoaderData } from 'react-router';
 import {
   TextField,
   Button,
@@ -11,31 +9,41 @@ import {
   Box,
   InputAdornment,
 } from '@mui/material';
+import styles from './GroupEdit.module.css';
 import Grid from '@mui/material/Grid2';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import { Group } from '../../../models/types';
 
 /**
- * `GroupNew` コンポーネント
- * 新規グループの作成画面。
- * @returns {JSX.Element} 新規グループの作成画面の UI を返す。
+ * `GroupEdit` コンポーネント
+ * グループの編集画面。
+ * @returns {JSX.Element} グループの編集画面の UI を返す。
  */
-function GroupNew(): JSX.Element {
-  const { addGroup } = useGroups();
-  const [groupName, setGroupName] = useState('');
+function GroupEdit(): JSX.Element {
+  const { updateGroup } = useGroups();
   const navigate = useNavigate();
+  const [groupName, setGroupName] = useState('');
+  const [group, setGroup] = useState<Group | null>(null);
+  const [groups, setGroups] = useState<Group[]>([]);
+
+  const data = useLoaderData();
+
+  // グループの名前を取得する
+  useEffect(() => {
+    const group: Group = data.group;
+    const groups: Group[] = data.groups;
+    setGroup(group);
+    setGroups(groups);
+    setGroupName(group.name);
+  }, [data]);
 
   /**
-   * 新規グループを作成する。
-   * @returns {void} 成功時はグループを作成し、ホームへ遷移する。
+   * グループを更新する。
+   * @returns {void} 成功時はグループを更新し、ホームへ遷移する。
    */
-  const handleCreate = (): void => {
-    if (!groupName.trim()) {
-      alert('グループ名を入力してください');
-      return;
-    }
-
-    const newGroup = { id: uuidv4(), name: groupName.trim() };
-    if (addGroup(newGroup)) {
+  const handleUpdate = (): void => {
+    const currentGroup = groups.find((g) => g.id === group?.id);
+    if (currentGroup && updateGroup({ ...currentGroup, name: groupName })) {
       navigate('/groups');
     } else {
       alert('既に同じグループ名が存在します');
@@ -46,9 +54,8 @@ function GroupNew(): JSX.Element {
     <div className={styles.container}>
       <Paper elevation={3} className={styles.formContainer}>
         <Typography variant="h1" className={styles.title}>
-          新しいグループを作成
+          グループを編集
         </Typography>
-
         <Box component="form" className={styles.form}>
           <Grid container spacing={2}>
             <Grid size={12}>
@@ -70,15 +77,14 @@ function GroupNew(): JSX.Element {
               />
             </Grid>
           </Grid>
-
           <Box className={styles.buttonContainer}>
             <Button
-              onClick={handleCreate}
+              onClick={handleUpdate}
               variant="contained"
               color="primary"
               fullWidth
             >
-              作成
+              更新
             </Button>
             <Button
               onClick={() => navigate(-1)}
@@ -95,4 +101,4 @@ function GroupNew(): JSX.Element {
   );
 }
 
-export default GroupNew;
+export default GroupEdit;

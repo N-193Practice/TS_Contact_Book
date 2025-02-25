@@ -1,6 +1,6 @@
 import { useRouteError, isRouteErrorResponse, NavLink } from 'react-router';
 
-import styles from './Error.module.css';
+import styles from './ErrorPage.module.css';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
