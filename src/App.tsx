@@ -1,25 +1,70 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router';
+import { createBrowserRouter, RouterProvider } from 'react-router';
 import { ContactProvider } from './contexts/ContactContext';
 import { GroupProvider } from './contexts/GroupContext';
-import Home from './pages/Home/Home';
+import Root from './pages/RootLayout/Root';
+import Contacts from './pages/Home/Home';
 import GroupNew from './pages/GroupNew/GroupNew';
 import GroupEdtit from './pages/GroupEdit/GroupEdit';
-import GroupDelete from './pages/GroupDelete/GroupDelete';
 import Error from './pages/Error/Error';
+import {
+  getContactsList,
+  getContactsEdit,
+  getContactsNew,
+  getGroupsList,
+  groupAction,
+  getGroupEdit,
+} from './utils/contactServices';
+import Groups from './pages/Groups/Groups';
+
+// ルーターの作成
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Root />,
+    errorElement: <Error />,
+    children: [
+      {
+        path: '/',
+        element: <Contacts />,
+        loader: getContactsList,
+      },
+      {
+        path: 'contacts/new',
+        element: <Contacts />,
+        loader: getContactsNew,
+      },
+      {
+        path: 'contacts/edit/:id',
+        element: <Contacts />,
+        loader: getContactsEdit,
+      },
+      {
+        path: 'groups',
+        element: <Groups />,
+        loader: getGroupsList,
+      },
+      {
+        path: 'groups/delete/:id',
+        action: groupAction,
+      },
+      {
+        path: 'groups/new',
+        element: <GroupNew />,
+      },
+      {
+        path: 'groups/edit/:id',
+        element: <GroupEdtit />,
+        loader: getGroupEdit,
+      },
+    ],
+  },
+]);
 
 function App() {
   return (
     <ContactProvider>
       <GroupProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/groups/new" element={<GroupNew />} />
-            <Route path="/groups/edit/:id" element={<GroupEdtit />} />
-            <Route path="/groups/delete/:id" element={<GroupDelete />} />
-            <Route path="*" element={<Error />} />
-          </Routes>
-        </Router>
+        <RouterProvider router={router} />
       </GroupProvider>
     </ContactProvider>
   );

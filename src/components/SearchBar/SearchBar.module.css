@@ -1,15 +1,4 @@
-/* 検索バーのコンテナ（中央配置） */
-.searchBarContainer {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
 /* 検索バーのスタイル */
 .searchBar {
   background-color: white;
-  font-size: 1.2rem;
-  width: 500px; /*幅を調整*/
-  max-width: 400%;
 }

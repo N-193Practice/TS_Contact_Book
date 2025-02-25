@@ -13,7 +13,6 @@ import {
   TextField,
   Button,
 } from '@mui/material';
-
 /**
  * `ContactFormDialog` コンポーネント
  * 連絡先の新規作成および編集用のダイアログ。

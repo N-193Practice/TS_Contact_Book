@@ -1,11 +1,11 @@
 import React, {
-  useContext,
   createContext,
+  useContext,
+  useCallback,
   useState,
-  useEffect,
   useRef,
   useMemo,
-  useCallback,
+  useEffect,
   ReactNode,
   JSX,
 } from 'react';
@@ -210,26 +210,6 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   }, [filteredContacts]);
 
   /**
-   * 新規作成用の編集ダイアログを開く。
-   * フォームのデータを初期化し表示する。
-   * @returns {void} この関数は値を返さず、ダイアログを開くだけ。
-   */
-  const handleNewContact = (): void => {
-    setEditContact(null);
-    setOpenDialog(true);
-  };
-
-  /**
-   * 既存の連絡先情報を編集するためのダイアログを開く。
-   * @param {Contact} contact - 編集対象の連絡先情報。
-   * @returns {void} この関数は値を返さず、ダイアログを開くだけ。
-   */
-  const handleEditContact = (contact: Contact): void => {
-    setEditContact(contact);
-    setOpenDialog(true);
-  };
-
-  /**
    * セレクトボックスの全選択解除を実装する関数。
    * @returns {void} この関数は値を返さず、全リストのチェックボックスにチェックを入れる。
    */
@@ -257,10 +237,8 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     if (contact.groupId) {
       updatedContacts = resetGroupIdInContacts(contact.groupId); // groupId を null にする
     }
-
-    setContacts(updatedContacts); // React の state を更新
     saveContacts(updatedContacts);
-
+    setContacts(updatedContacts);
     return true;
   };
 
@@ -280,7 +258,6 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
       updatedContacts = resetGroupIdInContacts(updatedContact.groupId); // groupId を null にする
     }
 
-    setContacts(updatedContacts); // React の state を更新
     saveContacts(updatedContacts);
 
     return true;
@@ -346,6 +323,26 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
       return updatedContacts;
     });
   };
+  /**
+   * 新規作成用の編集ダイアログを開く。
+   * フォームのデータを初期化し表示する。
+   * @returns {void} この関数は値を返さず、ダイアログを開くだけ。
+   */
+  const handleNewContact = (): void => {
+    setEditContact(null);
+    setOpenDialog(true);
+  };
+
+  /**
+   * 既存の連絡先情報を編集するためのダイアログを開く。
+   * @param {Contact} contact - 編集対象の連絡先情報。
+   * @returns {void} この関数は値を返さず、ダイアログを開くだけ。
+   */
+  const handleEditContact = (contact: Contact): void => {
+    setEditContact(contact);
+    setOpenDialog(true);
+  };
+
   /**
    * 連絡先を削除する関数(個人のため)。
    * @param {string} id - 削除する連絡先の ID。

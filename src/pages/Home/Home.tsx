@@ -1,15 +1,17 @@
-import { JSX } from 'react';
+import { JSX, useMemo } from 'react';
 import { useContacts } from '../../contexts/useContacts';
 import ContactList from '../../components/ContactList/ContactList';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import AlphabetBar from '../../components/AlphabetBar/AlphabetBar';
 import ContactFormDialog from '../../components/ContactFormDialog/ContactFormDialog';
 import CSVImport from '../../components/CSVImport/CSVImport';
-import NotificationBanner from '../../components/NotificationBanner/NotificationBanner';
+import CSVExport from '../../components/CSVExport/CSVExport';
 import styles from './Home.module.css';
-import { Typography, IconButton, Button } from '@mui/material';
+import { IconButton, Button, Alert, AlertTitle } from '@mui/material';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import Grid from '@mui/material/Grid2';
+import { NavLink } from 'react-router';
+import { useLoaderData } from 'react-router';
 
 /**
  * `Home` コンポーネント
@@ -17,87 +19,93 @@ import Grid from '@mui/material/Grid2';
  * アルファベットフィルター、および連絡先追加・削除機能を提供する。
  * @returns {JSX.Element} ホーム画面の UI を返す。
  */
-function Home(): JSX.Element {
+function Contacts(): JSX.Element {
+  const data = useLoaderData();
+
   const {
+    handleNewContact,
     handleDeleteMultiple,
     selectedContacts,
-    handleNewContact,
     selectAllContacts,
     deselectAllContacts,
-    contacts,
     errorMessage,
     setErrorMessage,
-    successMessage,
-    setSuccessMessage,
   } = useContacts();
+
+  const showError = useMemo(() => {
+    return errorMessage && errorMessage.length > 0;
+  }, [errorMessage]);
 
   return (
     <div className={styles.container}>
+      {/** エラーアラート */}
+      <Alert
+        className={`${styles.errorAlert} ${showError ? styles.show : ''}`}
+        severity="error"
+        onClose={() => setErrorMessage('')}
+      >
+        <AlertTitle>Error</AlertTitle>
+        {errorMessage}
+      </Alert>
       <header className={styles.header}>
-        <Typography className={styles.title}>Contact Book</Typography>
-        <div className={styles.csvButton}>
-          <CSVImport />
-        </div>
-        {/* エラーメッセージの表示 */}
-        {errorMessage && (
-          <NotificationBanner
-            message={errorMessage}
-            severity="error"
-            onClose={() => setErrorMessage(null)}
-          />
-        )}
-        {/* 成功メッセージの表示 */}
-        {successMessage && (
-          <NotificationBanner
-            message={successMessage}
-            severity="success"
-            onClose={() => setSuccessMessage(null)}
-          />
-        )}
-        {/* SearchBar */}
-        <div className={styles.searchBarContainer}>
-          <SearchBar />
-        </div>
-        {/* Navigation */}
-        <nav className={styles.navbar}>
-          <div className={styles.selectRightButton}>
-            <Button
-              variant="outlined"
-              onClick={selectAllContacts}
-              disabled={selectedContacts.length === contacts.length}
-              className={styles.selectAllButton}
-            >
-              連絡先の全選択
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={deselectAllContacts}
-              disabled={selectedContacts.length === 0}
-              className={styles.deselectAllButton}
-            >
-              全選択の解除
-            </Button>
+        {/** ヘッダー */}
+        <div className={styles.contactsManagement}>
+          <div className={styles.searchContacts}>
+            {/** 検索バー */}
+            <SearchBar />
           </div>
-          <div className={styles.navbarLeft}>
-            {/* 一括削除ボタン（選択された連絡先がある場合に有効） */}
-            <Button
-              variant="contained"
-              onClick={handleDeleteMultiple}
-              className={styles.deleteButton}
-              color="error"
-            >
-              連絡先一括削除
-            </Button>
+          <div className={styles.newContactButton}>
+            {/** 新規連絡先作成ボタン */}
             <IconButton
               aria-label="新規作成"
               onClick={handleNewContact}
               className={styles.iconButton}
+              component={NavLink}
+              to={'/contacts/new'}
             >
-              <AddReactionIcon focusable="false" className={styles.icon} />
+              <AddReactionIcon
+                className={styles.addContactIcon}
+                focusable="false"
+              />
             </IconButton>
           </div>
-          <div className={styles.navbarRight}></div>
-        </nav>
+          <div className={styles.contactsImportExport}>
+            {/* CSVインポートボタン */}
+            <CSVImport />
+            {/* CSVエクスポートボタン */}
+            <CSVExport />
+          </div>
+        </div>
+        <div className={styles.contactListController}>
+          {/** 連絡先一括削除ボタン */}
+          <Button
+            variant="contained"
+            onClick={handleDeleteMultiple}
+            disabled={selectedContacts.length === 0}
+            className={styles.deleteButton}
+            color="error"
+          >
+            連絡先一括削除
+          </Button>
+          {/** 連絡先全選択 */}
+          <Button
+            variant="outlined"
+            onClick={selectAllContacts}
+            disabled={selectedContacts.length === data.contacts.length}
+            className={styles.selectAllButton}
+          >
+            連絡先の全選択
+          </Button>
+          {/** 連絡先全選択解除ボタン */}
+          <Button
+            variant="outlined"
+            onClick={deselectAllContacts}
+            disabled={selectedContacts.length === 0}
+            className={styles.deselectAllButton}
+          >
+            全選択の解除
+          </Button>
+        </div>
       </header>
       {/* main */}
       <Grid className={styles.contactsContainer}>
@@ -114,4 +122,4 @@ function Home(): JSX.Element {
   );
 }
 
-export default Home;
+export default Contacts;

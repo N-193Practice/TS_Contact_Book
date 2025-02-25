@@ -2,58 +2,80 @@
 .container {
   display: grid;
   grid-template-areas:
-    'header header'
-    'main filter';
+    'header-contacts header-contacts'
+    'main-contacts contacts-filter';
   grid-template-columns: 1fr auto;
   grid-template-rows: auto 1fr;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 
 .header {
-  grid-area: header;
+  grid-area: header-contacts;
   background-color: #2196f3;
   color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.contactsManagement {
+  display: grid;
+  grid-template-areas:
+    'searchContacts searchContacts newContactButton'
+    'contactsImportExport contactsImportExport empty';
+  grid-template-columns: 1fr 1fr auto;
+  row-gap: 10px;
+  width: 60%;
+}
+
+.searchContacts {
+  grid-area: searchContacts;
+  justify-content: right;
+}
+
+.newContactButton {
+  grid-area: newContactButton;
+  align-content: left;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.iconButton {
+  padding: 5px;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+.addContactIcon {
+  color: white;
+  width: 40px;
+  height: 40px;
+}
+
+.contactsImportExport {
+  grid-area: contactsImportExport;
+  display: flex;
+  column-gap: 10px;
+  justify-content: center;
+}
+
+.contactListController {
+  display: flex;
+  column-gap: 10px;
+  width: 100%;
+  flex-direction: row;
+  justify-content: flex-end;
   padding: 10px;
 }
 
-/* タイトル */
-.title {
-  font-size: 3rem;
-  font-weight: bold;
+/* 削除ボタン */
+.deleteButton {
   color: white;
-  text-align: center;
-  padding: 8px;
-}
-
-/* CSVボタン */
-.csvButton {
-  margin-top: 20px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-}
-
-/* ナビバー全体(fullHD 1920×1080対応) */
-.navbar {
-  display: grid;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 5px;
-  gap: 20px;
-}
-
-/* セレクトボックスの為のボタンの位置 */
-.selectRightButton {
-  position: absolute;
-  right: 40px;
+  background-color: red;
 }
 
 /* 全選択ボタン */
@@ -68,45 +90,44 @@
   background-color: antiquewhite;
 }
 
-/* 左側のボタンコンテナ */
-.navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 10px; /* ボタンの間隔 */
-}
-
-/* 右側の空のスペース (バランス用) */
-.navbar-right {
-  flex-grow: 1;
-}
-
-/* 削除ボタン */
-.deleteButton {
-  min-width: 150px;
-  margin-left: 20px; /* 左側に余白を追加 */
-  padding: 20px 20px;
-}
-
-/* 新規作成ボタン */
-.iconButton {
-  min-width: 130px;
+/* CSVボタン */
+.csvButton {
+  margin-top: 20px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
   color: white;
+  cursor: pointer;
 }
 
-/* iconのサイズを変更 */
-.icon {
-  font-size: 50px !important;
-}
 /* メインコンテンツの余白を削除 */
 .contactsContainer {
-  grid-area: main;
+  grid-area: main-contacts;
   overflow-y: auto; /* 縦スクロールバーを表示 */
   overflow-x: hidden; /* 横スクロールバーを非表示 */
 }
 
 /* アルファベットバー */
 .alphabetContainer {
-  grid-area: filter;
+  grid-area: contacts-filter;
   overflow-y: auto; /* 縦スクロールバーを表示 */
   overflow-x: hidden; /* 横スクロールバーを非表示 */
+}
+
+/* アルファベットボタン */
+.errorAlert {
+  position: absolute; /* 絶対位置指定 */
+  top: -100px; /* 画面外に配置 */
+  left: 0; /* 左端に配置 */
+  width: 100vw; /* 画面幅いっぱいに */
+  z-index: 100; /* 最前面に表示 */
+  background-color: rgba(246, 139, 131, 0.8); /* 背景色 */
+  opacity: 0.5; /* 透明度 */
+  transition: top 0.5s ease, opacity 0.5s ease; /* トランジション */
+}
+
+/* エラーメッセージ */
+.errorAlert.show {
+  top: 0; /* 画面上部に移動 */
+  opacity: 1; /* 不透明にする */
 }

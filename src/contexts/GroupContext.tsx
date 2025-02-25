@@ -86,12 +86,11 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
    * @returns {boolean} 更新に成功すれば true、失敗すれば false。
    */
   const updateGroup = (group: Group): boolean => {
+    const groups = getGroups();
     if (!validateGroup(group, groups, true)) return false;
-
     const updatedGroups = groups.map((g) =>
       g.id === group.id ? { ...g, name: group.name } : g
     );
-    setGroups(updatedGroups);
     saveGroups(updatedGroups);
     return true;
   };

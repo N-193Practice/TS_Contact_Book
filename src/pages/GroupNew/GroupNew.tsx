@@ -36,7 +36,7 @@ function GroupNew(): JSX.Element {
 
     const newGroup = { id: uuidv4(), name: groupName.trim() };
     if (addGroup(newGroup)) {
-      navigate('/');
+      navigate('/groups');
     } else {
       alert('既に同じグループ名が存在します');
     }
@@ -81,7 +81,7 @@ function GroupNew(): JSX.Element {
               作成
             </Button>
             <Button
-              onClick={() => navigate('/')}
+              onClick={() => navigate(-1)}
               variant="outlined"
               color="secondary"
               fullWidth

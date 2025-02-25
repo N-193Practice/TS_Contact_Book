@@ -1,6 +1,5 @@
-import { JSX } from 'react';
+import { JSX, useEffect } from 'react';
 import { useContacts } from '../../contexts/useContacts';
-import CSVExport from '../../components/CSVExport/CSVExport';
 import {
   List,
   ListItem,
@@ -13,6 +12,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import styles from './ContactList.module.css';
+import { NavLink } from 'react-router';
 
 /**
  * `ContactList` コンポーネント
@@ -20,15 +20,23 @@ import styles from './ContactList.module.css';
  * 各連絡先はグループ化され、アルファベット順または五十音順に並ぶ。
  * @returns {JSX.Element} 連絡先リストの UI を返す。
  */
+
 function ContactList(): JSX.Element {
   const {
+    contacts,
     groupedContacts,
     listRefs,
     selectedContacts,
     handleEditContact,
     handleDeleteContact,
     handleMultipleSelected,
+    setContacts,
   } = useContacts();
+
+  useEffect(() => {
+    // グループ化された連絡先リストを作成
+    setContacts(contacts || []);
+  }, [contacts, setContacts]);
 
   return (
     <List className={styles.list}>
@@ -66,18 +74,19 @@ function ContactList(): JSX.Element {
                 <IconButton
                   onClick={() => handleEditContact(contact)}
                   className={styles.editButton}
+                  component={NavLink}
+                  aria-hidden="false"
+                  to={`/contacts/edit/${contact.id}`}
                 >
-                  <EditIcon focusable="false" />
+                  <EditIcon />
                 </IconButton>
                 {/* 削除ボタン */}
                 <IconButton
                   onClick={() => handleDeleteContact(contact.id)}
                   className={styles.deleteButton}
                 >
-                  <DeleteIcon focusable="false" />
+                  <DeleteIcon />
                 </IconButton>
-                {/* CSVエクスポートボタン */}
-                <CSVExport />
               </CardContent>
             </Card>
           ))}

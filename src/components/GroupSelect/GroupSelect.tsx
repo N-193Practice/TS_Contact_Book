@@ -47,7 +47,7 @@ function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
           to={value ? `/groups/edit/${value}` : ''}
           disabled={!value}
         >
-          Groupを編集
+          選択されたGroupを編集
         </Button>
         <Button
           variant="outlined"
@@ -56,7 +56,7 @@ function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
           to={value ? `/groups/delete/${value}` : ''}
           disabled={!value}
         >
-          Groupを削除
+          選択されたGroupを削除
         </Button>
       </>
     </>
