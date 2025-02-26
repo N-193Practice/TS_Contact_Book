@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import { validateContact } from '../../utils/validation';
+import GroupSelect from '../GroupSelect/GroupSelect';
 import NotificationBanner from '../NotificationBanner/NotificationBanner';
 import {
   Dialog,
@@ -28,7 +29,8 @@ function ContactFormDialog(): JSX.Element {
     successMessage,
     setSuccessMessage,
   } = useContacts();
-  const { groups } = useGroups();
+  const { groups, recentlyCreatedGroupId, clearRecentlyCreatedGroupId } =
+    useGroups();
 
   // フォームの状態管理
   const [name, setName] = useState<string>('');
@@ -41,11 +43,13 @@ function ContactFormDialog(): JSX.Element {
    * ない場合は新規作成モードとしてリセット。
    */
   useEffect(() => {
+    const selectedGroup =
+      recentlyCreatedGroupId || (editContact ? editContact.groupId : null);
     if (editContact) {
       setName(editContact.name);
       setPhone(editContact.phone);
       setMemo(editContact.memo || '');
-      setGroupId(editContact.groupId);
+      setGroupId(selectedGroup);
     } else {
       setName('');
       setPhone('');
@@ -54,7 +58,14 @@ function ContactFormDialog(): JSX.Element {
     }
     setErrorMessage(null); // ダイアログを開くたびにエラーをリセット
     setSuccessMessage(null); // 成功メッセージもリセット
-  }, [editContact, openDialog, groups, setErrorMessage, setSuccessMessage]);
+  }, [
+    editContact,
+    openDialog,
+    groups,
+    recentlyCreatedGroupId,
+    setErrorMessage,
+    setSuccessMessage,
+  ]);
 
   /**
    * 保存ボタンを押したときに呼び出される関数
@@ -93,6 +104,7 @@ function ContactFormDialog(): JSX.Element {
     setSuccessMessage(
       editContact ? '連絡先を更新しました' : '新しい連絡先を追加しました'
     );
+    clearRecentlyCreatedGroupId();
     setOpenDialog(false); // 成功した場合のみフォームを閉じる
   };
 
@@ -102,6 +114,7 @@ function ContactFormDialog(): JSX.Element {
    */
   const handleClose = (): void => {
     setOpenDialog(false);
+    clearRecentlyCreatedGroupId();
   };
 
   return (
@@ -159,6 +172,7 @@ function ContactFormDialog(): JSX.Element {
           value={memo}
           onChange={(e) => setMemo(e.target.value)}
         />
+        <GroupSelect value={groupId} onChange={setGroupId} />
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose}>キャンセル</Button>

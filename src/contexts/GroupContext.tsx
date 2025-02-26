@@ -29,6 +29,8 @@ import { AppError } from '../utils/errors';
  * @property {(message: string | null) => void} setErrorMessage -エラーメッセージを設定する関数。
  * @property {(string | null)} successMessage - 成功メッセージ。
  * @property {(message: string | null) => void} setSuccessMessage - 成功メッセージを設定する関数。
+ * @property {string | null} recentlyCreatedGroupId - 最近作成したグループのID。
+ * @property {() => void} clearRecentlyCreatedGroupId - 最近作成したグループのIDをクリアする関数。
  */
 export type GroupContextType = {
   groups: Group[];
@@ -41,6 +43,8 @@ export type GroupContextType = {
   setErrorMessage: (message: string | null) => void;
   successMessage: string | null;
   setSuccessMessage: (message: string | null) => void;
+  recentlyCreatedGroupId: string | null;
+  clearRecentlyCreatedGroupId: () => void;
 };
 
 // Context の作成
@@ -63,6 +67,9 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
   const [groups, setGroups] = useState<Group[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [recentlyCreatedGroupId, setRecentlyCreatedGroupId] = useState<
+    string | null
+  >(null);
 
   // GroupのCRUD処理(初回時ロード)
   useEffect(() => {
@@ -91,6 +98,7 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
     setTimeout(() => {
       setGroups(getGroups()); // 確実にデータを取得
     }, 500);
+    setRecentlyCreatedGroupId(group.id);
     return true;
   };
 
@@ -134,6 +142,14 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
     }
   }, []);
 
+  /**
+   * グループの編集を開始する関数。
+   * @returns {void} この関数は値を返さず、グループの編集を開始し、リストを更新する。
+   */
+  const clearRecentlyCreatedGroupId = (): void => {
+    setRecentlyCreatedGroupId(null);
+  };
+
   return (
     <GroupContext.Provider
       value={{
@@ -147,6 +163,8 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
         setErrorMessage,
         successMessage,
         setSuccessMessage,
+        recentlyCreatedGroupId,
+        clearRecentlyCreatedGroupId,
       }}
     >
       {children}
