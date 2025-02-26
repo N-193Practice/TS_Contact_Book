@@ -4,7 +4,7 @@ import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import { CSVContact } from '../../models/types';
 import { contactToCSV } from '../../utils/csvConverter';
-import { groupToCSV } from '../../utils/csvConverter'; // 追加
+import { groupToCSV } from '../../utils/csvConverter';
 import { Button } from '@mui/material';
 import styles from './CSVExport.module.css';
 

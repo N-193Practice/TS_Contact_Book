@@ -49,16 +49,18 @@ function ContactList(): JSX.Element {
   /**
    * 削除ボタンを押したときの処理（削除確認ダイアログを開く）
    * @param {string} id - 削除対象の連絡先ID
+   * @returns {void} この関数は値を返さず、削除ボタンを押したときに呼び出される関数。
    */
-  const handleDeleteClick = (id: string) => {
+  const handleDeleteClick = (id: string): void => {
     setDeleteTargetId(id);
     setConfirmOpen(true);
   };
 
   /**
    * 削除確認後の処理（連絡先削除を実行）
+   * @returns {void} この関数は値を返さず、削除確認ダイアログを閉じる。
    */
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = (): void => {
     if (deleteTargetId) {
       handleDeleteContact(deleteTargetId);
       setConfirmOpen(false);

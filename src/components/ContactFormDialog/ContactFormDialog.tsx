@@ -28,8 +28,7 @@ function ContactFormDialog(): JSX.Element {
     successMessage,
     setSuccessMessage,
   } = useContacts();
-  const { groups, recentlyCreatedGroupId, clearRecentlyCreatedGroupId } =
-    useGroups();
+  const { groups } = useGroups();
 
   // フォームの状態管理
   const [name, setName] = useState<string>('');
@@ -55,17 +54,11 @@ function ContactFormDialog(): JSX.Element {
     }
     setErrorMessage(null); // ダイアログを開くたびにエラーをリセット
     setSuccessMessage(null); // 成功メッセージもリセット
-  }, [
-    editContact,
-    openDialog,
-    recentlyCreatedGroupId,
-    groups,
-    setErrorMessage,
-    setSuccessMessage,
-  ]);
+  }, [editContact, openDialog, groups, setErrorMessage, setSuccessMessage]);
 
   /**
    * 保存ボタンを押したときに呼び出される関数
+   * @returns {void} この関数は値を返さず、ダイアログを開くだけ。
    */
   const handleSave = (): void => {
     const newContact = {
@@ -100,7 +93,6 @@ function ContactFormDialog(): JSX.Element {
     setSuccessMessage(
       editContact ? '連絡先を更新しました' : '新しい連絡先を追加しました'
     );
-    clearRecentlyCreatedGroupId();
     setOpenDialog(false); // 成功した場合のみフォームを閉じる
   };
 
@@ -110,7 +102,6 @@ function ContactFormDialog(): JSX.Element {
    */
   const handleClose = (): void => {
     setOpenDialog(false);
-    clearRecentlyCreatedGroupId();
   };
 
   return (

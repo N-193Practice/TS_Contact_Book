@@ -35,10 +35,12 @@ function Contacts(): JSX.Element {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
+  // エラーメッセージの表示
   const showError = useMemo(() => {
     return errorMessage && errorMessage.length > 0;
   }, [errorMessage]);
 
+  // 全選択ボタンの状態
   const isAllSelected = useMemo(() => {
     return (
       selectedContacts.length > 0 && selectedContacts.length === contacts.length
@@ -56,8 +58,9 @@ function Contacts(): JSX.Element {
 
   /**
    * 削除確認後の処理（連絡先削除を実行）
+   * @returns {void} この関数は値を返さず、削除確認ダイアログを閉じる。
    */
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = (): void => {
     if (deleteTargetId) {
       handleDeleteMultiple();
       setConfirmOpen(false);

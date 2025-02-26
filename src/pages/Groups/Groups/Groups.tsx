@@ -13,6 +13,11 @@ import { useGroups } from '../../../contexts/useGroups'; // **useGroups を使�
 import ConfirmDialog from '../../../components/ConfirmDialog/ConfirmDialog';
 import NotificationBanner from '../../../components/NotificationBanner/NotificationBanner';
 
+/**
+ * `Groups` コンポーネント
+ * グループの一覧画面。(削除も実行する)
+ * @returns {JSX.Element} グループの一覧画面の UI を返す。
+ */
 function Groups(): JSX.Element {
   const { groups, reloadGroups } = useGroups();
   const submit = useSubmit();
@@ -30,27 +35,28 @@ function Groups(): JSX.Element {
 
   // **初回レンダリング時にのみグループデータを取得**
   useEffect(() => {
-    console.log('🚀 [useEffect] reloadGroups を実行');
     reloadGroups();
   }, [reloadGroups]);
 
   useEffect(() => {
-    console.log('🚀 [useEffect] localGroups を更新:', groups);
     setLocalGroups([...groups]); // **新しい配列を作ることで変更を検知**
   }, [groups]);
 
   /**
    * 削除ボタンを押したときの処理
+   * @param {string} id - 削除対象のグループID
+   * @returns {void} この関数は値を返さず、削除ボタンを押したときに呼び出される関数。
    */
-  const handleDeleteClick = (id: string) => {
+  const handleDeleteClick = (id: string): void => {
     setDeleteTargetId(id);
     setConfirmOpen(true);
   };
 
   /**
    * 削除処理の実行
+   * @returns {void} この関数は値を返さず、削除確認ダイアログを閉じる。
    */
-  const handleConfirmDelete = () => {
+  const handleConfirmDelete = (): void => {
     if (deleteTargetId) {
       submit(null, {
         method: 'delete',

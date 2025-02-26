@@ -2,7 +2,12 @@ import { JSX } from 'react';
 import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-// NotificationBanner コンポーネントの型定義
+/**
+ * アラートのプロパティ
+ * @property {string} message - アラートのメッセージ。
+ * @property {'error' | 'warning' | 'info' | 'success'} severity - アラートのセマンティクス。
+ * @property {() => void} onClose - アラートを閉じるための関数。
+ */
 type NotificationBannerProps = {
   message: string;
   severity: 'error' | 'warning' | 'info' | 'success';
@@ -12,8 +17,8 @@ type NotificationBannerProps = {
 /**
  * `NotificationBanner` コンポーネント。
  * @returns {JSX.Element} アラート表示用の UI を返す。
- * @memberof NotificationBan
- * @name NotificationBanner
+ * @param {NotificationBannerProps} props - `NotificationBanner` のプロパティ。
+ * @returns {JSX.Element} `NotificationBanner` の UI を返す。
  */
 function NotificationBanner({
   message,

@@ -20,11 +20,15 @@ import { AppError } from '../utils/errors';
 /**
  * グループのコンテキスト。
  * @property {Group[]} groups - グループの配列。
+ * @property {(groups: Group[]) => void} setGroups - グループの配列を更新する関数。
  * @property {(group: Group) => boolean} addGroup - グループの追加を行う関数。
  * @property {(group: Group) => boolean} updateGroup - グループの更新を行う関数。
+ * @property {() => void} reloadGroups - グループのリストを再読み込みする関数。
  * @property {(id: string) => void} handleDeleteGroup - グループの削除を行う関数。
- * @property {string | null} recentlyCreatedGroupId - 最近作成したグループの ID。
- * @property {() => void} clearRecentlyCreatedGroupId - 最近作成したグループの ID をクリアする関数。
+ * @property {(string | null)} errorMessage - エラーメッセージ。
+ * @property {(message: string | null) => void} setErrorMessage -エラーメッセージを設定する関数。
+ * @property {(string | null)} successMessage - 成功メッセージ。
+ * @property {(message: string | null) => void} setSuccessMessage - 成功メッセージを設定する関数。
  */
 export type GroupContextType = {
   groups: Group[];
@@ -33,8 +37,6 @@ export type GroupContextType = {
   updateGroup: (group: Group) => boolean;
   reloadGroups: () => void;
   handleDeleteGroup: (id: string) => void;
-  recentlyCreatedGroupId: string | null;
-  clearRecentlyCreatedGroupId: () => void;
   errorMessage: string | null;
   setErrorMessage: (message: string | null) => void;
   successMessage: string | null;
@@ -59,9 +61,6 @@ type GroupProviderProps = {
  */
 function GroupProvider({ children }: GroupProviderProps): JSX.Element {
   const [groups, setGroups] = useState<Group[]>([]);
-  const [recentlyCreatedGroupId, setRecentlyCreatedGroupId] = useState<
-    string | null
-  >(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -83,20 +82,15 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
   const addGroup = (group: Group): boolean => {
     if (!validateGroup(group, groups)) return false;
 
-    console.log('追加前の groups:', groups);
-
     setGroups((prevGroups) => {
       const updatedGroups = [...prevGroups, group];
       saveGroups(updatedGroups);
-      console.log('追加後の groups:', updatedGroups);
       return updatedGroups;
     });
 
     setTimeout(() => {
-      console.log('1秒後の groups:', getGroups()); // 確認用
       setGroups(getGroups()); // 確実にデータを取得
     }, 500);
-    setRecentlyCreatedGroupId(group.id);
     return true;
   };
 
@@ -140,14 +134,6 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
     }
   }, []);
 
-  /**
-   * グループの編集を開始する関数。
-   * @returns {void} この関数は値を返さず、グループの編集を開始し、リストを更新する。
-   */
-  const clearRecentlyCreatedGroupId = (): void => {
-    setRecentlyCreatedGroupId(null);
-  };
-
   return (
     <GroupContext.Provider
       value={{
@@ -157,8 +143,6 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
         updateGroup,
         reloadGroups,
         handleDeleteGroup,
-        recentlyCreatedGroupId,
-        clearRecentlyCreatedGroupId,
         errorMessage,
         setErrorMessage,
         successMessage,

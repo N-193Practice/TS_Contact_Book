@@ -44,7 +44,7 @@ function GroupEdit(): JSX.Element {
   }, [data]);
 
   /**
-   * グループを更新する。
+   * グループを更新する関数。
    * @returns {void} 成功時はグループを更新し、ホームへ遷移する。
    */
   const handleUpdate = (): void => {

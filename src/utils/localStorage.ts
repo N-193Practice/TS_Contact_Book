@@ -80,7 +80,6 @@ function deleteContact(id: string): void {
  * @returns {Group[]} この関数はローカルストレージからグループを取得し、それらを返す。
  */
 function getGroups(): Group[] {
-  console.log('🚀 getGroups:', getFromStorage<Group>(GROUPS_STORAGE_KEY));
   return getFromStorage<Group>(GROUPS_STORAGE_KEY);
 }
 
@@ -90,9 +89,7 @@ function getGroups(): Group[] {
  * @returns {void} この関数は値を返さず、ローカルストレージにグループを保存する。
  */
 function saveGroups(groups: Group[]): void {
-  console.log('🚀 saveGroups:', groups);
   saveToStorage(GROUPS_STORAGE_KEY, groups);
-  console.log('🚀 saveGroups:', getGroups());
 }
 
 /**

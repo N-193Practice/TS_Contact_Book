@@ -11,7 +11,12 @@ import Typography from '@mui/material/Typography';
 
 import ApplicationHeader from '../../components/ApplicationHeader/ApplicationHeader';
 
-function ErrorPage() {
+/**
+ * `ErrorPage` コンポー��ント
+ * ルートに不正なパスが指定された場合の表示画面。
+ * @returns {JSX.Element} ルートに不正なパスが指定された場合の UI を返す。
+ */
+function ErrorPage(): JSX.Element {
   const routeError = useRouteError();
 
   let status: string = 'Error';

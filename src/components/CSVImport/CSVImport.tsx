@@ -29,8 +29,9 @@ function CSVImport(): JSX.Element | null {
   /**
    * CSVファイルを選択する関数。
    * @param {React.ChangeEvent<HTMLInputElement>} e - ファイルの選択イベント。
+   * @returns {void} この関数は値を返さず、ファイルを選択したときに呼び出される関数。
    */
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) {
       setErrorMessage('ファイルを選択してください');
