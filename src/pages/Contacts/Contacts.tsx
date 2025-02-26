@@ -1,4 +1,4 @@
-import { JSX, useMemo } from 'react';
+import { JSX, useMemo, useState } from 'react';
 import { useContacts } from '../../contexts/useContacts';
 import ContactList from '../../components/ContactList/ContactList';
 import SearchBar from '../../components/SearchBar/SearchBar';
@@ -11,7 +11,7 @@ import { IconButton, Button, Alert, AlertTitle } from '@mui/material';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import Grid from '@mui/material/Grid2';
 import { NavLink } from 'react-router';
-import { useLoaderData } from 'react-router';
+import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 
 /**
  * `Contacts` コンポーネント(このアプリケーションのホーム画面)
@@ -20,9 +20,8 @@ import { useLoaderData } from 'react-router';
  * @returns {JSX.Element} ホーム画面の UI を返す。
  */
 function Contacts(): JSX.Element {
-  const data = useLoaderData();
-
   const {
+    contacts,
     handleNewContact,
     handleDeleteMultiple,
     selectedContacts,
@@ -32,9 +31,39 @@ function Contacts(): JSX.Element {
     setErrorMessage,
   } = useContacts();
 
+  // 削除確認ダイアログの状態
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
   const showError = useMemo(() => {
     return errorMessage && errorMessage.length > 0;
   }, [errorMessage]);
+
+  const isAllSelected = useMemo(() => {
+    return (
+      selectedContacts.length > 0 && selectedContacts.length === contacts.length
+    );
+  }, [selectedContacts, contacts]);
+
+  /**
+   * 削除ボタンを押したときの処理（削除確認ダイアログを開く）
+   * @param {string} id - 削除対象の連絡先ID
+   */
+  const handleDeleteClick = (id: string) => {
+    setDeleteTargetId(id);
+    setConfirmOpen(true);
+  };
+
+  /**
+   * 削除確認後の処理（連絡先削除を実行）
+   */
+  const handleConfirmDelete = () => {
+    if (deleteTargetId) {
+      handleDeleteMultiple();
+      setConfirmOpen(false);
+      setDeleteTargetId(null);
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -80,7 +109,7 @@ function Contacts(): JSX.Element {
           {/** 連絡先一括削除ボタン */}
           <Button
             variant="contained"
-            onClick={handleDeleteMultiple}
+            onClick={() => handleDeleteClick(selectedContacts[0])}
             disabled={selectedContacts.length === 0}
             className={styles.deleteButton}
             color="error"
@@ -91,7 +120,7 @@ function Contacts(): JSX.Element {
           <Button
             variant="outlined"
             onClick={selectAllContacts}
-            disabled={selectedContacts.length === data.contacts.length}
+            disabled={isAllSelected}
             className={styles.selectAllButton}
           >
             連絡先の全選択
@@ -118,6 +147,14 @@ function Contacts(): JSX.Element {
       </Grid>
       {/* 連絡先追加・編集用ダイアログ */}
       <ContactFormDialog />
+      {/* 削除確認ダイアログ */}
+      <ConfirmDialog
+        open={confirmOpen}
+        title="連絡先削除確認"
+        message="この連絡先を削除してもよろしいですか？"
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 }

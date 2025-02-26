@@ -4,7 +4,7 @@ import { AppError } from '../utils/errors';
 
 export function useGroups(): GroupContextType {
   const context = useContext(GroupContext);
-  if (context === undefined) {
+  if (!context) {
     throw new AppError('useGroups must be used within a GroupProvider', 500);
   }
   return context;

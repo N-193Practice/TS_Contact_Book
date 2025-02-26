@@ -1,10 +1,7 @@
+import { CONTACTS_STORAGE_KEY, GROUPS_STORAGE_KEY } from './contacts';
 import { Contact } from '../models/types';
 import { Group } from '../models/types';
 import { AppError } from './errors';
-
-//ローカルストレージに保存されている連絡先、グループのデータを保持するためのキー。
-const CONTACTS_STORAGE_KEY = 'contacts';
-const GROUPS_STORAGE_KEY = 'groups';
 
 /**
  * ローカルストレージからデータを取得
@@ -83,6 +80,7 @@ function deleteContact(id: string): void {
  * @returns {Group[]} この関数はローカルストレージからグループを取得し、それらを返す。
  */
 function getGroups(): Group[] {
+  console.log('🚀 getGroups:', getFromStorage<Group>(GROUPS_STORAGE_KEY));
   return getFromStorage<Group>(GROUPS_STORAGE_KEY);
 }
 
@@ -92,7 +90,9 @@ function getGroups(): Group[] {
  * @returns {void} この関数は値を返さず、ローカルストレージにグループを保存する。
  */
 function saveGroups(groups: Group[]): void {
+  console.log('🚀 saveGroups:', groups);
   saveToStorage(GROUPS_STORAGE_KEY, groups);
+  console.log('🚀 saveGroups:', getGroups());
 }
 
 /**

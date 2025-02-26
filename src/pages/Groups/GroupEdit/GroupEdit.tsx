@@ -13,14 +13,20 @@ import styles from './GroupEdit.module.css';
 import Grid from '@mui/material/Grid2';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Group } from '../../../models/types';
-
+import NotificationBanner from '../../../components/NotificationBanner/NotificationBanner';
 /**
  * `GroupEdit` コンポーネント
  * グループの編集画面。
  * @returns {JSX.Element} グループの編集画面の UI を返す。
  */
 function GroupEdit(): JSX.Element {
-  const { updateGroup } = useGroups();
+  const {
+    updateGroup,
+    errorMessage,
+    setErrorMessage,
+    successMessage,
+    setSuccessMessage,
+  } = useGroups();
   const navigate = useNavigate();
   const [groupName, setGroupName] = useState('');
   const [group, setGroup] = useState<Group | null>(null);
@@ -44,14 +50,31 @@ function GroupEdit(): JSX.Element {
   const handleUpdate = (): void => {
     const currentGroup = groups.find((g) => g.id === group?.id);
     if (currentGroup && updateGroup({ ...currentGroup, name: groupName })) {
-      navigate('/groups');
+      setSuccessMessage('グループが更新されました');
+      setTimeout(() => navigate('/groups'), 1000);
     } else {
-      alert('既に同じグループ名が存在します');
+      setErrorMessage('既に同じグループ名が存在します');
     }
   };
 
   return (
     <div className={styles.container}>
+      {/* エラー表示 */}
+      {errorMessage && (
+        <NotificationBanner
+          message={errorMessage}
+          severity="error"
+          onClose={() => setErrorMessage(null)}
+        />
+      )}
+      {/* 成功メッセージ */}
+      {successMessage && (
+        <NotificationBanner
+          message={successMessage}
+          severity="success"
+          onClose={() => setSuccessMessage(null)}
+        />
+      )}
       <Paper elevation={3} className={styles.formContainer}>
         <Typography variant="h1" className={styles.title}>
           グループを編集

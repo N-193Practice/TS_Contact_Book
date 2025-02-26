@@ -28,11 +28,17 @@ import { AppError } from '../utils/errors';
  */
 export type GroupContextType = {
   groups: Group[];
+  setGroups: (groups: Group[]) => void;
   addGroup: (group: Group) => boolean;
   updateGroup: (group: Group) => boolean;
+  reloadGroups: () => void;
   handleDeleteGroup: (id: string) => void;
   recentlyCreatedGroupId: string | null;
   clearRecentlyCreatedGroupId: () => void;
+  errorMessage: string | null;
+  setErrorMessage: (message: string | null) => void;
+  successMessage: string | null;
+  setSuccessMessage: (message: string | null) => void;
 };
 
 // Context の作成
@@ -56,10 +62,17 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
   const [recentlyCreatedGroupId, setRecentlyCreatedGroupId] = useState<
     string | null
   >(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // GroupのCRUD処理(初回時ロード)
   useEffect(() => {
     setGroups(getGroups());
+  }, []);
+
+  // グループのリロード(無限ループ防ぐため)
+  const reloadGroups = useCallback(() => {
+    setGroups([...getGroups()]); // **新しい配列を作成**
   }, []);
 
   /**
@@ -70,12 +83,19 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
   const addGroup = (group: Group): boolean => {
     if (!validateGroup(group, groups)) return false;
 
+    console.log('追加前の groups:', groups);
+
     setGroups((prevGroups) => {
       const updatedGroups = [...prevGroups, group];
       saveGroups(updatedGroups);
+      console.log('追加後の groups:', updatedGroups);
       return updatedGroups;
     });
 
+    setTimeout(() => {
+      console.log('1秒後の groups:', getGroups()); // 確認用
+      setGroups(getGroups()); // 確実にデータを取得
+    }, 500);
     setRecentlyCreatedGroupId(group.id);
     return true;
   };
@@ -132,11 +152,17 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
     <GroupContext.Provider
       value={{
         groups,
+        setGroups,
         addGroup,
         updateGroup,
+        reloadGroups,
         handleDeleteGroup,
         recentlyCreatedGroupId,
         clearRecentlyCreatedGroupId,
+        errorMessage,
+        setErrorMessage,
+        successMessage,
+        setSuccessMessage,
       }}
     >
       {children}

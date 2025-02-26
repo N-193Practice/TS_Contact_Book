@@ -104,7 +104,6 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const listRefs = useRef<{ [key: string]: HTMLLIElement | null }>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
   // グループのコンテキストを取得
   const groupContext = useContext(GroupContext);
   const groups = useMemo(() => groupContext?.groups ?? [], [groupContext]);
@@ -213,9 +212,9 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * セレクトボックスの全選択解除を実装する関数。
    * @returns {void} この関数は値を返さず、全リストのチェックボックスにチェックを入れる。
    */
-  const selectAllContacts = (): void => {
+  const selectAllContacts = useCallback(() => {
     setSelectedContacts(contacts.map((contact) => contact.id));
-  };
+  }, [contacts]);
 
   /**
    * セレクトボックスの全選択解除を実装する関数。
@@ -371,14 +370,11 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    * @returns {void} この関数は値を返さず、連絡先削除し、リストを更新する。
    */
   const handleDeleteMultiple = (): void => {
-    if (selectedContacts.length === 0) {
-      setErrorMessage('削除する連絡先を選択してください');
-      return;
-    }
     selectedContacts.forEach((id) => deleteContact(id));
+    setSuccessMessage('選択した連絡先を削除しました。');
     setContacts(getContacts());
     setSelectedContacts([]);
-    setErrorMessage(null);
+    setSuccessMessage(null);
   };
 
   return (

@@ -8,7 +8,7 @@ import { AppError } from '../utils/errors';
  */
 export function useContacts(): ContactContextType {
   const context = useContext(ContactContext);
-  if (context === undefined) {
+  if (!context) {
     throw new AppError(
       'useContacts must be used within a ContactProvider',
       500

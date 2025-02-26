@@ -38,8 +38,6 @@ function CSVExport(): JSX.Element {
    * @returns {void} この関数は値を返さず、ローカルストレージからファイルを読み込む際に呼び出される。
    */
   const handleExport = (): void => {
-    console.log('エクスポート前のデータ:', contacts, groups);
-
     if (contacts.length === 0 && groups.length === 0) {
       setErrorMessage('エクスポートできるデータがありません');
       return;
@@ -53,8 +51,6 @@ function CSVExport(): JSX.Element {
 
     // **全データを統合して CSV に変換**
     const csvData = [...csvContacts, ...csvGroups];
-
-    console.log('変換後の CSVContacts:', csvData);
 
     // バリデーションチェック (連絡先は `fullName` と `phone` が必須)
     const validContacts: CSVContact[] = csvContacts.filter(

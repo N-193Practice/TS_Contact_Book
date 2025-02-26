@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import NotificationBanner from '../../../components/NotificationBanner/NotificationBanner';
 
 /**
  * `GroupNew` コンポーネント
@@ -20,30 +21,55 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
  * @returns {JSX.Element} 新規グループの作成画面の UI を返す。
  */
 function GroupNew(): JSX.Element {
-  const { addGroup } = useGroups();
+  const {
+    addGroup,
+    reloadGroups,
+    errorMessage,
+    setErrorMessage,
+    successMessage,
+    setSuccessMessage,
+  } = useGroups();
   const [groupName, setGroupName] = useState('');
   const navigate = useNavigate();
-
   /**
    * 新規グループを作成する。
    * @returns {void} 成功時はグループを作成し、ホームへ遷移する。
    */
   const handleCreate = (): void => {
     if (!groupName.trim()) {
-      alert('グループ名を入力してください');
+      setErrorMessage('グループ名を入力してください');
       return;
     }
 
     const newGroup = { id: uuidv4(), name: groupName.trim() };
     if (addGroup(newGroup)) {
-      navigate('/groups');
+      setSuccessMessage('グループが作成されました');
+      reloadGroups();
+      setTimeout(() => navigate('/groups'), 2000);
     } else {
-      alert('既に同じグループ名が存在します');
+      console.log('🚀 addGroup:', addGroup);
+      setErrorMessage('既に同じグループ名が存在します');
     }
   };
 
   return (
     <div className={styles.container}>
+      {/* エラー表示 */}
+      {errorMessage && (
+        <NotificationBanner
+          message={errorMessage}
+          severity="error"
+          onClose={() => setErrorMessage(null)}
+        />
+      )}
+      {/* 成功メッセージ */}
+      {successMessage && (
+        <NotificationBanner
+          message={successMessage}
+          severity="success"
+          onClose={() => setSuccessMessage(null)}
+        />
+      )}
       <Paper elevation={3} className={styles.formContainer}>
         <Typography variant="h1" className={styles.title}>
           新しいグループを作成

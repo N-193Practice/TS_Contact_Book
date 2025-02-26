@@ -42,18 +42,16 @@ function ContactFormDialog(): JSX.Element {
    * ない場合は新規作成モードとしてリセット。
    */
   useEffect(() => {
-    const selectedGroup =
-      recentlyCreatedGroupId || (editContact ? editContact.groupId : null);
     if (editContact) {
       setName(editContact.name);
       setPhone(editContact.phone);
       setMemo(editContact.memo || '');
-      setGroupId(selectedGroup);
+      setGroupId(editContact.groupId);
     } else {
       setName('');
       setPhone('');
       setMemo('');
-      setGroupId(selectedGroup);
+      setGroupId('');
     }
     setErrorMessage(null); // ダイアログを開くたびにエラーをリセット
     setSuccessMessage(null); // 成功メッセージもリセット
