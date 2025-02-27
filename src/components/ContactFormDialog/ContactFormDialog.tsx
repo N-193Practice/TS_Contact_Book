@@ -7,6 +7,7 @@ import {
   validateName,
   validatePhone,
 } from '../../utils/validation';
+import { MESSAGES } from '../../utils/message';
 import GroupSelect from '../GroupSelect/GroupSelect';
 import {
   Dialog,
@@ -94,8 +95,6 @@ function ContactFormDialog(): JSX.Element {
       [],
       !!editContact,
       setErrorMessage
-      // setErrorName,
-      // setErrorPhone,
     );
     if (!isValid) return;
 
@@ -107,7 +106,7 @@ function ContactFormDialog(): JSX.Element {
     }
 
     if (!success) {
-      setErrorMessage('入力内容にエラーがあります');
+      setErrorMessage(MESSAGES.COMMON.ERROR_CONTENT);
       navigate('/');
     }
 

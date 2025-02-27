@@ -34,7 +34,6 @@ export const csvToContact = (
     memo: csvData.memo || existingContact?.memo || '',
     groupId: group ? group.id : null, // **グループがある場合はIDをセット**
   };
-
   return contact;
 };
 

@@ -9,6 +9,7 @@ import styles from './CSVImport.module.css';
 import { Button, TextField, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { MESSAGES } from '../../utils/message';
 
 /**
  * `CSVImport` コンポーネント
@@ -34,7 +35,7 @@ function CSVImport(): JSX.Element | null {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) {
-      setErrorMessage('ファイルを選択してください');
+      setErrorMessage(MESSAGES.CSV.NO_SELECTED_FILE);
       return;
     }
     setFile(selectedFile);
@@ -57,14 +58,14 @@ function CSVImport(): JSX.Element | null {
    */
   const handleImport = (): void => {
     if (!file) {
-      setErrorMessage('ファイルを選択してください');
+      setErrorMessage(MESSAGES.CSV.NO_SELECTED_FILE);
       return;
     }
 
     const reader = new FileReader();
     reader.onload = (e) => {
       if (!e.target?.result) {
-        setErrorMessage('ファイルの読み込みに失敗しました');
+        setErrorMessage(MESSAGES.CSV.IMPORT_ERROR);
         return;
       }
 
@@ -82,7 +83,7 @@ function CSVImport(): JSX.Element | null {
             setErrorMessage
           );
           if (!isValid) {
-            setErrorMessage('CSVにエラーがあるため、インポートを中断しました');
+            setErrorMessage(MESSAGES.CSV.VALIDATION_ERROR);
             return;
           }
 

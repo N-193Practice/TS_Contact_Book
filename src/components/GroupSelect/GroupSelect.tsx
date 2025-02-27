@@ -24,7 +24,7 @@ function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
         value={groups.some((group) => group.id === value) ? value : ''}
         onChange={(e) => onChange(e.target.value || null)}
       >
-        <MenuItem value="">未選択</MenuItem>
+        <MenuItem value="">GROUPを選択してください</MenuItem>
         {groups.map((group) => (
           <MenuItem key={group.id} value={group.id}>
             {group.name}
@@ -38,7 +38,7 @@ function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
           component={Link}
           to="/groups/new"
         >
-          Groupを新規作成
+          GROUPを新規作成
         </Button>
         <Button
           variant="outlined"
@@ -47,7 +47,7 @@ function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
           to={value ? `/groups/edit/${value}` : ''}
           disabled={!value}
         >
-          Groupを編集
+          GROUPを編集
         </Button>
       </>
     </>

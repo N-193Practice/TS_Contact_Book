@@ -7,6 +7,7 @@ import { contactToCSV } from '../../utils/csvConverter';
 import { groupToCSV } from '../../utils/csvConverter';
 import { Button } from '@mui/material';
 import styles from './CSVExport.module.css';
+import { MESSAGES } from '../../utils/message';
 
 /**
  * `CSVExport` コンポーネント。
@@ -39,7 +40,7 @@ function CSVExport(): JSX.Element {
    */
   const handleExport = (): void => {
     if (contacts.length === 0 && groups.length === 0) {
-      setErrorMessage('エクスポートできるデータがありません');
+      setErrorMessage(MESSAGES.CSV.NO_DATA_IN_FILE);
       return;
     }
 
@@ -58,7 +59,7 @@ function CSVExport(): JSX.Element {
     );
 
     if (validContacts.length === 0 && csvGroups.length === 0) {
-      setErrorMessage('有効なデータがないため、エクスポートを中断しました');
+      setErrorMessage(MESSAGES.CSV.EXPORT_ERROR);
       return;
     }
 
@@ -79,7 +80,7 @@ function CSVExport(): JSX.Element {
     link.click();
     document.body.removeChild(link);
 
-    setSuccessMessage(`CSVエクスポートが完了しました！ (${fileName})`);
+    setSuccessMessage(`${MESSAGES.CSV.EXPORT_SUCCESS} (${fileName})`);
   };
 
   return (

@@ -1,5 +1,6 @@
 import { useState, useEffect, JSX } from 'react';
 import { useGroups } from '../../../contexts/useGroups';
+import { MESSAGES } from '../../../utils/message';
 import styles from './Group.module.css';
 import { useNavigate, useLoaderData, useSubmit } from 'react-router';
 import {
@@ -14,6 +15,7 @@ import Grid from '@mui/material/Grid2';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { GroupDTO } from '../../../utils/contactServices';
 import { Group } from '../../../models/types';
+import { validateGroup } from '../../../utils/validation';
 
 /**
  * `GroupのForm` コンポーネント
@@ -27,19 +29,33 @@ function GroupForm(): JSX.Element {
 
   const [group, setGroup] = useState<Group>({ id: '', name: '' });
 
+  const { groups, setErrorMessage, setSuccessMessage } = useGroups();
+  const [errorName, setErrorName] = useState<string>('');
+
   // データの初期化
   useEffect(() => {
     setGroup(data.group || { id: '', name: '' });
   }, [data]);
 
-  const { setErrorMessage, setSuccessMessage } = useGroups();
-
-  // グループ名の変更を反映するためのハンドラー
-  function groupNameChangeHandler(
+  /**
+   * `グループ名` の変更イベントハンドラ
+   * @param {React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>} event - イベントオブジェクト
+   * @returns {void} この関数は値を返さず、変更を反映する。
+   */
+  const groupNameChangeHandler = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
-    setGroup({ ...group, name: event.target.value });
-  }
+  ) => {
+    const newName = event.target.value;
+    setGroup({ ...group, name: newName });
+
+    // 入力時にリアルタイムでバリデーション
+    validateGroup(
+      { ...group, name: newName },
+      groups,
+      !!group.id,
+      setErrorName
+    );
+  };
 
   /**
    * グループを作成または編集する。
@@ -48,18 +64,17 @@ function GroupForm(): JSX.Element {
    * @returns {void} この関数は値を返さず、変更を反映する。
    */
   const handleSave = (): void => {
-    if (!group.name.trim()) {
-      setErrorMessage('グループ名を入力してください');
+    // 既存グループ一覧を渡してバリデーション実行
+    if (!validateGroup(group, groups, !!group.id, setErrorName)) {
+      setErrorMessage(MESSAGES.GROUP.NAME_REQUIRED);
       return;
     }
 
     if (group.id) {
-      // 編集の場合
-      setSuccessMessage('グループが更新されました');
-      submit(group, { action: `/groups/${group.id}/edit`, method: 'patch' });
+      setSuccessMessage(MESSAGES.GROUP.UPDATE_SUCCESS);
+      submit(group, { action: `/groups/edit/${group.id}`, method: 'patch' });
     } else {
-      // 新規作成の場合
-      setSuccessMessage('グループが作成されました');
+      setSuccessMessage(MESSAGES.GROUP.CREATE_SUCCESS);
       submit(group, { action: '/groups/new', method: 'post' });
     }
   };
@@ -75,6 +90,8 @@ function GroupForm(): JSX.Element {
           <Grid container spacing={2}>
             <Grid size={12}>
               <TextField
+                error={!!errorName}
+                helperText={errorName}
                 label="グループ名"
                 variant="standard"
                 fullWidth
@@ -87,6 +104,9 @@ function GroupForm(): JSX.Element {
                     </InputAdornment>
                   ),
                 }}
+                onBlur={() =>
+                  validateGroup(group, groups, !!group.id, setErrorName)
+                }
               />
             </Grid>
           </Grid>
@@ -97,6 +117,7 @@ function GroupForm(): JSX.Element {
               variant="contained"
               color="primary"
               fullWidth
+              disabled={!!errorName} // エラーがある場合はボタンを無効化
             >
               {group.id ? '更新' : '作成'}
             </Button>

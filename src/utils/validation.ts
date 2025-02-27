@@ -21,14 +21,17 @@ export const validateGroup = (
     setErrorMessage('グループ名は必須です');
     return false;
   }
+
   // グループの名前の重複チェック
   const isDuplicate = existingGroups.some(
-    (g) => g.name === trimmedName && (!isEdit || g.id !== group.id)
+    (g) => g.name.trim() === trimmedName && (!isEdit || g.id !== group.id)
   );
+
   if (isDuplicate) {
     setErrorMessage('このグループ名はすでに存在します');
     return false;
   }
+
   setErrorMessage('');
   return true;
 };

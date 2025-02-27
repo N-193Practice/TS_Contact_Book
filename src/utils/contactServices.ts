@@ -8,6 +8,7 @@ import {
   deleteGroup,
   updateGroup,
 } from './localStorage';
+import { AppError } from './errors';
 
 /**
  * 連絡先のデータを取得するための DTO
@@ -48,7 +49,7 @@ export function getContactsEdit({ params }: LoaderFunctionArgs): ContactsDTO {
     contacts.find((contact) => contact.id === selectedContactId) || null;
 
   if (!selectedContact) {
-    throw new Error(`Contact with ID ${selectedContactId} not found`);
+    throw new AppError(`Contact with ID ${selectedContactId} not found`);
   }
 
   const contactsDTO: ContactsDTO = {
@@ -104,7 +105,7 @@ export async function groupAction({
 }: LoaderFunctionArgs): Promise<Response> {
   const method = request.method?.toString() || null;
   if (!method) {
-    throw new Error('Action is required');
+    throw new AppError('Action is required');
   }
   if (method === 'POST') {
     const formData = await request.formData();
@@ -127,7 +128,7 @@ export async function groupAction({
     }
     deleteGroup(groupId);
   } else {
-    throw new Error(`Invalid action: ${method}`);
+    throw new AppError(`Invalid action: ${method}`);
   }
   return redirect('/groups');
 }
@@ -176,7 +177,7 @@ export function getGroup({ params }: LoaderFunctionArgs): GroupDTO {
   const groups = getGroups();
   const group = groups.find((group) => group.id === groupId);
   if (!group) {
-    throw new Error(`Group with ID ${groupId} not found`);
+    throw new AppError(`Group with ID ${groupId} not found`);
   }
 
   // 編集

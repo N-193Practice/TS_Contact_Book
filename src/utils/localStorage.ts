@@ -1,4 +1,4 @@
-import { CONTACTS_STORAGE_KEY, GROUPS_STORAGE_KEY } from './contacts';
+import { CONTACTS_STORAGE_KEY, GROUPS_STORAGE_KEY } from './const';
 import { v4 as uuidv4 } from 'uuid';
 import { Contact } from '../models/types';
 import { Group } from '../models/types';

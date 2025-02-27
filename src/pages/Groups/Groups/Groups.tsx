@@ -7,11 +7,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
-
 import styles from './Groups.module.css';
 import { useGroups } from '../../../contexts/useGroups';
 import ConfirmDialog from '../../../components/ConfirmDialog/ConfirmDialog';
 import NotificationBanner from '../../../components/NotificationBanner/NotificationBanner';
+import { MESSAGES } from '../../../utils/message';
 
 /**
  * `Groups` コンポーネント
@@ -65,7 +65,7 @@ function Groups(): JSX.Element {
 
       reloadGroups(); // **削除後にグループを更新**
 
-      setMessage('グループを削除しました。');
+      setMessage(MESSAGES.GROUP.DELETE_SUCCESS);
       setMessageSeverity('success');
     }
     setConfirmOpen(false);
