@@ -105,7 +105,7 @@ function CSVImport(): JSX.Element | null {
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       {/* ファイル選択 */}
       <Button
         variant="contained"

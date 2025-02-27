@@ -1,4 +1,4 @@
-import { JSX, useMemo, useState } from 'react';
+import { JSX, useEffect, useMemo, useState } from 'react';
 import { useContacts } from '../../contexts/useContacts';
 import ContactList from '../../components/ContactList/ContactList';
 import SearchBar from '../../components/SearchBar/SearchBar';
@@ -7,11 +7,13 @@ import ContactFormDialog from '../../components/ContactFormDialog/ContactFormDia
 import CSVImport from '../../components/CSVImport/CSVImport';
 import CSVExport from '../../components/CSVExport/CSVExport';
 import styles from './Contacts.module.css';
-import { IconButton, Button, Alert, AlertTitle } from '@mui/material';
+import { IconButton, Button } from '@mui/material';
+import NotificationBanner from '../../components/NotificationBanner/NotificationBanner';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import Grid from '@mui/material/Grid2';
-import { NavLink } from 'react-router';
+import { NavLink, useLoaderData } from 'react-router';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
+import { ContactsDTO } from '../../utils/contactServices';
 
 /**
  * `Contacts` コンポーネント(このアプリケーションのホーム画面)
@@ -22,6 +24,7 @@ import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 function Contacts(): JSX.Element {
   const {
     contacts,
+    setContacts,
     handleNewContact,
     handleDeleteMultiple,
     selectedContacts,
@@ -29,16 +32,42 @@ function Contacts(): JSX.Element {
     deselectAllContacts,
     errorMessage,
     setErrorMessage,
+    successMessage,
+    setSuccessMessage,
   } = useContacts();
+
+  const contactsData: ContactsDTO = useLoaderData();
+
+  // 連絡先一覧の表示を更新する。
+  useEffect(() => {
+    if (contactsData.contacts) {
+      setContacts(contactsData.contacts);
+    }
+  }, [contactsData.contacts, setContacts]);
 
   // 削除確認ダイアログの状態
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
-  // エラーメッセージの表示
-  const showError = useMemo(() => {
-    return errorMessage && errorMessage.length > 0;
-  }, [errorMessage]);
+  // 通知メッセージの状態
+  const [message, setMessage] = useState<string | null>(null);
+  const [messageSeverity, setMessageSeverity] = useState<
+    'success' | 'error' | 'info'
+  >('info');
+
+  // 通知メッセージの設定
+  useEffect(() => {
+    if (successMessage) {
+      setMessage(successMessage);
+      setMessageSeverity('success');
+      setSuccessMessage(null);
+    }
+    if (errorMessage) {
+      setMessage(errorMessage);
+      setMessageSeverity('error');
+      setErrorMessage(null);
+    }
+  }, [successMessage, errorMessage, setSuccessMessage, setErrorMessage]);
 
   // 全選択ボタンの状態
   const isAllSelected = useMemo(() => {
@@ -50,8 +79,9 @@ function Contacts(): JSX.Element {
   /**
    * 削除ボタンを押したときの処理（削除確認ダイアログを開く）
    * @param {string} id - 削除対象の連絡先ID
+   * @returns {void} この関数は値を返さず、削除ボタンを押したときに呼び出される関数。
    */
-  const handleDeleteClick = (id: string) => {
+  const handleDeleteClick = (id: string): void => {
     setDeleteTargetId(id);
     setConfirmOpen(true);
   };
@@ -71,14 +101,13 @@ function Contacts(): JSX.Element {
   return (
     <div className={styles.container}>
       {/** エラーアラート */}
-      <Alert
-        className={`${styles.errorAlert} ${showError ? styles.show : ''}`}
-        severity="error"
-        onClose={() => setErrorMessage('')}
-      >
-        <AlertTitle>Error</AlertTitle>
-        {errorMessage}
-      </Alert>
+      {message && (
+        <NotificationBanner
+          message={message}
+          severity={messageSeverity}
+          onClose={() => setMessage(null)}
+        />
+      )}
       <header className={styles.header}>
         {/** ヘッダー */}
         <div className={styles.contactsManagement}>

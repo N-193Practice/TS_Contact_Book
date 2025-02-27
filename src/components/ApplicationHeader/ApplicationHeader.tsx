@@ -1,10 +1,11 @@
+import { JSX } from 'react';
 import { NavLink, useLocation } from 'react-router';
 import styles from './ApplicationHeader.module.css';
 import { Button, Typography } from '@mui/material';
 
 /**
  * `ApplicationHeader` コンポーネント
- * アプリケーションのヘッダー部分を表示する。
+ * アプリケーションのヘッダー部分を表示する。(タイトル、Group/Contactのページへのナビゲーションボタン)
  * @returns {JSX.Element} ヘッダー部分の UI を返す。
  */
 function ApplicationHeader(): JSX.Element {

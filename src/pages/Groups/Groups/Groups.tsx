@@ -9,14 +9,14 @@ import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 
 import styles from './Groups.module.css';
-import { useGroups } from '../../../contexts/useGroups'; // **useGroups を使用**
+import { useGroups } from '../../../contexts/useGroups';
 import ConfirmDialog from '../../../components/ConfirmDialog/ConfirmDialog';
 import NotificationBanner from '../../../components/NotificationBanner/NotificationBanner';
 
 /**
  * `Groups` コンポーネント
- * グループの一覧画面。(削除も実行する)
- * @returns {JSX.Element} グループの一覧画面の UI を返す。
+ * 新規グループの作成画面。
+ * @returns {JSX.Element} 新規グループの作成画面の UI を返す。
  */
 function Groups(): JSX.Element {
   const { groups, reloadGroups } = useGroups();
@@ -43,8 +43,8 @@ function Groups(): JSX.Element {
   }, [groups]);
 
   /**
-   * 削除ボタンを押したときの処理
-   * @param {string} id - 削除対象のグループID
+   * 削除ボタンを押したときの処理をする関数。
+   * @param {string} id - 削除対象のグループID。
    * @returns {void} この関数は値を返さず、削除ボタンを押したときに呼び出される関数。
    */
   const handleDeleteClick = (id: string): void => {
@@ -53,8 +53,8 @@ function Groups(): JSX.Element {
   };
 
   /**
-   * 削除処理の実行
-   * @returns {void} この関数は値を返さず、削除確認ダイアログを閉じる。
+   * 削除処理の実行する関数。
+   * @returns {void} この関数は値を返さず、削除処理が実行される。
    */
   const handleConfirmDelete = (): void => {
     if (deleteTargetId) {

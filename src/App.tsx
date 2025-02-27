@@ -4,8 +4,7 @@ import { GroupProvider } from './contexts/GroupContext';
 import RootLayout from './pages/RootLayout/RootLayout';
 import Groups from './pages/Groups/Groups/Groups';
 import Contacts from './pages/Contacts/Contacts';
-import GroupNew from './pages/Groups/GroupNew/GroupNew';
-import GroupEdtit from './pages/Groups/GroupEdit/GroupEdit';
+import Group from './pages/Groups/Group/Group';
 import ErrorPage from './pages/ErrorPage/ErrorPage';
 import {
   getContactsList,
@@ -13,7 +12,7 @@ import {
   getContactsNew,
   getGroupsList,
   groupAction,
-  getGroupEdit,
+  getGroup,
 } from './utils/contactServices';
 
 // ルーターの作成
@@ -49,12 +48,15 @@ const router = createBrowserRouter([
       },
       {
         path: 'groups/new',
-        element: <GroupNew />,
+        element: <Group />,
+        loader: getGroup,
+        action: groupAction,
       },
       {
         path: 'groups/edit/:id',
-        element: <GroupEdtit />,
-        loader: getGroupEdit,
+        element: <Group />,
+        loader: getGroup,
+        action: groupAction,
       },
     ],
   },

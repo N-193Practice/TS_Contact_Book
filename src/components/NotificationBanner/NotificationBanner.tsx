@@ -1,6 +1,7 @@
 import { JSX } from 'react';
 import { Alert, Collapse, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import styles from './NotificationBanner.module.css';
 
 /**
  * アラートのプロパティ
@@ -28,6 +29,7 @@ function NotificationBanner({
   return (
     <Collapse in={!!message}>
       <Alert
+        className={styles.notificationBanner}
         severity={severity}
         action={
           <IconButton size="small" onClick={onClose}>

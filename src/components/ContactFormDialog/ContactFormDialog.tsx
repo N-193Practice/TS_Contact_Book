@@ -2,9 +2,12 @@ import { useState, useEffect, JSX } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
-import { validateContact } from '../../utils/validation';
+import {
+  validateContact,
+  validateName,
+  validatePhone,
+} from '../../utils/validation';
 import GroupSelect from '../GroupSelect/GroupSelect';
-import NotificationBanner from '../NotificationBanner/NotificationBanner';
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +16,7 @@ import {
   TextField,
   Button,
 } from '@mui/material';
+import { useNavigate } from 'react-router';
 /**
  * `ContactFormDialog` コンポーネント
  * 連絡先の新規作成および編集用のダイアログ。
@@ -24,11 +28,12 @@ function ContactFormDialog(): JSX.Element {
     editContact,
     addContact,
     updateContact,
-    errorMessage,
     setErrorMessage,
-    successMessage,
     setSuccessMessage,
   } = useContacts();
+
+  const navigate = useNavigate();
+
   const { groups, recentlyCreatedGroupId, clearRecentlyCreatedGroupId } =
     useGroups();
 
@@ -37,6 +42,9 @@ function ContactFormDialog(): JSX.Element {
   const [phone, setPhone] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
   const [groupId, setGroupId] = useState<string | null>(null);
+
+  const [errorName, setErrorName] = useState<string>('');
+  const [errorPhone, setErrorPhone] = useState<string>('');
 
   /**
    * `editContact` がある場合は編集モードとしてデータをセット。
@@ -86,6 +94,8 @@ function ContactFormDialog(): JSX.Element {
       [],
       !!editContact,
       setErrorMessage
+      // setErrorName,
+      // setErrorPhone,
     );
     if (!isValid) return;
 
@@ -98,7 +108,7 @@ function ContactFormDialog(): JSX.Element {
 
     if (!success) {
       setErrorMessage('入力内容にエラーがあります');
-      return;
+      navigate('/');
     }
 
     setSuccessMessage(
@@ -106,6 +116,7 @@ function ContactFormDialog(): JSX.Element {
     );
     clearRecentlyCreatedGroupId();
     setOpenDialog(false); // 成功した場合のみフォームを閉じる
+    navigate('/');
   };
 
   /**
@@ -131,37 +142,27 @@ function ContactFormDialog(): JSX.Element {
         {editContact ? '連絡先を編集' : '新しい連絡先を追加'}
       </DialogTitle>
       <DialogContent>
-        {/* エラー表示 */}
-        {errorMessage && (
-          <NotificationBanner
-            message={errorMessage}
-            severity="error"
-            onClose={() => setErrorMessage(null)}
-          />
-        )}
-        {/* 成功メッセージ */}
-        {successMessage && (
-          <NotificationBanner
-            message={successMessage}
-            severity="success"
-            onClose={() => setSuccessMessage(null)}
-          />
-        )}
         <TextField
+          error={!!errorName}
+          helperText={errorName}
           fullWidth
           label="名前"
           variant="filled"
           margin="normal"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onBlur={() => validateName(name, setErrorName)}
         />
         <TextField
+          error={!!errorPhone}
+          helperText={errorPhone}
           fullWidth
           label="電話番号"
           variant="filled"
           margin="normal"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
+          onBlur={() => validatePhone(phone, setErrorPhone)}
         />
         <TextField
           multiline

@@ -1,3 +1,19 @@
-.fileName {
-  min-width: 250px;
+.container {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  height: 40px;
+}
+
+.fileInput {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fileInput input {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  height: 40px;
 }

@@ -29,6 +29,7 @@ export const validateGroup = (
     setErrorMessage('このグループ名はすでに存在します');
     return false;
   }
+  setErrorMessage('');
   return true;
 };
 
@@ -44,38 +45,83 @@ export const validateContact = (
   contact: Contact,
   exisitingContacts: Contact[] = [],
   isEdit: boolean = false,
-  setErrorMessage: (message: string) => void = () => {}
+  setErrorName: (message: string) => void = () => {},
+  setErrorPhone: (message: string) => void = () => {}
 ): boolean => {
-  // 空白のチェック
-  const trimmedName = contact.name.trim();
-  const trimmedPhone = contact.phone.trim();
-  if (!trimmedName || !trimmedPhone) {
-    setErrorMessage('名前と電話番号は必須です');
+  const isValidPhone = validatePhone(contact.phone, setErrorPhone);
+  const isValidName = validateName(contact.name, setErrorName);
+  if (isEdit) {
+    const isDuplicate = exisitingContacts.some(
+      (c) => c.name === contact.name && c.id !== contact.id
+    );
+    if (isDuplicate) {
+      setErrorName('この名前の連絡先はすでに存在します');
+      return false;
+    }
+  }
+  return isValidPhone && isValidName;
+};
+
+/**
+ * 連絡先の名前が重複しているかどうかをチェックする関数
+ * @param name
+ * @param contacts
+ * @returns
+ */
+export const nameIsDuplicated = (
+  name: string,
+  contacts: Contact[]
+): boolean => {
+  const trimmedName = name.trim();
+  return contacts.some((c) => c.name === trimmedName);
+};
+
+/**
+ * 名前のバリデーションを行う
+ *
+ * @param name
+ * @param setErrorMessage
+ * @returns
+ */
+export const validateName = (
+  name: string,
+  setErrorMessage: (name: string) => void
+): boolean => {
+  if (!name || name.trim() === '') {
+    setErrorMessage('名前は必須です');
     return false;
   }
+  setErrorMessage('');
+  return true;
+};
 
-  //電話番号のチェック(ハイフン除く10-11桁)
-  if (!/^[0-9-]+$/.test(trimmedPhone)) {
+/**
+ * 電話番号のバリデーションを行う
+ *
+ * @param phone
+ * @param setErrorMessage
+ * @returns
+ */
+export const validatePhone = (
+  phone: string,
+  setErrorMessage: (phone: string) => void
+): boolean => {
+  if (!phone || phone.trim() === '') {
+    setErrorMessage('電話番号は必須です');
+    return false;
+  }
+  if (!/^[0-9-]+$/.test(phone)) {
     setErrorMessage('電話番号は半角数字のみ入力してください');
     return false;
   }
-  //電話番号の先頭には0を含めることができないため、ハイフンを削除してチェックする
-  const strippedNumber = trimmedPhone.replace(/-/g, '');
+  const strippedNumber = phone.replace(/-/g, '');
   if (!/^0\d{9,10}$/.test(strippedNumber)) {
     setErrorMessage(
       '電話番号は半角数字0から始まる10桁以上11桁以内の数字で入力してください'
     );
     return false;
   }
-
-  // 連絡先名前の重複チェック(新規・編集の際)
-  const isDuplicate = exisitingContacts.some(
-    (c) => c.name === trimmedName && (!isEdit || c.id !== contact.id)
-  );
-  if (isDuplicate) {
-    setErrorMessage('この名前の連絡先はすでに存在します');
-    return false;
-  }
+  setErrorMessage('');
   return true;
 };
 

@@ -1,4 +1,4 @@
-import { JSX, useEffect, useState } from 'react';
+import { JSX, useState } from 'react';
 import { useContacts } from '../../contexts/useContacts';
 import {
   List,
@@ -25,14 +25,12 @@ import NotificationBanner from '../../components/NotificationBanner/Notification
 
 function ContactList(): JSX.Element {
   const {
-    contacts,
     groupedContacts,
     listRefs,
     selectedContacts,
     handleEditContact,
     handleDeleteContact,
     handleMultipleSelected,
-    setContacts,
     successMessage,
     setSuccessMessage,
   } = useContacts();
@@ -40,11 +38,6 @@ function ContactList(): JSX.Element {
   // 削除確認ダイアログの状態
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
-
-  useEffect(() => {
-    // グループ化された連絡先リストを作成
-    setContacts(contacts || []);
-  }, [contacts, setContacts]);
 
   /**
    * 削除ボタンを押したときの処理（削除確認ダイアログを開く）

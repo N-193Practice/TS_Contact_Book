@@ -1,14 +1,20 @@
 import { redirect, type LoaderFunctionArgs } from 'react-router';
 
 import { Contact, Group } from '../models/types';
-import { getContacts, getGroups, deleteGroup } from './localStorage';
+import {
+  getContacts,
+  getGroups,
+  createGroup,
+  deleteGroup,
+  updateGroup,
+} from './localStorage';
 
 /**
  * 連絡先のデータを取得するための DTO
  * @property {Contact | null} selectedContact - 選択された連絡先
  * @property {Contact[]} contacts - 連絡先のリスト
  */
-interface ContactsDTO {
+export interface ContactsDTO {
   selectedContact: Contact | null;
   contacts: Contact[];
   groups: Group[];
@@ -92,12 +98,37 @@ export function getGroupsList(): Group[] {
  *
  * @returns {Group} グループのリスト
  */
-export function groupAction({ params }: LoaderFunctionArgs): Response {
-  const groupId = params.id?.toString() || null;
-  if (!groupId) {
-    throw new Error('Group ID is required');
+export async function groupAction({
+  params,
+  request,
+}: LoaderFunctionArgs): Promise<Response> {
+  const method = request.method?.toString() || null;
+  if (!method) {
+    throw new Error('Action is required');
   }
-  deleteGroup(groupId);
+  if (method === 'POST') {
+    const formData = await request.formData();
+    const group: Group = {
+      id: formData.get('id')?.toString() || '',
+      name: formData.get('name')?.toString() || '',
+    };
+    createGroup(group);
+  } else if (method === 'PATCH') {
+    const formData = await request.formData();
+    const group: Group = {
+      id: formData.get('id')?.toString() || '',
+      name: formData.get('name')?.toString() || '',
+    };
+    updateGroup(group);
+  } else if (method === 'DELETE') {
+    const groupId = params.id?.toString() || null;
+    if (!groupId) {
+      throw new Error('Group ID is required');
+    }
+    deleteGroup(groupId);
+  } else {
+    throw new Error(`Invalid action: ${method}`);
+  }
   return redirect('/groups');
 }
 
@@ -107,9 +138,20 @@ export function groupAction({ params }: LoaderFunctionArgs): Response {
  * @property {Group} group - 編集対象のグループ
  * @property {Group[]} groups - グループのリスト
  */
-interface GroupEditDTO {
+export interface GroupDTO {
   group: Group;
   groups: Group[];
+}
+
+export function getGroupNew(): GroupDTO {
+  const groupDTO: GroupDTO = {
+    group: {
+      id: '',
+      name: '',
+    },
+    groups: [],
+  };
+  return groupDTO;
 }
 
 /**
@@ -118,10 +160,18 @@ interface GroupEditDTO {
  * @param {LoaderFunctionArgs} params - パラメータ
  * @returns {Group} グループのリスト
  */
-export function getGroupEdit({ params }: LoaderFunctionArgs): GroupEditDTO {
+export function getGroup({ params }: LoaderFunctionArgs): GroupDTO {
   const groupId = params.id?.toString() || null;
   if (!groupId) {
-    throw new Error('Group ID is required');
+    // 新規作成
+    const groupDTO: GroupDTO = {
+      group: {
+        id: '',
+        name: '',
+      },
+      groups: [],
+    };
+    return groupDTO;
   }
   const groups = getGroups();
   const group = groups.find((group) => group.id === groupId);
@@ -129,7 +179,8 @@ export function getGroupEdit({ params }: LoaderFunctionArgs): GroupEditDTO {
     throw new Error(`Group with ID ${groupId} not found`);
   }
 
-  const groupEditDTO: GroupEditDTO = {
+  // 編集
+  const groupEditDTO: GroupDTO = {
     group: group,
     groups: groups,
   };

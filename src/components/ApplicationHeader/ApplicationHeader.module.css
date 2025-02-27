@@ -16,12 +16,13 @@
 /* タイトル */
 .title {
   grid-area: title;
-  font-size: 3rem;
+  font-size: 4rem;
   font-weight: bold;
   color: white;
   text-align: center;
-  padding: 8px;
+  padding: 5px;
   flex-grow: 1;
+  margin-right: 80px;
 }
 
 /* ナビゲーションセクション */

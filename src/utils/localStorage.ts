@@ -1,4 +1,5 @@
 import { CONTACTS_STORAGE_KEY, GROUPS_STORAGE_KEY } from './contacts';
+import { v4 as uuidv4 } from 'uuid';
 import { Contact } from '../models/types';
 import { Group } from '../models/types';
 import { AppError } from './errors';
@@ -93,6 +94,30 @@ function saveGroups(groups: Group[]): void {
 }
 
 /**
+ * グループをローカルストレージに作成する。
+ * @param {Group} group - 作成するグループ。
+ * @returns {Group} 作成されたグループ。
+ */
+function createGroup(group: Group): Group {
+  const groups = getGroups();
+  const newGroup = { ...group, id: uuidv4() };
+  saveGroups([...groups, newGroup]);
+  return newGroup;
+}
+
+/**
+ * グループをローカルストレージに保存する。
+ * @param {Group} group - 保存するグループ。
+ * @returns {void} この関数は値を返さず、ローカルストレージにグループを保存する。
+ * @throws {AppError} グループが見つからない場合、エラーをスローする。
+ */
+function updateGroup(group: Group): void {
+  const groups = getGroups();
+  const updatedGroups = groups.map((g) => (g.id === group.id ? group : g));
+  saveGroups(updatedGroups);
+}
+
+/**
  * グループをローカルストレージから削除する。
  * @param {string} id - 削除するグループの ID。
  * @returns {void} この関数は値を返さず、ローカルストレージからグループを削除し、リストを更新する。
@@ -138,7 +163,9 @@ export {
   saveContacts,
   deleteContact,
   getGroups,
+  createGroup,
   saveGroups,
+  updateGroup,
   deleteGroup,
   resetGroupIdInContacts,
 };

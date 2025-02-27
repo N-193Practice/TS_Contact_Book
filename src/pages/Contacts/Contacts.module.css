@@ -23,19 +23,37 @@
 .contactsManagement {
   display: grid;
   grid-template-areas:
-    'searchContacts searchContacts newContactButton'
-    'contactsImportExport contactsImportExport empty';
-  grid-template-columns: 1fr 1fr auto;
+    'searchContacts searchContacts searchContacts newContactButton'
+    'contactsImportExport contactsImportExport contactsImportExport empty';
+  grid-template-columns: 1fr 1fr 1fr auto;
   row-gap: 10px;
   width: 60%;
 }
 
+@media (max-width: 1280px) {
+  .contactsManagement {
+    width: 80%;
+  }
+}
+
+@media (max-width: 960px) {
+  .contactsManagement {
+    grid-template-areas:
+      'searchContacts searchContacts newContactButton'
+      'contactsImportExport contactsImportExport contactsImportExport';
+    grid-template-columns: 1fr 1fr auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 100%;
+  }
+}
+/* 検索バーのコンテナ（中央配置） */
 .searchContacts {
   grid-area: searchContacts;
   justify-content: center;
   display: flex;
   align-items: center;
-  width: 110%;
+  width: 100%;
 }
 
 .newContactButton {
@@ -52,8 +70,8 @@
   align-items: center;
   justify-content: center;
   vertical-align: middle;
-  width: 100px; /* アイコンのサイズを変更 */
-  height: 100px; /* アイコンのサイズを変更 */
+  width: 120px; /* アイコンのサイズを変更 */
+  height: 120px; /* アイコンのサイズを変更 */
 }
 /* アイコンのサイズを変更 */
 .addContactIcon {
@@ -66,6 +84,8 @@
   display: flex;
   column-gap: 10px;
   justify-content: center;
+  align-items: center;
+  height: 40px;
 }
 
 .contactListController {

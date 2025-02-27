@@ -83,16 +83,14 @@ function CSVExport(): JSX.Element {
   };
 
   return (
-    <>
-      <Button
-        className={styles.exportButton}
-        variant="contained"
-        component="label"
-        onClick={handleExport}
-      >
-        データを出力する
-      </Button>
-    </>
+    <Button
+      className={styles.exportButton}
+      variant="contained"
+      component="label"
+      onClick={handleExport}
+    >
+      データを出力する
+    </Button>
   );
 }
 

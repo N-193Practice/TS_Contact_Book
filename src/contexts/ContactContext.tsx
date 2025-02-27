@@ -238,6 +238,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     }
     saveContacts(updatedContacts);
     setContacts(updatedContacts);
+
     return true;
   };
 
