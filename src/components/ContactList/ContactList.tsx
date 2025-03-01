@@ -1,5 +1,6 @@
 import { JSX, useState } from 'react';
 import { useContacts } from '../../contexts/useContacts';
+import { useGroups } from '../../contexts/useGroups';
 import {
   List,
   ListItem,
@@ -35,10 +36,18 @@ function ContactList(): JSX.Element {
     setSuccessMessage,
   } = useContacts();
 
+  const { groups } = useGroups();
+
   // 削除確認ダイアログの状態
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
+  // 紐づいているグループ名を取得
+  const getGroupName = (groupId: string): string => {
+    if (!groupId) return '';
+    const group = groups.find((g) => g.id === groupId);
+    return group?.name || '';
+  };
   /**
    * 削除ボタンを押したときの処理（削除確認ダイアログを開く）
    * @param {string} id - 削除対象の連絡先ID
@@ -104,6 +113,10 @@ function ContactList(): JSX.Element {
                       {contact.memo}
                     </Typography>
                   )}
+                  <Typography variant="h5">
+                    グループ名:
+                    {contact.groupId ? getGroupName(contact.groupId) : ''}
+                  </Typography>
                   {/* 編集ボタン */}
                   <IconButton
                     onClick={() => handleEditContact(contact)}

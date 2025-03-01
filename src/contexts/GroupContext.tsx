@@ -7,15 +7,8 @@ import {
   useCallback,
 } from 'react';
 import { Group } from '../models/types';
-import {
-  getGroups,
-  saveGroups,
-  deleteGroup,
-  getContacts,
-  saveContacts,
-} from '../utils/localStorage';
+import { getGroups, saveGroups } from '../utils/localStorage';
 import { validateGroup } from '../utils/validation';
-import { AppError } from '../utils/errors';
 
 /**
  * グループのコンテキスト。
@@ -24,7 +17,6 @@ import { AppError } from '../utils/errors';
  * @property {(group: Group) => boolean} addGroup - グループの追加を行う関数。
  * @property {(group: Group) => boolean} updateGroup - グループの更新を行う関数。
  * @property {() => void} reloadGroups - グループのリストを再読み込みする関数。
- * @property {(id: string) => void} handleDeleteGroup - グループの削除を行う関数。
  * @property {(string | null)} errorMessage - エラーメッセージ。
  * @property {(message: string | null) => void} setErrorMessage -エラーメッセージを設定する関数。
  * @property {(string | null)} successMessage - 成功メッセージ。
@@ -38,7 +30,6 @@ export type GroupContextType = {
   addGroup: (group: Group) => boolean;
   updateGroup: (group: Group) => boolean;
   reloadGroups: () => void;
-  handleDeleteGroup: (id: string) => void;
   errorMessage: string | null;
   setErrorMessage: (message: string | null) => void;
   successMessage: string | null;
@@ -118,31 +109,6 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
   };
 
   /**
-   * useCallbackを使用し、グループを削除する関数。
-   * @param {string} id - 削除するグループの ID。
-   * @returns {void} この関数は値を返さず、連絡先削除し、リストを更新する。
-   */
-  const handleDeleteGroup = useCallback((id: string): void => {
-    try {
-      deleteGroup(id);
-      const updatedGroups = getGroups();
-      setGroups(updatedGroups);
-
-      const contacts = getContacts();
-      const updatedContacts = contacts.map((contact) =>
-        contact.groupId === id ? { ...contact, groupId: null } : contact
-      );
-
-      saveContacts(updatedContacts);
-    } catch (error) {
-      throw new AppError(
-        `Group with ID ${id} not found:${(error as Error).message}`,
-        404
-      );
-    }
-  }, []);
-
-  /**
    * グループの編集を開始する関数。
    * @returns {void} この関数は値を返さず、グループの編集を開始し、リストを更新する。
    */
@@ -158,7 +124,6 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
         addGroup,
         updateGroup,
         reloadGroups,
-        handleDeleteGroup,
         errorMessage,
         setErrorMessage,
         successMessage,

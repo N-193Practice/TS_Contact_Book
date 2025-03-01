@@ -1,5 +1,5 @@
 import { JSX, useEffect, useState } from 'react';
-import { NavLink, useSubmit } from 'react-router';
+import { NavLink, useSubmit, useLocation } from 'react-router';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -21,6 +21,7 @@ import { MESSAGES } from '../../../utils/message';
 function Groups(): JSX.Element {
   const { groups, reloadGroups } = useGroups();
   const submit = useSubmit();
+  const location = useLocation();
   const [localGroups, setLocalGroups] = useState(groups);
 
   // 削除確認ダイアログの状態
@@ -41,6 +42,18 @@ function Groups(): JSX.Element {
   useEffect(() => {
     setLocalGroups([...groups]); // **新しい配列を作ることで変更を検知**
   }, [groups]);
+
+  // GroupFormの処理後、通知メッセージが表示されている場合、3秒後に非表示にする。
+  useEffect(() => {
+    if (location.state?.message) {
+      setMessage(location.state.message);
+      setMessageSeverity(location.state.severity || 'info');
+
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+    }
+  }, [location.state]);
 
   /**
    * 削除ボタンを押したときの処理をする関数。

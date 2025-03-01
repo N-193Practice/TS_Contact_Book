@@ -142,20 +142,44 @@ function deleteGroup(id: string): void {
  * @returns {Contact[]} 連絡先の `groupId` をnullに上書きする。
  */
 function resetGroupIdInContacts(groupId: string): Contact[] {
-  const contacts = getContacts();
-  let hasUpdated = false;
-
-  const updatedContacts = contacts.map((contact) => {
-    if (String(contact.groupId ?? '').trim() === String(groupId ?? '').trim()) {
-      hasUpdated = true;
-      return { ...contact, groupId: null }; // null に上書き
+  try {
+    if (!groupId) {
+      throw new AppError(`Group not found`, 404);
+      return [];
     }
-    return contact;
-  });
-  if (hasUpdated) {
-    saveContacts(updatedContacts);
+    const contacts = getContacts();
+
+    if (!Array.isArray(contacts)) {
+      throw new AppError(`Error: getContacts() did not return a valid array`);
+      return [];
+    }
+    let hasUpdated = false;
+
+    const updatedContacts = contacts.map((contact) => {
+      if (String(contact.groupId ?? '') === String(groupId ?? '')) {
+        hasUpdated = true;
+        return { ...contact, groupId: null }; // null に上書き
+      }
+      return contact;
+    });
+
+    if (hasUpdated) {
+      try {
+        saveContacts(updatedContacts);
+      } catch (error) {
+        throw new AppError(
+          `Error saving updated contacts: ${(error as Error).message}`
+        );
+        return contacts;
+      }
+    }
+    return updatedContacts;
+  } catch (error) {
+    throw new AppError(
+      `Error in resetGroupIdInContacts: ${(error as Error).message}`
+    );
+    return [];
   }
-  return updatedContacts;
 }
 
 export {

@@ -95,7 +95,7 @@ function CSVImport(): JSX.Element | null {
           // 一括登録処理を実行（forEach ではなく、まとめて setContacts する）
           bulkImportContacts(validContacts);
 
-          setSuccessMessage('CSVのインポートが完了しました');
+          setSuccessMessage(MESSAGES.CSV.IMPORT_SUCCESS);
           setErrorMessage(null);
           setFile(null);
         },

@@ -34,6 +34,7 @@ export const csvToContact = (
     memo: csvData.memo || existingContact?.memo || '',
     groupId: group ? group.id : null, // **グループがある場合はIDをセット**
   };
+
   return contact;
 };
 
@@ -43,41 +44,17 @@ export const csvToContact = (
  * @param {Group[]} groups - グループのリスト。
  * @returns {CSVContact} 変換後の `CSVContact` データ。
  */
-export const contactToCSV = (contact: Contact): CSVContact => {
-  // **Contact の情報のみ取得**
+export const contactToCSV = (contact: Contact, groups: Group[]): CSVContact => {
+  // グループのテーブルからグループを検索
+  const group = groups.find((g) => g.name === contact.name);
+  console.log('Contact から CSVContact へ変換開始後:', group);
   const csvContact: CSVContact = {
     contactId: contact.id,
-    fullName: contact.name,
+    fullName: contact.name, // nameをfullNameに変換
     phone: contact.phone,
     memo: contact.memo || '',
-    groupName: '', // Contact の出力時はグループ名を空にする
+    groupName: group ? group.name : '',
   };
 
   return csvContact;
-};
-
-export const groupToCSV = (group: Group): CSVContact => {
-  // **Group の情報のみ取得**
-  const csvGroup: CSVContact = {
-    contactId: '', // Group の場合は contactId は不要
-    fullName: '',
-    phone: '',
-    memo: '',
-    groupName: group.name, // Group の情報は groupName のみ
-  };
-
-  return csvGroup;
-};
-
-export const exportCSV = (contacts: Contact[], groups: Group[]) => {
-  // **Contact のデータを CSV フォーマットへ変換**
-  const csvContacts: CSVContact[] = contacts.map(contactToCSV);
-
-  // **Group のデータを CSV フォーマットへ変換**
-  const csvGroups: CSVContact[] = groups.map(groupToCSV);
-
-  // **全データを統合してCSVへ出力**
-  const csvData = [...csvContacts, ...csvGroups];
-
-  return csvData;
 };

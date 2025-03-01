@@ -16,6 +16,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import { GroupDTO } from '../../../utils/contactServices';
 import { Group } from '../../../models/types';
 import { validateGroup } from '../../../utils/validation';
+import NotificationBanner from '../../../components/NotificationBanner/NotificationBanner';
 
 /**
  * `GroupのForm` コンポーネント
@@ -29,8 +30,14 @@ function GroupForm(): JSX.Element {
 
   const [group, setGroup] = useState<Group>({ id: '', name: '' });
 
-  const { groups, setErrorMessage, setSuccessMessage } = useGroups();
+  const { groups } = useGroups();
   const [errorName, setErrorName] = useState<string>('');
+
+  // 通知メッセージの状態
+  const [message, setMessage] = useState<string | null>(null);
+  const [messageSeverity, setMessageSeverity] = useState<
+    'success' | 'error' | 'info'
+  >('info');
 
   // データの初期化
   useEffect(() => {
@@ -64,23 +71,36 @@ function GroupForm(): JSX.Element {
    * @returns {void} この関数は値を返さず、変更を反映する。
    */
   const handleSave = (): void => {
-    // 既存グループ一覧を渡してバリデーション実行
     if (!validateGroup(group, groups, !!group.id, setErrorName)) {
-      setErrorMessage(MESSAGES.GROUP.NAME_REQUIRED);
+      setMessage(MESSAGES.GROUP.NAME_REQUIRED);
+      setMessageSeverity('error');
       return;
     }
 
     if (group.id) {
-      setSuccessMessage(MESSAGES.GROUP.UPDATE_SUCCESS);
       submit(group, { action: `/groups/edit/${group.id}`, method: 'patch' });
+      navigate('/groups', {
+        state: { message: MESSAGES.GROUP.UPDATE_SUCCESS, severity: 'success' },
+        replace: true,
+      });
     } else {
-      setSuccessMessage(MESSAGES.GROUP.CREATE_SUCCESS);
       submit(group, { action: '/groups/new', method: 'post' });
+      navigate('/groups', {
+        state: { message: MESSAGES.GROUP.CREATE_SUCCESS, severity: 'success' },
+        replace: true,
+      });
     }
   };
 
   return (
     <div className={styles.container}>
+      {message && (
+        <NotificationBanner
+          message={message}
+          severity={messageSeverity}
+          onClose={() => setMessage(null)}
+        />
+      )}
       <Paper elevation={3} className={styles.formContainer}>
         <Typography variant="h1" className={styles.title}>
           {group.id ? 'グループを編集' : '新しいグループを作成'}

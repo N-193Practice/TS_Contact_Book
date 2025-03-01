@@ -15,7 +15,6 @@ import {
   getContacts,
   saveContacts,
   deleteContact,
-  resetGroupIdInContacts,
 } from '../utils/localStorage';
 import { validateContact } from '../utils/validation';
 
@@ -231,11 +230,8 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const addContact = (contact: Contact): boolean => {
     if (!validateContact(contact, contacts)) return false;
 
-    let updatedContacts = [...contacts, contact];
+    const updatedContacts = [...contacts, contact];
 
-    if (contact.groupId) {
-      updatedContacts = resetGroupIdInContacts(contact.groupId); // groupId を null にする
-    }
     saveContacts(updatedContacts);
     setContacts(updatedContacts);
 
@@ -250,13 +246,9 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const updateContact = (updatedContact: Contact): boolean => {
     if (!validateContact(updatedContact, contacts, true)) return false;
 
-    let updatedContacts = contacts.map((c) =>
+    const updatedContacts = contacts.map((c) =>
       c.id === updatedContact.id ? updatedContact : c
     );
-
-    if (updatedContact.groupId) {
-      updatedContacts = resetGroupIdInContacts(updatedContact.groupId); // groupId を null にする
-    }
 
     saveContacts(updatedContacts);
 
@@ -314,7 +306,6 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
       // **Contact のみ `groupId` を null にする**
       updatedContacts = updatedContacts.map((contact) => ({
         ...contact,
-        groupId: null, // **LocalStorage では `groupId` を null に上書き**
       }));
 
       // **ローカルストレージに保存**

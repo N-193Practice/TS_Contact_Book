@@ -14,6 +14,7 @@ import Grid from '@mui/material/Grid2';
 import { NavLink, useLoaderData } from 'react-router';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import { ContactsDTO } from '../../utils/contactServices';
+import { MESSAGES } from '../../utils/message';
 
 /**
  * `Contacts` コンポーネント(このアプリケーションのホーム画面)
@@ -95,6 +96,8 @@ function Contacts(): JSX.Element {
       handleDeleteMultiple();
       setConfirmOpen(false);
       setDeleteTargetId(null);
+      setMessage(MESSAGES.CONTACT.DELETE_SUCCESS);
+      setMessageSeverity('success');
     }
   };
 

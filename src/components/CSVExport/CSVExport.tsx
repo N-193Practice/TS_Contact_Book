@@ -4,14 +4,13 @@ import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import { CSVContact } from '../../models/types';
 import { contactToCSV } from '../../utils/csvConverter';
-import { groupToCSV } from '../../utils/csvConverter';
 import { Button } from '@mui/material';
 import styles from './CSVExport.module.css';
 import { MESSAGES } from '../../utils/message';
 
 /**
  * `CSVExport` コンポーネント。
- * 連絡先とグループをCSVファイルにエクスポートする。
+ * 連絡先をCSVファイルにエクスポートする。(Contact → CSVContact)
  * @returns {JSX.Element} エクスポートした場合は UI を返す。
  */
 function CSVExport(): JSX.Element {
@@ -39,32 +38,27 @@ function CSVExport(): JSX.Element {
    * @returns {void} この関数は値を返さず、ローカルストレージからファイルを読み込む際に呼び出される。
    */
   const handleExport = (): void => {
-    if (contacts.length === 0 && groups.length === 0) {
+    if (contacts.length === 0) {
       setErrorMessage(MESSAGES.CSV.NO_DATA_IN_FILE);
       return;
     }
 
-    // **Contact のデータを CSV フォーマットへ変換**
-    const csvContacts: CSVContact[] = contacts.map(contactToCSV);
+    const csvContacts: CSVContact[] = contacts.map((contact) =>
+      contactToCSV(contact, groups)
+    );
 
-    // **Group のデータを CSV フォーマットへ変換**
-    const csvGroups: CSVContact[] = groups.map(groupToCSV);
-
-    // **全データを統合して CSV に変換**
-    const csvData = [...csvContacts, ...csvGroups];
-
-    // バリデーションチェック (連絡先は `fullName` と `phone` が必須)
+    // バリデーションチェック
     const validContacts: CSVContact[] = csvContacts.filter(
       (csvContact) => csvContact.fullName && csvContact.phone
     );
 
-    if (validContacts.length === 0 && csvGroups.length === 0) {
-      setErrorMessage(MESSAGES.CSV.EXPORT_ERROR);
+    if (validContacts.length === 0) {
+      setErrorMessage(MESSAGES.CSV.VALIDATION_ERROR);
       return;
     }
 
     // CSV に変換してダウンロード
-    let csv = jsonToCSV(csvData, {
+    let csv = jsonToCSV(validContacts, {
       header: true,
       newline: '\r\n',
       columns: ['contactId', 'fullName', 'phone', 'memo', 'groupName'],
@@ -84,14 +78,16 @@ function CSVExport(): JSX.Element {
   };
 
   return (
-    <Button
-      className={styles.exportButton}
-      variant="contained"
-      component="label"
-      onClick={handleExport}
-    >
-      データを出力する
-    </Button>
+    <>
+      <Button
+        className={styles.exportButton}
+        variant="contained"
+        component="label"
+        onClick={handleExport}
+      >
+        データを出力する
+      </Button>
+    </>
   );
 }
 

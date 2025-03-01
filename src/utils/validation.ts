@@ -1,6 +1,7 @@
 import { Contact } from '../models/types';
 import { Group } from '../models/types';
 import { CSVContact } from '../models/types';
+import { MESSAGES } from './message';
 
 /**
  * グループのバリデーションを行う
@@ -18,7 +19,7 @@ export const validateGroup = (
   // 空白チェック
   const trimmedName = group.name.trim();
   if (!trimmedName) {
-    setErrorMessage('グループ名は必須です');
+    setErrorMessage(MESSAGES.GROUP.NAME_REQUIRED);
     return false;
   }
 
@@ -28,7 +29,7 @@ export const validateGroup = (
   );
 
   if (isDuplicate) {
-    setErrorMessage('このグループ名はすでに存在します');
+    setErrorMessage(MESSAGES.GROUP.NAME_ALREADY_EXISTS);
     return false;
   }
 
@@ -58,7 +59,7 @@ export const validateContact = (
       (c) => c.name === contact.name && c.id !== contact.id
     );
     if (isDuplicate) {
-      setErrorName('この名前の連絡先はすでに存在します');
+      setErrorName(MESSAGES.CONTACT.NAME_ALREADY_EXISTS);
       return false;
     }
   }
@@ -91,7 +92,7 @@ export const validateName = (
   setErrorMessage: (name: string) => void
 ): boolean => {
   if (!name || name.trim() === '') {
-    setErrorMessage('名前は必須です');
+    setErrorMessage(MESSAGES.VALIDATION.NAME_REQUIRED);
     return false;
   }
   setErrorMessage('');
@@ -110,18 +111,16 @@ export const validatePhone = (
   setErrorMessage: (phone: string) => void
 ): boolean => {
   if (!phone || phone.trim() === '') {
-    setErrorMessage('電話番号は必須です');
+    setErrorMessage(MESSAGES.VALIDATION.PHONE_REQUIRED);
     return false;
   }
   if (!/^[0-9-]+$/.test(phone)) {
-    setErrorMessage('電話番号は半角数字のみ入力してください');
+    setErrorMessage(MESSAGES.VALIDATION.PHONE_INVALID);
     return false;
   }
   const strippedNumber = phone.replace(/-/g, '');
   if (!/^0\d{9,10}$/.test(strippedNumber)) {
-    setErrorMessage(
-      '電話番号は半角数字0から始まる10桁以上11桁以内の数字で入力してください'
-    );
+    setErrorMessage(MESSAGES.VALIDATION.PHONE_INVALID_LENGTH);
     return false;
   }
   setErrorMessage('');
