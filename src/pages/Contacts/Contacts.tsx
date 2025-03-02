@@ -15,6 +15,7 @@ import { NavLink, useLoaderData } from 'react-router';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import { ContactsDTO } from '../../utils/contactServices';
 import { MESSAGES } from '../../utils/message';
+import { useGroups } from '../../contexts/useGroups';
 
 /**
  * `Contacts` コンポーネント(このアプリケーションのホーム画面)
@@ -26,6 +27,8 @@ function Contacts(): JSX.Element {
   const {
     contacts,
     setContacts,
+    setEditContact,
+    setOpenDialog,
     handleNewContact,
     handleDeleteMultiple,
     selectedContacts,
@@ -37,6 +40,8 @@ function Contacts(): JSX.Element {
     setSuccessMessage,
   } = useContacts();
 
+  const { setGroups } = useGroups();
+
   const contactsData: ContactsDTO = useLoaderData();
 
   // 連絡先一覧の表示を更新する。
@@ -44,7 +49,24 @@ function Contacts(): JSX.Element {
     if (contactsData.contacts) {
       setContacts(contactsData.contacts);
     }
-  }, [contactsData.contacts, setContacts]);
+    if (contactsData.groups) {
+      setGroups(contactsData.groups);
+    }
+  }, [contactsData.contacts, contactsData.groups, setGroups, setContacts]);
+
+  useEffect(() => {
+    if (contactsData.selectedContact) {
+      setEditContact(contactsData.selectedContact);
+      setGroups(contactsData.groups);
+    }
+    setOpenDialog(contactsData.selectedContact !== null);
+  }, [
+    contactsData.selectedContact,
+    contactsData.groups,
+    setEditContact,
+    setOpenDialog,
+    setGroups,
+  ]);
 
   // 削除確認ダイアログの状態
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -117,8 +139,6 @@ function Contacts(): JSX.Element {
           <div className={styles.searchContacts}>
             {/** 検索バー */}
             <SearchBar />
-          </div>
-          <div className={styles.newContactButton}>
             {/** 新規連絡先作成ボタン */}
             <IconButton
               aria-label="新規作成"
@@ -133,6 +153,7 @@ function Contacts(): JSX.Element {
               />
             </IconButton>
           </div>
+          <div className={styles.newContactButton}></div>
           <div className={styles.contactsImportExport}>
             {/* CSVインポートボタン */}
             <CSVImport />

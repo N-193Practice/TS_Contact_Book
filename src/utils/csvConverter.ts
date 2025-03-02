@@ -1,5 +1,4 @@
 import { Contact, Group, CSVContact } from '../models/types';
-import { v4 as uuidv4 } from 'uuid';
 
 /**
  * `CSVContact` を `Contact` に変換する (インポート時)
@@ -13,7 +12,7 @@ export const csvToContact = (
   csvData: CSVContact,
   contacts: Contact[],
   groups: Group[],
-  addGroup: (newGroup: Group) => void
+  addGroup: (groupName: string) => Group
 ): Contact => {
   // 既存の連絡先を検索 (IDが一致する場合は既存データ)
   const existingContact = contacts.find((c) => c.id === csvData.contactId);
@@ -22,13 +21,12 @@ export const csvToContact = (
   let group = groups.find((g) => g.name === csvData.groupName);
   if (!group && csvData.groupName && csvData.groupName.trim() !== '') {
     // グループが存在しない場合、新規作成して登録
-    group = { id: uuidv4(), name: csvData.groupName };
-    addGroup(group);
+    group = addGroup(csvData.groupName);
   }
 
   // **新しい Contact オブジェクトの作成**
   const contact: Contact = {
-    id: existingContact ? existingContact.id : csvData.contactId || uuidv4(),
+    id: existingContact?.id || '', //既存のIDがある場合はそのまま使う、なければ作成
     name: csvData.fullName, // fullNameをnameに変換
     phone: csvData.phone,
     memo: csvData.memo || existingContact?.memo || '',

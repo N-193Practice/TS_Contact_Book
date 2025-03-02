@@ -62,6 +62,36 @@ function saveContacts(contacts: Contact[]): void {
 }
 
 /**
+ * 連絡先をローカルストレージに作成する。
+ * @param {Contact} contact - 作成する連絡先。
+ * @returns {Contact} 作成された連絡先。
+ */
+function createContact(contact: Contact): Contact {
+  const contacts = getContacts();
+  const newContact = { ...contact, id: uuidv4() };
+  saveContacts([...contacts, newContact]);
+  return newContact;
+}
+
+/**
+ * 連絡先をローカルストレージに保存する。
+ * @param {Contact} contact - 保存する連絡先。
+ * @returns {Contact} 保存された連絡先。
+ */
+function updateContact(contact: Contact): Contact {
+  const contacts = getContacts();
+  const contactToUpdate = contacts.find((c) => c.id === contact.id);
+  if (!contactToUpdate) {
+    throw new AppError(`Contact with ID ${contact.id} not found`, 404);
+  }
+  const updatedContacts = contacts.map((c) =>
+    c.id === contactToUpdate.id ? contact : c
+  );
+  saveContacts(updatedContacts);
+  return contact;
+}
+
+/**
  * ローカルストレージから ID で連絡先を削除する。
  * @param {string} id - 削除する連絡先の ID。
  * @returns {void} この関数は値を返さず、ローカルストレージから連絡先を削除し、リストを更新する。
@@ -95,12 +125,12 @@ function saveGroups(groups: Group[]): void {
 
 /**
  * グループをローカルストレージに作成する。
- * @param {Group} group - 作成するグループ。
+ * @param {string} name - 作成するグループの名前。
  * @returns {Group} 作成されたグループ。
  */
-function createGroup(group: Group): Group {
+function createGroup(name: string): Group {
   const groups = getGroups();
-  const newGroup = { ...group, id: uuidv4() };
+  const newGroup = { id: uuidv4(), name: name };
   saveGroups([...groups, newGroup]);
   return newGroup;
 }
@@ -145,13 +175,11 @@ function resetGroupIdInContacts(groupId: string): Contact[] {
   try {
     if (!groupId) {
       throw new AppError(`Group not found`, 404);
-      return [];
     }
     const contacts = getContacts();
 
     if (!Array.isArray(contacts)) {
       throw new AppError(`Error: getContacts() did not return a valid array`);
-      return [];
     }
     let hasUpdated = false;
 
@@ -170,7 +198,6 @@ function resetGroupIdInContacts(groupId: string): Contact[] {
         throw new AppError(
           `Error saving updated contacts: ${(error as Error).message}`
         );
-        return contacts;
       }
     }
     return updatedContacts;
@@ -178,13 +205,14 @@ function resetGroupIdInContacts(groupId: string): Contact[] {
     throw new AppError(
       `Error in resetGroupIdInContacts: ${(error as Error).message}`
     );
-    return [];
   }
 }
 
 export {
   getContacts,
   saveContacts,
+  updateContact,
+  createContact,
   deleteContact,
   getGroups,
   createGroup,

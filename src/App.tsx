@@ -10,8 +10,10 @@ import {
   getContactsList,
   getContactsEdit,
   getContactsNew,
+  importContacts,
   getGroupsList,
   groupAction,
+  contactsAction,
   getGroup,
 } from './utils/contactServices';
 
@@ -26,6 +28,7 @@ const router = createBrowserRouter([
         path: '/',
         element: <Contacts />,
         loader: getContactsList,
+        action: contactsAction,
       },
       {
         path: 'contacts/new',
@@ -36,6 +39,10 @@ const router = createBrowserRouter([
         path: 'contacts/edit/:id',
         element: <Contacts />,
         loader: getContactsEdit,
+      },
+      {
+        path: 'contacts/csv',
+        action: importContacts,
       },
       {
         path: 'groups',

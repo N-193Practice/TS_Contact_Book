@@ -1,14 +1,20 @@
 import { redirect, type LoaderFunctionArgs } from 'react-router';
+import Papa from 'papaparse';
 
-import { Contact, Group } from '../models/types';
+import { Contact, Group, CSVContact } from '../models/types';
+import { csvToContact } from './csvConverter';
 import {
   getContacts,
   getGroups,
+  createContact,
+  deleteContact,
+  updateContact,
   createGroup,
   deleteGroup,
   updateGroup,
 } from './localStorage';
 import { AppError } from './errors';
+import { validateContact } from '../utils/validation';
 
 /**
  * 連絡先のデータを取得するための DTO
@@ -27,13 +33,95 @@ export interface ContactsDTO {
  */
 export function getContactsList(): ContactsDTO {
   const contacts = getContacts();
+  const groups = getGroups();
   const contactsDTO: ContactsDTO = {
     selectedContact: null,
     contacts: contacts,
-    groups: [],
+    groups: groups,
   };
 
   return contactsDTO;
+}
+
+export async function contactsAction({
+  request,
+}: LoaderFunctionArgs): Promise<Response> {
+  const method = request.method?.toString() || null;
+  if (!method) {
+    throw new AppError('Action is required');
+  }
+  if (method === 'POST') {
+    const formData = await request.formData();
+    const contact: Contact = {
+      id: formData.get('id')?.toString() || '',
+      name: formData.get('name')?.toString() || '',
+      phone: formData.get('phone')?.toString() || '',
+      memo: formData.get('memo')?.toString() || '',
+      groupId: formData.get('groupId')?.toString() || null,
+    };
+    const isValid = validateContact(contact);
+    if (!isValid) {
+      return redirect('/contacts/new');
+    }
+    createContact(contact);
+  } else if (method === 'PATCH') {
+    const formData = await request.formData();
+    const contact: Contact = {
+      id: formData.get('id')?.toString() || '',
+      name: formData.get('name')?.toString() || '',
+      phone: formData.get('phone')?.toString() || '',
+      memo: formData.get('memo')?.toString() || '',
+      groupId: formData.get('groupId')?.toString() || null,
+    };
+    const isValid = validateContact(contact);
+    if (!isValid) {
+      return redirect(`/contacts/edit/${contact.id}/edit`);
+    }
+    updateContact(contact);
+  } else if (method === 'DELETE') {
+    const formData = await request.formData();
+    const contactId = formData.get('id')?.toString() || null;
+    if (!contactId) {
+      throw new Error('Contact ID is required');
+    }
+    deleteContact(contactId);
+  } else {
+    throw new AppError(`Invalid action: ${method}`);
+  }
+  return redirect('/');
+}
+
+export async function importContacts({
+  request,
+}: LoaderFunctionArgs): Promise<Response> {
+  const formData = await request.formData();
+  const fileContent = formData.get('fileContent');
+  if (!fileContent) {
+    throw new AppError('File content is required');
+  }
+
+  try {
+    const parsedData = Papa.parse(fileContent as string, { header: true });
+    const csvContacts = parsedData.data as CSVContact[];
+    const existingContacts = getContacts();
+    const existingGroups = getGroups();
+
+    const newContacts = csvContacts.map((csvContact) =>
+      csvToContact(csvContact, existingContacts, existingGroups, createGroup)
+    );
+
+    newContacts.forEach((contact) => {
+      if (contact.id || contact.id !== '') {
+        updateContact(contact);
+      } else {
+        createContact(contact);
+      }
+    });
+
+    return redirect('/');
+  } catch (error: unknown) {
+    throw new AppError('Error processing file' + (error as Error).message);
+  }
 }
 
 /**
@@ -109,11 +197,9 @@ export async function groupAction({
   }
   if (method === 'POST') {
     const formData = await request.formData();
-    const group: Group = {
-      id: formData.get('id')?.toString() || '',
-      name: formData.get('name')?.toString() || '',
-    };
-    createGroup(group);
+
+    const name: string = formData.get('name')?.toString() || '';
+    createGroup(name);
   } else if (method === 'PATCH') {
     const formData = await request.formData();
     const group: Group = {

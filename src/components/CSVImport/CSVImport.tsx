@@ -1,10 +1,6 @@
 import { JSX, useState, useEffect, useRef } from 'react';
-import { usePapaParse } from 'react-papaparse';
+import { useSubmit } from 'react-router';
 import { useContacts } from '../../contexts/useContacts';
-import { useGroups } from '../../contexts/useGroups';
-import { CSVContact } from '../../models/types';
-import { csvToContact } from '../../utils/csvConverter';
-import { validateContactsFromCSV } from '../../utils/validation';
 import styles from './CSVImport.module.css';
 import { Button, TextField, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -17,10 +13,9 @@ import { MESSAGES } from '../../utils/message';
  * @returns {JSX.Element | null} UIコンポーネントを返す。
  */
 function CSVImport(): JSX.Element | null {
-  const { contacts, bulkImportContacts, setErrorMessage, setSuccessMessage } =
-    useContacts();
-  const { groups, addGroup } = useGroups();
-  const { readString } = usePapaParse(); // CSVをJSONに変換
+  const submit = useSubmit();
+
+  const { contacts, setErrorMessage, setSuccessMessage } = useContacts();
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -56,53 +51,35 @@ function CSVImport(): JSX.Element | null {
    * CSVファイルをインポートする関数。
    * @returns {void} この関数は値を返さず、インポートし、メッセージを表示する。
    */
-  const handleImport = (): void => {
+  const handleImport = async (): Promise<void> => {
     if (!file) {
       setErrorMessage(MESSAGES.CSV.NO_SELECTED_FILE);
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (!e.target?.result) {
-        setErrorMessage(MESSAGES.CSV.IMPORT_ERROR);
-        return;
-      }
+    // CSVファイルの内容を取得し、連絡先を追加する。
+    try {
+      const readFile = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsText(file);
+          reader.onload = () => {
+            resolve(reader.result as string);
+          };
+          reader.onerror = () => reject(new Error('Error reading file'));
+        });
+      };
+      const fileContent = await readFile(file);
 
-      // CSVデータをJSONへ変換
-      readString(e.target.result as string, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (results) => {
-          const csvContacts = results.data as CSVContact[];
-
-          // 一括バリデーション
-          const isValid = validateContactsFromCSV(
-            csvContacts,
-            contacts,
-            setErrorMessage
-          );
-          if (!isValid) {
-            setErrorMessage(MESSAGES.CSV.VALIDATION_ERROR);
-            return;
-          }
-
-          // CSVデータを `Contact` 型に変換
-          const validContacts = csvContacts
-            .map((csvRow) => csvToContact(csvRow, contacts, groups, addGroup))
-            .filter(Boolean); // 無効データは除外
-
-          // 一括登録処理を実行（forEach ではなく、まとめて setContacts する）
-          bulkImportContacts(validContacts);
-
-          setSuccessMessage(MESSAGES.CSV.IMPORT_SUCCESS);
-          setErrorMessage(null);
-          setFile(null);
-        },
-      });
-    };
-
-    reader.readAsText(file);
+      const formData = new FormData();
+      formData.append('fileContent', fileContent);
+      await submit(formData, { method: 'post', action: '/contacts/csv' });
+      setSuccessMessage(MESSAGES.CSV.IMPORT_SUCCESS);
+      setErrorMessage(null);
+    } catch {
+      setErrorMessage(MESSAGES.CSV.IMPORT_ERROR);
+    }
+    setFile(null);
   };
 
   return (

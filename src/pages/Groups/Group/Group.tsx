@@ -16,7 +16,6 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import { GroupDTO } from '../../../utils/contactServices';
 import { Group } from '../../../models/types';
 import { validateGroup } from '../../../utils/validation';
-import NotificationBanner from '../../../components/NotificationBanner/NotificationBanner';
 
 /**
  * `GroupのForm` コンポーネント
@@ -30,14 +29,8 @@ function GroupForm(): JSX.Element {
 
   const [group, setGroup] = useState<Group>({ id: '', name: '' });
 
-  const { groups } = useGroups();
+  const { groups, setSuccessMessage, setErrorMessage } = useGroups();
   const [errorName, setErrorName] = useState<string>('');
-
-  // 通知メッセージの状態
-  const [message, setMessage] = useState<string | null>(null);
-  const [messageSeverity, setMessageSeverity] = useState<
-    'success' | 'error' | 'info'
-  >('info');
 
   // データの初期化
   useEffect(() => {
@@ -70,37 +63,33 @@ function GroupForm(): JSX.Element {
    * それ以外の場合は、グループを作成または編集する。
    * @returns {void} この関数は値を返さず、変更を反映する。
    */
-  const handleSave = (): void => {
+  const handleSave = async (): Promise<void> => {
     if (!validateGroup(group, groups, !!group.id, setErrorName)) {
-      setMessage(MESSAGES.GROUP.NAME_REQUIRED);
-      setMessageSeverity('error');
+      setErrorMessage(MESSAGES.GROUP.NAME_REQUIRED);
       return;
     }
-
     if (group.id) {
-      submit(group, { action: `/groups/edit/${group.id}`, method: 'patch' });
-      navigate('/groups', {
-        state: { message: MESSAGES.GROUP.UPDATE_SUCCESS, severity: 'success' },
-        replace: true,
-      });
+      try {
+        await submit(group, {
+          action: `/groups/edit/${group.id}`,
+          method: 'patch',
+        });
+        setSuccessMessage(MESSAGES.GROUP.UPDATE_SUCCESS);
+      } catch {
+        setErrorMessage(MESSAGES.GROUP.UPDATE_ERROR);
+      }
     } else {
-      submit(group, { action: '/groups/new', method: 'post' });
-      navigate('/groups', {
-        state: { message: MESSAGES.GROUP.CREATE_SUCCESS, severity: 'success' },
-        replace: true,
-      });
+      try {
+        await submit(group, { action: '/groups/new', method: 'post' });
+        setSuccessMessage(MESSAGES.GROUP.CREATE_SUCCESS);
+      } catch {
+        setErrorMessage(MESSAGES.GROUP.CREATE_ERROR);
+      }
     }
   };
 
   return (
     <div className={styles.container}>
-      {message && (
-        <NotificationBanner
-          message={message}
-          severity={messageSeverity}
-          onClose={() => setMessage(null)}
-        />
-      )}
       <Paper elevation={3} className={styles.formContainer}>
         <Typography variant="h1" className={styles.title}>
           {group.id ? 'グループを編集' : '新しいグループを作成'}
@@ -117,12 +106,14 @@ function GroupForm(): JSX.Element {
                 fullWidth
                 value={group.name}
                 onChange={groupNameChangeHandler}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AccountCircle />
-                    </InputAdornment>
-                  ),
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <AccountCircle />
+                      </InputAdornment>
+                    ),
+                  },
                 }}
                 onBlur={() =>
                   validateGroup(group, groups, !!group.id, setErrorName)
@@ -142,7 +133,7 @@ function GroupForm(): JSX.Element {
               {group.id ? '更新' : '作成'}
             </Button>
             <Button
-              onClick={() => navigate(-1)}
+              onClick={() => navigate('/groups')}
               variant="outlined"
               color="secondary"
               fullWidth

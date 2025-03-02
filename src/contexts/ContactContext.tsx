@@ -11,12 +11,7 @@ import React, {
 } from 'react';
 import { Contact } from '../models/types';
 import { GroupContext } from './GroupContext';
-import {
-  getContacts,
-  saveContacts,
-  deleteContact,
-} from '../utils/localStorage';
-import { validateContact } from '../utils/validation';
+import { getContacts, deleteContact } from '../utils/localStorage';
 
 /**
  * ContactContextType は、連絡先コンテキストの構造を定義する。
@@ -35,10 +30,7 @@ import { validateContact } from '../utils/validation';
  * @property {(message: string | null) => void} setErrorMessage -エラーメッセージを設定する関数。
  * @property {string | null} successMessage - 成功メッセージ。
  * @property {(message: string | null) => void} setSuccessMessage - 成功メッセージを設定する関数。
- * @property {(contact: Contact) => boolean} addContact - 新しい連絡先を追加する関数。
- * @property {(contact: Contact) => boolean} updateContact - 既存の連絡先を更新する関数。
  * @property {() => void} handleNewContact - 新しい連絡先の作成を処理する関数。
- * @property {(contact: Contact) => void} handleEditContact - 連絡先の編集を処理する関数。
  * @property {(id: string) => void} handleDeleteSelected - 選択された連絡先を削除する関数。
  * @property {(id: string) => void} handleDeleteAll - 削除する連絡先の選択を切り替える関数。
  * @property {() => void} handleDeleteMultiple - 選択した複数の連絡先を削除する関数。
@@ -46,7 +38,6 @@ import { validateContact } from '../utils/validation';
  * @property {{ [key: string]: Contact[] }} groupedContacts - 先頭の文字でグループ化された連絡先。
  * @property {() => void} selectAllContacts - 全選択ボタンを押したときに呼び出される関数。
  * @property {() => void} deselectAllContacts - 全選択解除ボタンを押したときに呼び出される関数。
- * @property {(newContacts: Contact[]) => void;} bulkImportContacts - CSVのインポートを実行する関数。
  */
 export type ContactContextType = {
   contacts: Contact[];
@@ -64,18 +55,13 @@ export type ContactContextType = {
   setErrorMessage: (message: string | null) => void;
   successMessage: string | null;
   setSuccessMessage: (message: string | null) => void;
-  addContact: (contact: Contact) => boolean;
-  updateContact: (contact: Contact) => boolean;
   handleNewContact: () => void;
-  handleEditContact: (contact: Contact) => void;
-  handleDeleteContact: (id: string) => void;
   handleMultipleSelected: (id: string) => void;
   handleDeleteMultiple: () => void;
   handleAlphabetClick: (letter: string) => void;
   groupedContacts: { [key: string]: Contact[] };
   selectAllContacts: () => void;
   deselectAllContacts: () => void;
-  bulkImportContacts: (newContacts: Contact[]) => void;
 };
 
 // Context の作成
@@ -222,98 +208,7 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const deselectAllContacts = (): void => {
     setSelectedContacts([]);
   };
-  /**
-   * 連絡先を追加する関数。
-   * @param {Contact} contact - 追加する連絡先。
-   * @returns {boolean} 追加に成功すれば true、失敗すれば false。
-   */
-  const addContact = (contact: Contact): boolean => {
-    if (!validateContact(contact, contacts)) return false;
 
-    const updatedContacts = [...contacts, contact];
-
-    saveContacts(updatedContacts);
-    setContacts(updatedContacts);
-
-    return true;
-  };
-
-  /**
-   * 連絡先を更新する関数。
-   * @param {Contact} updatedContact - 更新する連絡先。
-   * @returns {boolean} 更新に成功すれば true、失敗すれば false。
-   */
-  const updateContact = (updatedContact: Contact): boolean => {
-    if (!validateContact(updatedContact, contacts, true)) return false;
-
-    const updatedContacts = contacts.map((c) =>
-      c.id === updatedContact.id ? updatedContact : c
-    );
-
-    saveContacts(updatedContacts);
-
-    return true;
-  };
-
-  /**
-   * CSV操作の時に新規作成、更新処理をする関数。
-   * @param {Contact} newContacts - 更新する連絡先。
-   * @returns {void} この関数は値を返さず、CSV操作の際にContact,Groupテーブルにそれぞれデータを投入する。
-   */
-  const bulkImportContacts = (newContacts: Contact[]): void => {
-    setContacts((prevContacts) => {
-      let updatedContacts = [...prevContacts];
-
-      newContacts.forEach((newContact) => {
-        const existingIndex = updatedContacts.findIndex(
-          (c) => c.id === newContact.id
-        );
-
-        if (existingIndex !== -1) {
-          // **既存の連絡先がある場合、新しい groupId をセット**
-          updatedContacts[existingIndex] = {
-            ...updatedContacts[existingIndex],
-            ...newContact,
-            groupId: newContact.groupId, // **一旦 newContact の groupId を保持**
-          };
-        } else {
-          // **新規追加する場合、新しい groupId をセット**
-          updatedContacts.push({
-            ...newContact,
-            groupId: newContact.groupId, // **新規作成の際も groupId を設定**
-          });
-        }
-      });
-
-      // **グループを更新 (既存グループを削除しない)**
-      const storedGroups = JSON.parse(localStorage.getItem('groups') || '[]');
-      const uniqueGroups = [...storedGroups]; // **既存グループを維持**
-
-      newContacts.forEach((contact) => {
-        if (
-          contact.groupId &&
-          !uniqueGroups.find((g) => g.id === contact.groupId)
-        ) {
-          uniqueGroups.push({
-            id: contact.groupId,
-            name: `Group ${contact.groupId}`,
-          });
-        }
-      });
-
-      localStorage.setItem('groups', JSON.stringify(uniqueGroups));
-
-      // **Contact のみ `groupId` を null にする**
-      updatedContacts = updatedContacts.map((contact) => ({
-        ...contact,
-      }));
-
-      // **ローカルストレージに保存**
-      localStorage.setItem('contacts', JSON.stringify(updatedContacts));
-
-      return updatedContacts;
-    });
-  };
   /**
    * 新規作成用の編集ダイアログを開く。
    * フォームのデータを初期化し表示する。
@@ -322,26 +217,6 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const handleNewContact = (): void => {
     setEditContact(null);
     setOpenDialog(true);
-  };
-
-  /**
-   * 既存の連絡先情報を編集するためのダイアログを開く。
-   * @param {Contact} contact - 編集対象の連絡先情報。
-   * @returns {void} この関数は値を返さず、ダイアログを開くだけ。
-   */
-  const handleEditContact = (contact: Contact): void => {
-    setEditContact(contact);
-    setOpenDialog(true);
-  };
-
-  /**
-   * 連絡先を削除する関数(個人のため)。
-   * @param {string} id - 削除する連絡先の ID。
-   * @returns {void} この関数は値を返さず、連絡先削除し、リストを更新する。
-   */
-  const handleDeleteContact = (id: string): void => {
-    deleteContact(id);
-    setContacts(getContacts());
   };
 
   /**
@@ -387,18 +262,13 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
         setErrorMessage,
         successMessage,
         setSuccessMessage,
-        addContact,
-        updateContact,
         handleNewContact,
-        handleEditContact,
-        handleDeleteContact,
         handleMultipleSelected,
         handleDeleteMultiple,
         handleAlphabetClick,
         groupedContacts,
         selectAllContacts,
         deselectAllContacts,
-        bulkImportContacts,
       }}
     >
       {children}

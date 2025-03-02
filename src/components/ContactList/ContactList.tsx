@@ -13,7 +13,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import styles from './ContactList.module.css';
-import { NavLink } from 'react-router';
+import { NavLink, useSubmit } from 'react-router';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import NotificationBanner from '../../components/NotificationBanner/NotificationBanner';
 
@@ -25,12 +25,12 @@ import NotificationBanner from '../../components/NotificationBanner/Notification
  */
 
 function ContactList(): JSX.Element {
+  const submit = useSubmit();
+
   const {
     groupedContacts,
     listRefs,
     selectedContacts,
-    handleEditContact,
-    handleDeleteContact,
     handleMultipleSelected,
     successMessage,
     setSuccessMessage,
@@ -62,11 +62,15 @@ function ContactList(): JSX.Element {
    * 削除確認後の処理（連絡先削除を実行）
    * @returns {void} この関数は値を返さず、削除確認ダイアログを閉じる。
    */
-  const handleConfirmDelete = (): void => {
+  const handleConfirmDelete = async (): Promise<void> => {
     if (deleteTargetId) {
-      handleDeleteContact(deleteTargetId);
+      const body = {
+        id: deleteTargetId,
+      };
+      await submit(body, { method: 'delete', action: '/' });
       setConfirmOpen(false);
       setDeleteTargetId(null);
+      setSuccessMessage('連絡先を削除しました。');
     }
   };
 
@@ -119,19 +123,18 @@ function ContactList(): JSX.Element {
                   </Typography>
                   {/* 編集ボタン */}
                   <IconButton
-                    onClick={() => handleEditContact(contact)}
                     className={styles.editButton}
+                    aria-label="編集"
                     component={NavLink}
-                    aria-hidden="false"
                     to={`/contacts/edit/${contact.id}`}
                   >
                     <EditIcon />
                   </IconButton>
                   {/* 削除ボタン */}
                   <IconButton
-                    onClick={() => handleDeleteClick(contact.id)}
                     className={styles.deleteButton}
                     aria-label="削除"
+                    onClick={() => handleDeleteClick(contact.id)}
                   >
                     <DeleteIcon />
                   </IconButton>

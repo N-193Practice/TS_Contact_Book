@@ -1,5 +1,5 @@
 import { JSX, useEffect, useState } from 'react';
-import { NavLink, useSubmit, useLocation } from 'react-router';
+import { NavLink, useSubmit, useLoaderData } from 'react-router';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -12,6 +12,7 @@ import { useGroups } from '../../../contexts/useGroups';
 import ConfirmDialog from '../../../components/ConfirmDialog/ConfirmDialog';
 import NotificationBanner from '../../../components/NotificationBanner/NotificationBanner';
 import { MESSAGES } from '../../../utils/message';
+import { Group } from '../../../models/types';
 
 /**
  * `Groups` コンポーネント
@@ -19,10 +20,16 @@ import { MESSAGES } from '../../../utils/message';
  * @returns {JSX.Element} 新規グループの作成画面の UI を返す。
  */
 function Groups(): JSX.Element {
-  const { groups, reloadGroups } = useGroups();
   const submit = useSubmit();
-  const location = useLocation();
-  const [localGroups, setLocalGroups] = useState(groups);
+  const groupsData: Group[] = useLoaderData();
+  const {
+    groups,
+    setGroups,
+    errorMessage,
+    successMessage,
+    setErrorMessage,
+    setSuccessMessage,
+  } = useGroups();
 
   // 削除確認ダイアログの状態
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -34,26 +41,24 @@ function Groups(): JSX.Element {
     'success' | 'error' | 'info'
   >('info');
 
-  // **初回レンダリング時にのみグループデータを取得**
   useEffect(() => {
-    reloadGroups();
-  }, [reloadGroups]);
+    if (errorMessage) {
+      setMessage(errorMessage);
+      setMessageSeverity('error');
+    }
+    if (successMessage) {
+      setMessage(successMessage);
+      setMessageSeverity('success');
+    }
+  }, [errorMessage, successMessage]);
 
   useEffect(() => {
-    setLocalGroups([...groups]); // **新しい配列を作ることで変更を検知**
-  }, [groups]);
+    if (groupsData) {
+      setGroups(groupsData);
+    }
+  }, [groupsData, setGroups]);
 
   // GroupFormの処理後、通知メッセージが表示されている場合、3秒後に非表示にする。
-  useEffect(() => {
-    if (location.state?.message) {
-      setMessage(location.state.message);
-      setMessageSeverity(location.state.severity || 'info');
-
-      setTimeout(() => {
-        setMessage(null);
-      }, 3000);
-    }
-  }, [location.state]);
 
   /**
    * 削除ボタンを押したときの処理をする関数。
@@ -76,13 +81,17 @@ function Groups(): JSX.Element {
         action: `/groups/delete/${deleteTargetId}`,
       });
 
-      reloadGroups(); // **削除後にグループを更新**
-
       setMessage(MESSAGES.GROUP.DELETE_SUCCESS);
       setMessageSeverity('success');
     }
     setConfirmOpen(false);
     setDeleteTargetId(null);
+  };
+
+  const handleMessageClose = (): void => {
+    setMessage(null);
+    setErrorMessage(null);
+    setSuccessMessage(null);
   };
 
   return (
@@ -91,12 +100,12 @@ function Groups(): JSX.Element {
         <NotificationBanner
           message={message}
           severity={messageSeverity}
-          onClose={() => setMessage(null)}
+          onClose={() => handleMessageClose()}
         />
       )}
 
       <List className={styles.list}>
-        {localGroups.map((group) => (
+        {groups.map((group) => (
           <ListItem
             key={group.id}
             disableGutters

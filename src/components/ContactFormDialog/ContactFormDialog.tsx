@@ -7,7 +7,7 @@ import {
   validateName,
   validatePhone,
 } from '../../utils/validation';
-import { MESSAGES } from '../../utils/message';
+// import { MESSAGES } from '../../utils/message';
 import GroupSelect from '../GroupSelect/GroupSelect';
 import {
   Dialog,
@@ -17,7 +17,8 @@ import {
   TextField,
   Button,
 } from '@mui/material';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSubmit } from 'react-router';
+
 /**
  * `ContactFormDialog` コンポーネント
  * 連絡先の新規作成および編集用のダイアログ。
@@ -27,12 +28,11 @@ function ContactFormDialog(): JSX.Element {
     openDialog,
     setOpenDialog,
     editContact,
-    addContact,
-    updateContact,
     setErrorMessage,
     setSuccessMessage,
   } = useContacts();
 
+  const submit = useSubmit();
   const navigate = useNavigate();
 
   const { groups, recentlyCreatedGroupId, clearRecentlyCreatedGroupId } =
@@ -80,7 +80,7 @@ function ContactFormDialog(): JSX.Element {
    * 保存ボタンを押したときに呼び出される関数
    * @returns {void} この関数は値を返さず、ダイアログを開くだけ。
    */
-  const handleSave = (): void => {
+  const handleSave = async (): Promise<void> => {
     const newContact = {
       id: editContact ? editContact.id : uuidv4(),
       name: name.trim(),
@@ -98,24 +98,20 @@ function ContactFormDialog(): JSX.Element {
     );
     if (!isValid) return;
 
-    let success = false;
-    if (editContact) {
-      success = updateContact(newContact); // 編集処理
-    } else {
-      success = addContact(newContact); // 新規作成処理
+    try {
+      if (editContact && editContact.id !== '') {
+        await submit(newContact, { action: '/', method: 'patch' });
+        setSuccessMessage('連絡先を更新しました');
+      } else {
+        await submit(newContact, { action: '/', method: 'post' });
+        setSuccessMessage('新しい連絡先を追加しました');
+      }
+      clearRecentlyCreatedGroupId();
+      setOpenDialog(false); // 成功した場合のみフォームを閉じる
+    } catch {
+      setErrorMessage('エラーが発生しました');
+      return;
     }
-
-    if (!success) {
-      setErrorMessage(MESSAGES.COMMON.ERROR_CONTENT);
-      navigate('/');
-    }
-
-    setSuccessMessage(
-      editContact ? '連絡先を更新しました' : '新しい連絡先を追加しました'
-    );
-    clearRecentlyCreatedGroupId();
-    setOpenDialog(false); // 成功した場合のみフォームを閉じる
-    navigate('/');
   };
 
   /**
@@ -125,6 +121,7 @@ function ContactFormDialog(): JSX.Element {
   const handleClose = (): void => {
     setOpenDialog(false);
     clearRecentlyCreatedGroupId();
+    navigate('/');
   };
 
   return (
@@ -138,7 +135,9 @@ function ContactFormDialog(): JSX.Element {
       aria-hidden={false}
     >
       <DialogTitle>
-        {editContact ? '連絡先を編集' : '新しい連絡先を追加'}
+        {editContact && editContact.id !== ''
+          ? '連絡先を編集'
+          : '新しい連絡先を追加'}
       </DialogTitle>
       <DialogContent>
         <TextField

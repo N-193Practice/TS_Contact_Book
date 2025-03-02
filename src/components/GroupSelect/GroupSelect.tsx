@@ -19,7 +19,7 @@ type GroupSelectProps = {
  * @returns {JSX.Element} 選択したグループの UI を返す。
  */
 function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
-  const { groups, reloadGroups } = useGroups();
+  const { groups } = useGroups();
   const submit = useSubmit();
 
   // 削除確認ダイアログの状態
@@ -50,8 +50,6 @@ function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
         method: 'delete',
         action: `/groups/delete/${value}`,
       });
-
-      reloadGroups(); // **削除後にグループを更新**
 
       setMessage(MESSAGES.GROUP.DELETE_SUCCESS);
       setMessageSeverity('success');

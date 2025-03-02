@@ -14,6 +14,8 @@ export const MESSAGES = {
     NAME_REQUIRED: 'グループ名は必須です',
     NAME_ALREADY_EXISTS: '既に存在するグループ名です',
     NO_SELECTED_GROUP: 'グループを選択してください',
+    CREATE_ERROR: 'グループの作成に失敗しました',
+    UPDATE_ERROR: 'グループの更新に失敗しました',
   },
   CSV: {
     EXPORT_SUCCESS: 'データを出力しました',
