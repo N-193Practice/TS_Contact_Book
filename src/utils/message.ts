@@ -11,6 +11,7 @@ export const MESSAGES = {
     CREATE_SUCCESS: 'グループが作成されました',
     UPDATE_SUCCESS: 'グループが更新されました',
     DELETE_SUCCESS: 'グループが削除されました',
+    DELETE_FAIL: 'グループの削除に失敗しました',
     NAME_REQUIRED: 'グループ名は必須です',
     NAME_ALREADY_EXISTS: '既に存在するグループ名です',
     NO_SELECTED_GROUP: 'グループを選択してください',

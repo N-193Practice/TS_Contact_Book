@@ -86,6 +86,7 @@ function GroupForm(): JSX.Element {
         setErrorMessage(MESSAGES.GROUP.CREATE_ERROR);
       }
     }
+    navigate(-1);
   };
 
   return (
@@ -133,7 +134,7 @@ function GroupForm(): JSX.Element {
               {group.id ? '更新' : '作成'}
             </Button>
             <Button
-              onClick={() => navigate('/groups')}
+              onClick={() => navigate(-1)}
               variant="outlined"
               color="secondary"
               fullWidth

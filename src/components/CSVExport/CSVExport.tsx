@@ -43,6 +43,7 @@ function CSVExport(): JSX.Element {
       return;
     }
 
+    // データの変換(Contact→CSVContact)
     const csvContacts: CSVContact[] = contacts.map((contact) =>
       contactToCSV(contact, groups)
     );
@@ -65,8 +66,8 @@ function CSVExport(): JSX.Element {
     });
 
     csv = '\uFEFF' + csv; // Excel の文字化け対策
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' }); //CSVダウンロード用のBlobを作成
+    const link = document.createElement('a'); //Blobをダウンロードするためのリンクを作成
     link.href = URL.createObjectURL(blob);
     const fileName = `contact_data_${getFormattedDate()}.csv`;
     link.download = fileName;

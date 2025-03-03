@@ -141,6 +141,7 @@ export const validateCSVRow = (
 ): boolean => {
   const trimmedName = row.fullName.trim(); // 修正: name → fullName
   const trimmedPhone = row.phone.trim();
+  const trimmedId = row.contactId?.trim();
 
   if (!trimmedName || !trimmedPhone) {
     setErrorMessage(
@@ -162,10 +163,13 @@ export const validateCSVRow = (
     return false;
   }
 
-  // IDのUUIDフォーマットチェック
-  const uuidRegex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (row.contactId && !uuidRegex.test(row.contactId)) {
+  // **IDのバリデーション: ID がある場合のみ UUID 形式チェック**
+  if (
+    trimmedId &&
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+      trimmedId
+    )
+  ) {
     setErrorMessage(
       `エラー: IDの形式が正しくありません (ID: ${row.contactId})`
     );

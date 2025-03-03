@@ -45,7 +45,6 @@ export const csvToContact = (
 export const contactToCSV = (contact: Contact, groups: Group[]): CSVContact => {
   // グループのテーブルからグループを検索
   const group = groups.find((g) => g.id === contact.groupId);
-  console.log('Contact から CSVContact へ変換開始後:', group);
   const csvContact: CSVContact = {
     contactId: contact.id,
     fullName: contact.name, // nameをfullNameに変換

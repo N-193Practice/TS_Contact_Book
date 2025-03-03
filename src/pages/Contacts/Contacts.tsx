@@ -44,7 +44,7 @@ function Contacts(): JSX.Element {
 
   const contactsData: ContactsDTO = useLoaderData();
 
-  // 連絡先一覧の表示を更新する。
+  // 連絡先データの状態を更新する。
   useEffect(() => {
     if (contactsData.contacts) {
       setContacts(contactsData.contacts);
@@ -54,12 +54,13 @@ function Contacts(): JSX.Element {
     }
   }, [contactsData.contacts, contactsData.groups, setGroups, setContacts]);
 
+  // 連絡先編集ダイアログの状態
   useEffect(() => {
     if (contactsData.selectedContact) {
       setEditContact(contactsData.selectedContact);
       setGroups(contactsData.groups);
+      setOpenDialog(true);
     }
-    setOpenDialog(contactsData.selectedContact !== null);
   }, [
     contactsData.selectedContact,
     contactsData.groups,

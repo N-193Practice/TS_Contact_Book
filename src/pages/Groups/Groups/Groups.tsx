@@ -1,5 +1,5 @@
 import { JSX, useEffect, useState } from 'react';
-import { NavLink, useSubmit, useLoaderData } from 'react-router';
+import { NavLink, useSubmit, useLoaderData, useNavigate } from 'react-router';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -21,6 +21,7 @@ import { Group } from '../../../models/types';
  */
 function Groups(): JSX.Element {
   const submit = useSubmit();
+  const navigate = useNavigate();
   const groupsData: Group[] = useLoaderData();
   const {
     groups,
@@ -41,6 +42,7 @@ function Groups(): JSX.Element {
     'success' | 'error' | 'info'
   >('info');
 
+  // エラーメッセージと成功メッセージの状態を監視し、変更があれば通知メッセージを表示する。
   useEffect(() => {
     if (errorMessage) {
       setMessage(errorMessage);
@@ -74,18 +76,24 @@ function Groups(): JSX.Element {
    * 削除処理の実行する関数。
    * @returns {void} この関数は値を返さず、削除処理が実行される。
    */
-  const handleConfirmDelete = (): void => {
+  const handleConfirmDelete = async (): Promise<void> => {
     if (deleteTargetId) {
-      submit(null, {
-        method: 'delete',
-        action: `/groups/delete/${deleteTargetId}`,
-      });
+      try {
+        await submit(null, {
+          method: 'delete',
+          action: `/groups/delete/${deleteTargetId}`,
+        });
 
-      setMessage(MESSAGES.GROUP.DELETE_SUCCESS);
-      setMessageSeverity('success');
+        setSuccessMessage(MESSAGES.GROUP.DELETE_SUCCESS);
+        setMessageSeverity('success');
+      } catch {
+        setErrorMessage(MESSAGES.GROUP.DELETE_FAIL);
+        setMessageSeverity('error');
+      }
     }
     setConfirmOpen(false);
     setDeleteTargetId(null);
+    navigate(-1);
   };
 
   const handleMessageClose = (): void => {

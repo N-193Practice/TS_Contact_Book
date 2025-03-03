@@ -238,7 +238,6 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
    */
   const handleDeleteMultiple = (): void => {
     selectedContacts.forEach((id) => deleteContact(id));
-    setSuccessMessage('選択した連絡先を削除しました。');
     setContacts(getContacts());
     setSelectedContacts([]);
     setSuccessMessage(null);

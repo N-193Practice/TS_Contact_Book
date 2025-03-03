@@ -1,11 +1,12 @@
 import { JSX, useState } from 'react';
 import { useGroups } from '../../contexts/useGroups';
+import { useContacts } from '../../contexts/useContacts';
 import { Link } from 'react-router';
 import { Select, MenuItem, Button } from '@mui/material';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import NotificationBanner from '../../components/NotificationBanner/NotificationBanner';
 import { MESSAGES } from '../../utils/message';
-import { useSubmit } from 'react-router';
+import { useSubmit, useNavigate } from 'react-router';
 
 // GroupSelect コンポーネントの型定義
 type GroupSelectProps = {
@@ -14,13 +15,15 @@ type GroupSelectProps = {
 };
 
 /**
- * `GroupSelect` コンポーネント。(グループ機能は一覧画面から行うことを想定)
+ * `GroupSelect` コンポーネント。
  * グループのセレクトボックスを表示し、グループを選択する。
  * @returns {JSX.Element} 選択したグループの UI を返す。
  */
 function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
+  const { setOpenDialog } = useContacts();
   const { groups } = useGroups();
   const submit = useSubmit();
+  const navigate = useNavigate();
 
   // 削除確認ダイアログの状態
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -33,7 +36,6 @@ function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
 
   /**
    * 削除ボタンを押したときの処理をする関数。
-   * @param {string} id - 削除対象のグループID。
    * @returns {void} この関数は値を返さず、削除ボタンを押したときに呼び出される関数。
    */
   const handleDeleteClick = (): void => {
@@ -44,15 +46,21 @@ function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
    * 削除処理の実行する関数。
    * @returns {void} この関数は値を返さず、削除処理が実行される。
    */
-  const handleConfirmDelete = (): void => {
+  const handleConfirmDelete = async (): Promise<void> => {
     if (value) {
-      submit(null, {
-        method: 'delete',
-        action: `/groups/delete/${value}`,
-      });
-
-      setMessage(MESSAGES.GROUP.DELETE_SUCCESS);
-      setMessageSeverity('success');
+      try {
+        setOpenDialog(false);
+        await submit(null, {
+          method: 'delete',
+          action: `/groups/delete/${value}`,
+        });
+        setMessage(MESSAGES.GROUP.DELETE_SUCCESS);
+        setMessageSeverity('success');
+        navigate(-1);
+      } catch {
+        setMessage(MESSAGES.GROUP.DELETE_FAIL);
+        setMessageSeverity('error');
+      }
     }
     setConfirmOpen(false);
   };

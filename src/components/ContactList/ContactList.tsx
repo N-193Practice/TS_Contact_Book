@@ -16,6 +16,7 @@ import styles from './ContactList.module.css';
 import { NavLink, useSubmit } from 'react-router';
 import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog';
 import NotificationBanner from '../../components/NotificationBanner/NotificationBanner';
+import { MESSAGES } from '../../utils/message';
 
 /**
  * `ContactList` コンポーネント
@@ -42,12 +43,17 @@ function ContactList(): JSX.Element {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
-  // 紐づいているグループ名を取得
+  /**
+   * グループ名を取得する関数
+   * @param {string} groupId
+   * @returns {string} 連絡先と紐づいているグループ名を返す。
+   */
   const getGroupName = (groupId: string): string => {
     if (!groupId) return '';
     const group = groups.find((g) => g.id === groupId);
     return group?.name || '';
   };
+
   /**
    * 削除ボタンを押したときの処理（削除確認ダイアログを開く）
    * @param {string} id - 削除対象の連絡先ID
@@ -70,7 +76,7 @@ function ContactList(): JSX.Element {
       await submit(body, { method: 'delete', action: '/' });
       setConfirmOpen(false);
       setDeleteTargetId(null);
-      setSuccessMessage('連絡先を削除しました。');
+      setSuccessMessage(MESSAGES.CONTACT.DELETE_SUCCESS);
     }
   };
 

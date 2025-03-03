@@ -1,4 +1,4 @@
-import { JSX, useState, useEffect, useRef } from 'react';
+import { JSX, useState, useRef } from 'react';
 import { useSubmit } from 'react-router';
 import { useContacts } from '../../contexts/useContacts';
 import styles from './CSVImport.module.css';
@@ -15,12 +15,9 @@ import { MESSAGES } from '../../utils/message';
 function CSVImport(): JSX.Element | null {
   const submit = useSubmit();
 
-  const { contacts, setErrorMessage, setSuccessMessage } = useContacts();
+  const { setErrorMessage, setSuccessMessage } = useContacts();
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  // 最後に読み込みした CSVの contactsの監視をする。
-  useEffect(() => {}, [contacts]);
 
   /**
    * CSVファイルを選択する関数。

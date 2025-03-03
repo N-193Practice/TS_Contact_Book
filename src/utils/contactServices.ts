@@ -14,7 +14,7 @@ import {
   updateGroup,
 } from './localStorage';
 import { AppError } from './errors';
-import { validateContact } from '../utils/validation';
+import { validateContact, validateCSVRow } from '../utils/validation';
 
 /**
  * 連絡先のデータを取得するための DTO
@@ -51,28 +51,14 @@ export async function contactsAction({
     throw new AppError('Action is required');
   }
   if (method === 'POST') {
-    const formData = await request.formData();
-    const contact: Contact = {
-      id: formData.get('id')?.toString() || '',
-      name: formData.get('name')?.toString() || '',
-      phone: formData.get('phone')?.toString() || '',
-      memo: formData.get('memo')?.toString() || '',
-      groupId: formData.get('groupId')?.toString() || null,
-    };
+    const contact: Contact = await request.json();
     const isValid = validateContact(contact);
     if (!isValid) {
       return redirect('/contacts/new');
     }
     createContact(contact);
   } else if (method === 'PATCH') {
-    const formData = await request.formData();
-    const contact: Contact = {
-      id: formData.get('id')?.toString() || '',
-      name: formData.get('name')?.toString() || '',
-      phone: formData.get('phone')?.toString() || '',
-      memo: formData.get('memo')?.toString() || '',
-      groupId: formData.get('groupId')?.toString() || null,
-    };
+    const contact: Contact = await request.json();
     const isValid = validateContact(contact);
     if (!isValid) {
       return redirect(`/contacts/edit/${contact.id}/edit`);
@@ -82,7 +68,7 @@ export async function contactsAction({
     const formData = await request.formData();
     const contactId = formData.get('id')?.toString() || null;
     if (!contactId) {
-      throw new Error('Contact ID is required');
+      throw new AppError('Contact ID is required');
     }
     deleteContact(contactId);
   } else {
@@ -105,6 +91,17 @@ export async function importContacts({
     const csvContacts = parsedData.data as CSVContact[];
     const existingContacts = getContacts();
     const existingGroups = getGroups();
+
+    // バリデーション実行
+    for (const row of csvContacts) {
+      if (
+        !validateCSVRow(row, existingContacts, (message) => {
+          throw new AppError(message);
+        })
+      ) {
+        return new Response(null, { status: 400 }); // バリデーションエラー時はエラーを返す
+      }
+    }
 
     const newContacts = csvContacts.map((csvContact) =>
       csvToContact(csvContact, existingContacts, existingGroups, createGroup)
@@ -210,13 +207,13 @@ export async function groupAction({
   } else if (method === 'DELETE') {
     const groupId = params.id?.toString() || null;
     if (!groupId) {
-      throw new Error('Group ID is required');
+      throw new AppError('Group ID is required');
     }
     deleteGroup(groupId);
   } else {
     throw new AppError(`Invalid action: ${method}`);
   }
-  return redirect('/groups');
+  return new Response(null, { status: 200 });
 }
 
 /**
