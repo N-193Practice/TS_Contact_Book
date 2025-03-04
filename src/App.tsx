@@ -51,6 +51,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'groups/delete/:id',
+        element: null,
         action: groupAction,
       },
       {
