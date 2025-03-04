@@ -86,7 +86,7 @@ function GroupForm(): JSX.Element {
         setErrorMessage(MESSAGES.GROUP.CREATE_ERROR);
       }
     }
-    navigate(-1);
+    navigate('/groups');
   };
 
   return (

@@ -59,7 +59,7 @@ export const validateContact = (
       (c) => c.name === contact.name && c.id !== contact.id
     );
     if (isDuplicate) {
-      setErrorName(MESSAGES.CONTACT.NAME_ALREADY_EXISTS);
+      setErrorName(MESSAGES.VALIDATION.NAME_ALREADY_EXISTS);
       return false;
     }
   }
@@ -145,20 +145,22 @@ export const validateCSVRow = (
 
   if (!trimmedName || !trimmedPhone) {
     setErrorMessage(
-      `エラー: 名前または電話番号が空欄です (ID: ${row.contactId})`
+      `${MESSAGES.VALIDATION.NAME_AND_PHONE_REQUIRED} (ID: ${row.contactId})`
     );
     return false;
   }
 
   if (!/^[0-9-]+$/.test(trimmedPhone)) {
-    setErrorMessage(`エラー: 電話番号が不正です (ID: ${row.contactId})`);
+    setErrorMessage(
+      `${MESSAGES.VALIDATION.PHONE_INVALID} (ID: ${row.contactId})`
+    );
     return false;
   }
 
   const strippedNumber = trimmedPhone.replace(/-/g, '');
   if (!/^0\d{9,10}$/.test(strippedNumber)) {
     setErrorMessage(
-      `エラー: 電話番号は0から始まる10桁以上11桁以内の数字で入力してください (ID: ${row.contactId})`
+      `${MESSAGES.VALIDATION.NAME_REQUIRED} (ID: ${row.contactId})`
     );
     return false;
   }
@@ -170,16 +172,16 @@ export const validateCSVRow = (
       trimmedId
     )
   ) {
-    setErrorMessage(
-      `エラー: IDの形式が正しくありません (ID: ${row.contactId})`
-    );
+    setErrorMessage(`${MESSAGES.VALIDATION.ID_ERROR} (ID: ${row.contactId})`);
     return false;
   }
 
   // 連絡先の重複チェック
   const isDuplicate = existingContacts.some((c) => c.name === trimmedName);
   if (isDuplicate) {
-    setErrorMessage(`エラー: 連絡先の名前が重複しています (${trimmedName})`);
+    setErrorMessage(
+      `${MESSAGES.VALIDATION.NAME_ALREADY_EXISTS} (NAME:${trimmedName})`
+    );
     return false;
   }
 

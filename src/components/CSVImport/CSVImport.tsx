@@ -6,6 +6,7 @@ import { Button, TextField, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { MESSAGES } from '../../utils/message';
+import { AppError } from '../../utils/errors';
 
 /**
  * `CSVImport` コンポーネント
@@ -63,7 +64,7 @@ function CSVImport(): JSX.Element | null {
           reader.onload = () => {
             resolve(reader.result as string);
           };
-          reader.onerror = () => reject(new Error('Error reading file'));
+          reader.onerror = () => reject(new AppError('Error reading file'));
         });
       };
       const fileContent = await readFile(file);

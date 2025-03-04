@@ -7,7 +7,7 @@ import {
   validateName,
   validatePhone,
 } from '../../utils/validation';
-// import { MESSAGES } from '../../utils/message';
+import { MESSAGES } from '../../utils/message';
 import GroupSelect from '../GroupSelect/GroupSelect';
 import {
   Dialog,
@@ -100,16 +100,24 @@ function ContactFormDialog(): JSX.Element {
 
     try {
       if (editContact && editContact.id !== '') {
-        await submit(newContact, { action: '/', method: 'patch' });
-        setSuccessMessage('連絡先を更新しました');
+        await submit(newContact, {
+          action: '/',
+          method: 'patch',
+          encType: 'application/json',
+        });
+        setSuccessMessage(MESSAGES.CONTACT.UPDATE_SUCCESS);
       } else {
-        await submit(newContact, { action: '/', method: 'post' });
-        setSuccessMessage('新しい連絡先を追加しました');
+        await submit(newContact, {
+          action: '/',
+          method: 'post',
+          encType: 'application/json',
+        });
+        setSuccessMessage(MESSAGES.CONTACT.CREATE_SUCCESS);
       }
       clearRecentlyCreatedGroupId();
       setOpenDialog(false); // 成功した場合のみフォームを閉じる
     } catch {
-      setErrorMessage('エラーが発生しました');
+      setErrorMessage(MESSAGES.CONTACT.CREATE_ERROR);
       return;
     }
   };
@@ -129,7 +137,6 @@ function ContactFormDialog(): JSX.Element {
       open={openDialog}
       onClose={handleClose}
       maxWidth="sm"
-      fullWidth
       closeAfterTransition={false}
       disableEnforceFocus={true}
       aria-hidden={false}

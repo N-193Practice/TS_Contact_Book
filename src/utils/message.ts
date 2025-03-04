@@ -6,6 +6,7 @@ export const MESSAGES = {
     DELETE_SUCCESS: '連絡先が削除されました',
     NAME_REQUIRED: '連絡先を入力してください',
     NAME_ALREADY_EXISTS: '既に存在する連絡先です',
+    CREATE_ERROR: '連絡先の作成に失敗しました',
   },
   GROUP: {
     CREATE_SUCCESS: 'グループが作成されました',
@@ -28,12 +29,14 @@ export const MESSAGES = {
     VALIDATION_ERROR: '内容に不備があるため処理中断しました',
   },
   VALIDATION: {
+    NAME_AND_PHONE_REQUIRED: '名前または電話番号が空欄です',
     NAME_REQUIRED: '名前は必須です',
     NAME_ALREADY_EXISTS: '既に存在する名前です',
     PHONE_REQUIRED: '電話番号は必須です',
     PHONE_INVALID: '電話番号は半角数字のみ入力してください',
     PHONE_INVALID_LENGTH:
       '電話番号は半角数字0から始まる10桁以上11桁以内の数字で入力してください',
+    ID_ERROR: 'IDの形式が正しくありません',
   },
   COMMON: {
     NO_DATA: 'データがありません',
@@ -41,6 +44,5 @@ export const MESSAGES = {
     ERROR_OCCURRED: 'エラーが発生したため、処理を中断しました',
     SAVE_ERROR: 'データの保存に失敗しました',
     CONFIRM_DELETE: '本当にこのデータを削除しますか？',
-    CONFIRM_CANCEL: 'この操作をキャンセルしますか？',
   },
 };

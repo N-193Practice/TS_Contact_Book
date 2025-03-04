@@ -153,7 +153,7 @@ function Groups(): JSX.Element {
       <ConfirmDialog
         open={confirmOpen}
         title="グループ削除確認"
-        message="このグループを削除してもよろしいですか？"
+        message={`${MESSAGES.COMMON.CONFIRM_DELETE}`}
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
       />

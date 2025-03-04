@@ -45,3 +45,9 @@
 .deleteButton {
   color: red;
 }
+
+/* グループ名のデザイン */
+.groupName {
+  font-size: 1.2rem;
+  color: gray;
+}

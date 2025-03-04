@@ -208,7 +208,7 @@ function Contacts(): JSX.Element {
       <ConfirmDialog
         open={confirmOpen}
         title="連絡先削除確認"
-        message="この連絡先を削除してもよろしいですか？"
+        message={`${MESSAGES.COMMON.CONFIRM_DELETE}`}
         onClose={() => setConfirmOpen(false)}
         onConfirm={handleConfirmDelete}
       />

@@ -62,7 +62,7 @@ function CSVExport(): JSX.Element {
     let csv = jsonToCSV(validContacts, {
       header: true,
       newline: '\r\n',
-      columns: ['contactId', 'fullName', 'phone', 'memo', 'groupName'],
+      columns: ['contactId', 'groupName', 'fullName', 'phone', 'memo'],
     });
 
     csv = '\uFEFF' + csv; // Excel の文字化け対策
