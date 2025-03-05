@@ -17,7 +17,8 @@ import {
   TextField,
   Button,
 } from '@mui/material';
-import { useNavigate, useSubmit } from 'react-router';
+import { useNavigate, useSubmit, useLoaderData } from 'react-router';
+import { ContactsDTO } from '../../utils/contactServices';
 
 /**
  * `ContactFormDialog` コンポーネント
@@ -34,6 +35,7 @@ function ContactFormDialog(): JSX.Element {
 
   const submit = useSubmit();
   const navigate = useNavigate();
+  const { contacts: existingContacts } = useLoaderData() as ContactsDTO;
 
   const { groups, recentlyCreatedGroupId, clearRecentlyCreatedGroupId } =
     useGroups();
@@ -89,10 +91,22 @@ function ContactFormDialog(): JSX.Element {
       groupId: groupId,
     };
 
+    // **重複チェック**
+    const isDuplicate = existingContacts.some(
+      (contact) =>
+        contact.name.toLowerCase() === newContact.name.toLowerCase() &&
+        (!editContact || contact.id !== newContact.id)
+    );
+
+    if (isDuplicate) {
+      setErrorMessage(MESSAGES.VALIDATION.NAME_ALREADY_EXISTS);
+      return;
+    }
+
     // バリデーションを実行 (エラー時は `setErrorMessage` に渡す)
     const isValid = validateContact(
       newContact,
-      [],
+      existingContacts,
       !!editContact,
       setErrorMessage
     );

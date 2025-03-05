@@ -42,26 +42,29 @@ export const validateGroup = (
  * @param {Contact} contact - バリデーション対象の連絡先情報。
  * @param {Contact[]} existingContacts - 既存の連絡先リスト
  * @param {boolean} [isEdit=false] - 編集モードなのか確認(新規作成時はfalse)。
- * @param {setErrorMessage} setErrorMessage - エラーメッセージを表示する関数
+ * @param {setErrorMessage} setErrorName - エラーメッセージを表示する関数
+ * @param {setErrorMessage} setErrorPhone - エラーメッセージを表示する関数
  * @returns {boolean} バリデーションが成功すれば true、失敗すれば false。
  */
 export const validateContact = (
   contact: Contact,
-  exisitingContacts: Contact[] = [],
+  existingContacts: Contact[] = [],
   isEdit: boolean = false,
   setErrorName: (message: string) => void = () => {},
   setErrorPhone: (message: string) => void = () => {}
 ): boolean => {
   const isValidPhone = validatePhone(contact.phone, setErrorPhone);
   const isValidName = validateName(contact.name, setErrorName);
-  if (isEdit) {
-    const isDuplicate = exisitingContacts.some(
-      (c) => c.name === contact.name && c.id !== contact.id
-    );
-    if (isDuplicate) {
-      setErrorName(MESSAGES.VALIDATION.NAME_ALREADY_EXISTS);
-      return false;
-    }
+
+  const isDuplicate = existingContacts.some(
+    (c) =>
+      c.name.toLowerCase() === contact.name.toLowerCase() &&
+      (!isEdit || c.id !== contact.id)
+  );
+
+  if (isDuplicate) {
+    setErrorName(MESSAGES.VALIDATION.NAME_ALREADY_EXISTS);
+    return false;
   }
   return isValidPhone && isValidName;
 };
