@@ -177,7 +177,7 @@ function Contacts(): JSX.Element {
           <Button
             variant="outlined"
             onClick={selectAllContacts}
-            disabled={isAllSelected}
+            disabled={contacts.length === 0 || isAllSelected}
             className={styles.selectAllButton}
           >
             連絡先の全選択
