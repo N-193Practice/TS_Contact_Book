@@ -42,6 +42,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'contacts/csv',
+        element: null,
         action: importContacts,
       },
       {
