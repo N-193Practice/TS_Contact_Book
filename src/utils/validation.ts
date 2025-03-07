@@ -163,7 +163,7 @@ export const validateCSVRow = (
   const strippedNumber = trimmedPhone.replace(/-/g, '');
   if (!/^0\d{9,10}$/.test(strippedNumber)) {
     setErrorMessage(
-      `${MESSAGES.VALIDATION.NAME_REQUIRED} (ID: ${row.contactId})`
+      `${MESSAGES.VALIDATION.PHONE_INVALID_LENGTH} (ID: ${row.contactId})`
     );
     return false;
   }
