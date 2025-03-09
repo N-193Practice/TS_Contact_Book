@@ -1,4 +1,4 @@
-import { JSX, useEffect, useState } from 'react';
+import { JSX, useEffect } from 'react';
 import { NavLink, useSubmit, useLoaderData, useNavigate } from 'react-router';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -30,17 +30,15 @@ function Groups(): JSX.Element {
     successMessage,
     setErrorMessage,
     setSuccessMessage,
+    confirmOpen,
+    setConfirmOpen,
+    deleteTargetId,
+    setDeleteTargetId,
+    message,
+    setMessage,
+    messageSeverity,
+    setMessageSeverity,
   } = useGroups();
-
-  // 削除確認ダイアログの状態
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
-
-  // 通知メッセージの状態
-  const [message, setMessage] = useState<string | null>(null);
-  const [messageSeverity, setMessageSeverity] = useState<
-    'success' | 'error' | 'info'
-  >('info');
 
   // エラーメッセージと成功メッセージの状態を監視し、変更があれば通知メッセージを表示する。
   useEffect(() => {
@@ -52,7 +50,7 @@ function Groups(): JSX.Element {
       setMessage(successMessage);
       setMessageSeverity('success');
     }
-  }, [errorMessage, successMessage]);
+  }, [errorMessage, successMessage, setMessage, setMessageSeverity]);
 
   useEffect(() => {
     if (groupsData) {

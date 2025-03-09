@@ -30,6 +30,18 @@ import { getContacts, deleteContact } from '../utils/localStorage';
  * @property {(message: string | null) => void} setErrorMessage -エラーメッセージを設定する関数。
  * @property {string | null} successMessage - 成功メッセージ。
  * @property {(message: string | null) => void} setSuccessMessage - 成功メッセージを設定する関数。
+ * @property {string} errorName - 名前のエラーメッセージ。
+ * @property {(name: string) => void} setErrorName - 名前のエラーメッセージを設定する関数。
+ * @property {string} errorPhone - 電話番号のエラーメッセージ。
+ * @property {(phone: string) => void} setErrorPhone - 電話番号のエラーメッセージを設定する関数。
+ * @property {boolean} confirmOpen - 削除確認ダイアログが開いているかどうかを示します。
+ * @property {(open: boolean) => void} setConfirmOpen - 削除確認ダイアログを開くか閉じるかする関数。
+ * @property {string | null} deleteTargetId - 削除対象の連絡先ID。
+ * @property {(id: string | null) => void} setDeleteTargetId - 削除対象の連絡先IDを設定する関数。
+ * @property {string | null} message - 通知メッセージ。
+ * @property {(message: string | null) => void} setMessage - 通知メッセージを設定する関数。
+ * @property {'success' | 'error' | 'info'} messageSeverity - 通知メッセージのセマンティクス。
+ * @property {(severity: 'success' | 'error' | 'info') => void} setMessageSeverity - 通知メッセージのセマンティクスを設定する関数。
  * @property {() => void} handleNewContact - 新しい連絡先の作成を処理する関数。
  * @property {(id: string) => void} handleDeleteSelected - 選択された連絡先を削除する関数。
  * @property {(id: string) => void} handleDeleteAll - 削除する連絡先の選択を切り替える関数。
@@ -55,6 +67,18 @@ export type ContactContextType = {
   setErrorMessage: (message: string | null) => void;
   successMessage: string | null;
   setSuccessMessage: (message: string | null) => void;
+  errorName: string;
+  setErrorName: (name: string) => void;
+  errorPhone: string;
+  setErrorPhone: (phone: string) => void;
+  confirmOpen: boolean;
+  setConfirmOpen: (open: boolean) => void;
+  deleteTargetId: string | null;
+  setDeleteTargetId: (id: string | null) => void;
+  message: string | null;
+  setMessage: (message: string | null) => void;
+  messageSeverity: 'success' | 'error' | 'info';
+  setMessageSeverity: (severity: 'success' | 'error' | 'info') => void;
   handleNewContact: () => void;
   handleMultipleSelected: (id: string) => void;
   handleDeleteMultiple: () => void;
@@ -89,6 +113,20 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
   const listRefs = useRef<{ [key: string]: HTMLLIElement | null }>({});
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const [errorName, setErrorName] = useState<string>('');
+  const [errorPhone, setErrorPhone] = useState<string>('');
+
+  // 削除確認ダイアログの状態
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
+  // 通知メッセージの状態
+  const [message, setMessage] = useState<string | null>(null);
+  const [messageSeverity, setMessageSeverity] = useState<
+    'success' | 'error' | 'info'
+  >('info');
+
   // グループのコンテキストを取得
   const groupContext = useContext(GroupContext);
   const groups = useMemo(() => groupContext?.groups ?? [], [groupContext]);
@@ -261,6 +299,18 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
         setErrorMessage,
         successMessage,
         setSuccessMessage,
+        errorName,
+        setErrorName,
+        errorPhone,
+        setErrorPhone,
+        confirmOpen,
+        setConfirmOpen,
+        deleteTargetId,
+        setDeleteTargetId,
+        message,
+        setMessage,
+        messageSeverity,
+        setMessageSeverity,
         handleNewContact,
         handleMultipleSelected,
         handleDeleteMultiple,

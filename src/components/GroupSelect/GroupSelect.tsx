@@ -1,4 +1,4 @@
-import { JSX, useState } from 'react';
+import { JSX } from 'react';
 import { useGroups } from '../../contexts/useGroups';
 import { useContacts } from '../../contexts/useContacts';
 import { Link } from 'react-router';
@@ -21,18 +21,17 @@ type GroupSelectProps = {
  */
 function GroupSelect({ value, onChange }: GroupSelectProps): JSX.Element {
   const { setOpenDialog } = useContacts();
-  const { groups } = useGroups();
+  const {
+    groups,
+    confirmOpen,
+    setConfirmOpen,
+    message,
+    setMessage,
+    messageSeverity,
+    setMessageSeverity,
+  } = useGroups();
   const submit = useSubmit();
   const navigate = useNavigate();
-
-  // 削除確認ダイアログの状態
-  const [confirmOpen, setConfirmOpen] = useState(false);
-
-  // 通知メッセージの状態
-  const [message, setMessage] = useState<string | null>(null);
-  const [messageSeverity, setMessageSeverity] = useState<
-    'success' | 'error' | 'info'
-  >('info');
 
   /**
    * 削除ボタンを押したときの処理をする関数。

@@ -31,6 +31,10 @@ function ContactFormDialog(): JSX.Element {
     editContact,
     setErrorMessage,
     setSuccessMessage,
+    errorName,
+    setErrorName,
+    errorPhone,
+    setErrorPhone,
   } = useContacts();
 
   const submit = useSubmit();
@@ -45,9 +49,6 @@ function ContactFormDialog(): JSX.Element {
   const [phone, setPhone] = useState<string>('');
   const [memo, setMemo] = useState<string>('');
   const [groupId, setGroupId] = useState<string | null>(null);
-
-  const [errorName, setErrorName] = useState<string>('');
-  const [errorPhone, setErrorPhone] = useState<string>('');
 
   /**
    * `editContact` がある場合は編集モードとしてデータをセット。

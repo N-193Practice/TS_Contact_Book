@@ -10,6 +10,14 @@ import { Group } from '../models/types';
  * @property {(message: string | null) => void} setErrorMessage -エラーメッセージを設定する関数。
  * @property {(string | null)} successMessage - 成功メッセージ。
  * @property {(message: string | null) => void} setSuccessMessage - 成功メッセージを設定する関数。
+ * @property {boolean} confirmOpen - 削除確認ダイアログの状態。
+ * @property {(open: boolean) => void} setConfirmOpen - 削除確認ダイアログの状態を設定する関数。
+ * @property {string | null} deleteTargetId - 削除対象のグループID。
+ * @property {(id: string | null) => void} setDeleteTargetId - 削除対象のグループIDを設定する関数。
+ * @property {string | null} message - 通知メッセージ。
+ * @property {(message: string | null) => void} setMessage - 通知メッセージを設定する関数。
+ * @property {'success' | 'error' | 'info'} messageSeverity - 通知メッセージのセマンティクス。
+ * @property {(severity: 'success' | 'error' | 'info') => void} setMessageSeverity - 通知メッセージのセマンティクスを設定する関数。
  * @property {string | null} recentlyCreatedGroupId - 最近作成したグループのID。
  * @property {() => void} clearRecentlyCreatedGroupId - 最近作成したグループのIDをクリアする関数。
  */
@@ -20,6 +28,14 @@ export type GroupContextType = {
   setErrorMessage: (message: string | null) => void;
   successMessage: string | null;
   setSuccessMessage: (message: string | null) => void;
+  confirmOpen: boolean;
+  setConfirmOpen: (open: boolean) => void;
+  deleteTargetId: string | null;
+  setDeleteTargetId: (id: string | null) => void;
+  message: string | null;
+  setMessage: (message: string | null) => void;
+  messageSeverity: 'success' | 'error' | 'info';
+  setMessageSeverity: (severity: 'success' | 'error' | 'info') => void;
   recentlyCreatedGroupId: string | null;
   clearRecentlyCreatedGroupId: () => void;
 };
@@ -48,6 +64,16 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
     string | null
   >(null);
 
+  // 削除確認ダイアログの状態
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
+  // 通知メッセージの状態
+  const [message, setMessage] = useState<string | null>(null);
+  const [messageSeverity, setMessageSeverity] = useState<
+    'success' | 'error' | 'info'
+  >('info');
+
   /**
    * グループの編集を開始する関数。
    * @returns {void} この関数は値を返さず、グループの編集を開始し、リストを更新する。
@@ -65,6 +91,14 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
         setErrorMessage,
         successMessage,
         setSuccessMessage,
+        confirmOpen,
+        setConfirmOpen,
+        deleteTargetId,
+        setDeleteTargetId,
+        message,
+        setMessage,
+        messageSeverity,
+        setMessageSeverity,
         recentlyCreatedGroupId,
         clearRecentlyCreatedGroupId,
       }}

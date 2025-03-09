@@ -1,4 +1,4 @@
-import { JSX, useState } from 'react';
+import { JSX } from 'react';
 import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import {
@@ -35,14 +35,13 @@ function ContactList(): JSX.Element {
     handleMultipleSelected,
     successMessage,
     setSuccessMessage,
+    confirmOpen,
+    setConfirmOpen,
+    deleteTargetId,
+    setDeleteTargetId,
   } = useContacts();
 
   const { groups } = useGroups();
-
-  // 削除確認ダイアログの状態
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
-
   /**
    * グループ名を取得する関数
    * @param {string} groupId

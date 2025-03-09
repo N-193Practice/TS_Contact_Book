@@ -1,4 +1,4 @@
-import { JSX, useEffect, useMemo, useState } from 'react';
+import { JSX, useEffect, useMemo } from 'react';
 import { useContacts } from '../../contexts/useContacts';
 import ContactList from '../../components/ContactList/ContactList';
 import SearchBar from '../../components/SearchBar/SearchBar';
@@ -38,6 +38,14 @@ function Contacts(): JSX.Element {
     setErrorMessage,
     successMessage,
     setSuccessMessage,
+    confirmOpen,
+    setConfirmOpen,
+    deleteTargetId,
+    setDeleteTargetId,
+    message,
+    setMessage,
+    messageSeverity,
+    setMessageSeverity,
   } = useContacts();
 
   const { setGroups } = useGroups();
@@ -69,16 +77,6 @@ function Contacts(): JSX.Element {
     setGroups,
   ]);
 
-  // 削除確認ダイアログの状態
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
-
-  // 通知メッセージの状態
-  const [message, setMessage] = useState<string | null>(null);
-  const [messageSeverity, setMessageSeverity] = useState<
-    'success' | 'error' | 'info'
-  >('info');
-
   // 通知メッセージの設定
   useEffect(() => {
     if (successMessage) {
@@ -91,7 +89,14 @@ function Contacts(): JSX.Element {
       setMessageSeverity('error');
       setErrorMessage(null);
     }
-  }, [successMessage, errorMessage, setSuccessMessage, setErrorMessage]);
+  }, [
+    successMessage,
+    errorMessage,
+    setSuccessMessage,
+    setErrorMessage,
+    setMessage,
+    setMessageSeverity,
+  ]);
 
   // 全選択ボタンの状態
   const isAllSelected = useMemo(() => {
