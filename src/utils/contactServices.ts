@@ -15,6 +15,7 @@ import {
 } from './localStorage';
 import { AppError } from './errors';
 import { validateContact, validateCSVRow } from '../utils/validation';
+import { MESSAGES } from './message';
 
 /**
  * 連絡先のデータを取得するための DTO
@@ -83,7 +84,7 @@ export async function importContacts({
   const formData = await request.formData();
   const fileContent = formData.get('fileContent');
   if (!fileContent) {
-    throw new AppError('File content is required');
+    throw new AppError(MESSAGES.CSV.NO_DATA_IN_FILE);
   }
 
   try {
