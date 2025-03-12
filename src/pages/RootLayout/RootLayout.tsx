@@ -2,6 +2,8 @@ import { JSX } from 'react';
 import { Outlet } from 'react-router';
 import styles from './RootLayout.module.css';
 import ApplicationHeader from '../../components/ApplicationHeader/ApplicationHeader';
+import { ContactProvider } from '../../contexts/ContactContext';
+import { GroupProvider } from '../../contexts/GroupContext';
 
 /**
  * `RootLayout` コンポーネント
@@ -13,7 +15,11 @@ function RootLayout(): JSX.Element {
     <div className={styles.container}>
       <ApplicationHeader />
       <main className={styles.main}>
-        <Outlet />
+        <ContactProvider>
+          <GroupProvider>
+            <Outlet />
+          </GroupProvider>
+        </ContactProvider>
       </main>
     </div>
   );
