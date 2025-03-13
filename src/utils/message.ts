@@ -37,6 +37,8 @@ export const MESSAGES = {
     PHONE_INVALID_LENGTH:
       '電話番号は半角数字0から始まる10桁以上11桁以内の数字で入力してください',
     ID_ERROR: 'IDの形式が正しくありません',
+    ID_NOT_FOUND: 'IDが見つかりません',
+    ID_NAME_MISMATCH: 'IDと名前が一致しません',
   },
   COMMON: {
     NO_DATA: 'データがありません',

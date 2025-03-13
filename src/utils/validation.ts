@@ -142,10 +142,11 @@ export const validateCSVRow = (
   existingContacts: Contact[],
   setErrorMessage: (message: string) => void
 ): boolean => {
-  const trimmedName = row.fullName.trim(); // 修正: name → fullName
-  const trimmedPhone = row.phone.trim();
+  const trimmedName = row.fullName?.trim(); // 修正: name → fullName
+  const trimmedPhone = row.phone?.trim();
   const trimmedId = row.contactId?.trim();
 
+  // 氏名と電話番号は必須
   if (!trimmedName || !trimmedPhone) {
     setErrorMessage(
       `${MESSAGES.VALIDATION.NAME_AND_PHONE_REQUIRED} (ID: ${row.contactId})`
@@ -153,6 +154,7 @@ export const validateCSVRow = (
     return false;
   }
 
+  // 電話番号のフォーマットチェック
   if (!/^[0-9-]+$/.test(trimmedPhone)) {
     setErrorMessage(
       `${MESSAGES.VALIDATION.PHONE_INVALID} (ID: ${row.contactId})`
@@ -179,13 +181,33 @@ export const validateCSVRow = (
     return false;
   }
 
-  // 連絡先の重複チェック
-  const isDuplicate = existingContacts.some((c) => c.name === trimmedName);
-  if (isDuplicate) {
-    setErrorMessage(
-      `${MESSAGES.VALIDATION.NAME_ALREADY_EXISTS} (NAME:${trimmedName})`
+  // 既存データの検索
+  const existingContact = existingContacts.find((c) => c.id === trimmedId);
+
+  if (!trimmedId) {
+    // ID が空欄 → 新規登録
+    const isDuplicateName = existingContacts.some(
+      (c) => c.name === trimmedName
     );
-    return false;
+    if (isDuplicateName) {
+      setErrorMessage(
+        `${MESSAGES.VALIDATION.NAME_ALREADY_EXISTS} (NAME:${trimmedName})`
+      );
+      return false;
+    }
+  } else {
+    // ID が記載されている → 更新
+    if (!existingContact) {
+      setErrorMessage(`${MESSAGES.VALIDATION.ID_NOT_FOUND} (ID: ${trimmedId})`);
+      return false;
+    }
+
+    if (existingContact.name !== trimmedName) {
+      setErrorMessage(
+        `${MESSAGES.VALIDATION.ID_NAME_MISMATCH} (ID: ${trimmedId}, NAME: ${trimmedName})`
+      );
+      return false;
+    }
   }
 
   return true;
