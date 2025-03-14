@@ -170,17 +170,6 @@ export const validateCSVRow = (
     return false;
   }
 
-  // **IDのバリデーション: ID がある場合のみ UUID 形式チェック**
-  if (
-    trimmedId &&
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-      trimmedId
-    )
-  ) {
-    setErrorMessage(`${MESSAGES.VALIDATION.ID_ERROR} (ID: ${row.contactId})`);
-    return false;
-  }
-
   // 既存データの検索
   const existingContact = existingContacts.find((c) => c.id === trimmedId);
 
@@ -208,8 +197,17 @@ export const validateCSVRow = (
       );
       return false;
     }
+    // **IDのバリデーション: ID がある場合のみ UUID 形式チェック**
+    if (
+      trimmedId &&
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+        trimmedId
+      )
+    ) {
+      setErrorMessage(`${MESSAGES.VALIDATION.ID_ERROR} (ID: ${row.contactId})`);
+      return false;
+    }
   }
-
   return true;
 };
 

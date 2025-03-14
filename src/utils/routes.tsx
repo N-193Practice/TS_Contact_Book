@@ -13,8 +13,9 @@ import {
   contactsAction,
   getGroup,
 } from './contactServices';
+import { RouteObject } from 'react-router';
 
-const router = [
+const routes: RouteObject[] = [
   {
     path: '/',
     element: <RootLayout />,
@@ -67,4 +68,4 @@ const router = [
   },
 ];
 
-export default router;
+export default routes;

@@ -1,4 +1,4 @@
-import { JSX } from 'react';
+import { JSX, useState } from 'react';
 import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import {
@@ -35,13 +35,13 @@ function ContactList(): JSX.Element {
     handleMultipleSelected,
     successMessage,
     setSuccessMessage,
-    confirmOpen,
-    setConfirmOpen,
-    deleteTargetId,
-    setDeleteTargetId,
   } = useContacts();
 
   const { groups } = useGroups();
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+
   /**
    * グループ名を取得する関数
    * @param {string} groupId
@@ -59,6 +59,7 @@ function ContactList(): JSX.Element {
    * @returns {void} この関数は値を返さず、削除ボタンを押したときに呼び出される関数。
    */
   const handleDeleteClick = (id: string): void => {
+    console.log(`Delete button clicked for id: ${id}`); // 追加
     setDeleteTargetId(id);
     setConfirmOpen(true);
   };
@@ -77,6 +78,7 @@ function ContactList(): JSX.Element {
       setDeleteTargetId(null);
       setSuccessMessage(MESSAGES.CONTACT.DELETE_SUCCESS);
     }
+    console.log('No delete target ID found!'); // 追加
   };
 
   return (
@@ -135,7 +137,7 @@ function ContactList(): JSX.Element {
                   >
                     <EditIcon />
                   </IconButton>
-                  {/* 削除ボタン */}
+                  {/* 個別削除ボタン */}
                   <IconButton
                     className={styles.deleteButton}
                     aria-label="削除"
