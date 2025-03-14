@@ -19,6 +19,7 @@ function CSVImport(): JSX.Element | null {
   const { setErrorMessage, setSuccessMessage } = useContacts();
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [inputKey, setInputKey] = useState<number>(Date.now());
 
   /**
    * CSVファイルを選択する関数。
@@ -40,9 +41,7 @@ function CSVImport(): JSX.Element | null {
    */
   const handleRemoveFile = (): void => {
     setFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    setInputKey(Date.now());
   };
 
   /**
@@ -74,6 +73,8 @@ function CSVImport(): JSX.Element | null {
       await submit(formData, { method: 'post', action: '/contacts/csv' });
       setSuccessMessage(MESSAGES.CSV.IMPORT_SUCCESS);
       setErrorMessage(null);
+      setFile(null);
+      setInputKey(Date.now());
     } catch {
       setErrorMessage(MESSAGES.CSV.IMPORT_ERROR);
     }
@@ -89,7 +90,13 @@ function CSVImport(): JSX.Element | null {
         startIcon={<CloudUploadIcon />}
       >
         ファイルを選択
-        <input type="file" accept=".csv" hidden onChange={handleFileChange} />
+        <input
+          key={inputKey}
+          type="file"
+          accept=".csv"
+          hidden
+          onChange={handleFileChange}
+        />
       </Button>
       {/* 選択したファイル名を表示 */}
       <TextField
