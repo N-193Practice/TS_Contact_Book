@@ -41,16 +41,26 @@ function Groups(): JSX.Element {
   } = useGroups();
 
   // エラーメッセージと成功メッセージの状態を監視し、変更があれば通知メッセージを表示する。
+  // 通知メッセージの設定
   useEffect(() => {
-    if (errorMessage) {
-      setMessage(errorMessage);
-      setMessageSeverity('error');
-    }
     if (successMessage) {
       setMessage(successMessage);
       setMessageSeverity('success');
+      setSuccessMessage(null);
     }
-  }, [errorMessage, successMessage, setMessage, setMessageSeverity]);
+    if (errorMessage) {
+      setMessage(errorMessage);
+      setMessageSeverity('error');
+      setErrorMessage(null);
+    }
+  }, [
+    successMessage,
+    errorMessage,
+    setSuccessMessage,
+    setErrorMessage,
+    setMessage,
+    setMessageSeverity,
+  ]);
 
   useEffect(() => {
     if (groupsData) {

@@ -1,4 +1,4 @@
-import { createContext, useState, ReactNode, JSX } from 'react';
+import { createContext, useState, ReactNode, JSX, useEffect } from 'react';
 import { Group } from '../models/types';
 
 /**
@@ -73,6 +73,17 @@ function GroupProvider({ children }: GroupProviderProps): JSX.Element {
   const [messageSeverity, setMessageSeverity] = useState<
     'success' | 'error' | 'info'
   >('info');
+
+  // メッセージの表示時間を設定
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   /**
    * グループの編集を開始する関数。

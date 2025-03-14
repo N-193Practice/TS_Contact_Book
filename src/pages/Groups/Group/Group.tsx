@@ -75,6 +75,9 @@ function GroupForm(): JSX.Element {
           method: 'patch',
         });
         setSuccessMessage(MESSAGES.GROUP.UPDATE_SUCCESS);
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
       } catch {
         setErrorMessage(MESSAGES.GROUP.UPDATE_ERROR);
       }
@@ -82,6 +85,9 @@ function GroupForm(): JSX.Element {
       try {
         await submit(group, { action: '/groups/new', method: 'post' });
         setSuccessMessage(MESSAGES.GROUP.CREATE_SUCCESS);
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
       } catch {
         setErrorMessage(MESSAGES.GROUP.CREATE_ERROR);
       }

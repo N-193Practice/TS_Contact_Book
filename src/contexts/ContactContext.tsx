@@ -136,9 +136,21 @@ function ContactProvider({ children }: ContactProviderProps): JSX.Element {
     setContacts(getContacts());
   }, []);
 
+  // 連絡先リストを更新する
   useEffect(() => {
     updateContacts();
   }, [groups, updateContacts]);
+
+  // メッセージの表示時間を設定
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   /**
    * 検索クエリに基づいて連絡先をフィルタリングする。
