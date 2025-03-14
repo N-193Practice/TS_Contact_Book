@@ -93,6 +93,16 @@ export async function importContacts({
     const existingContacts = getContacts();
     const existingGroups = getGroups();
 
+    // CSV内で作成したグループを保存
+    const createdGroups = new Map<string, Group>();
+
+    // 既存の連絡先とCSV内での重複チェック用
+    const existingContactsSet = new Set<string>();
+
+    existingContacts.forEach((contact) => {
+      existingContactsSet.add(contact.name);
+    });
+
     // バリデーション実行
     for (const row of csvContacts) {
       if (
@@ -105,7 +115,14 @@ export async function importContacts({
     }
 
     const newContacts = csvContacts.map((csvContact) =>
-      csvToContact(csvContact, existingContacts, existingGroups, createGroup)
+      csvToContact(
+        csvContact,
+        existingContacts,
+        existingGroups,
+        createGroup,
+        createdGroups,
+        existingContactsSet
+      )
     );
 
     newContacts.forEach((contact) => {

@@ -1,4 +1,6 @@
 import { Contact, Group, CSVContact } from '../models/types';
+import { AppError } from './errors';
+import { MESSAGES } from './message';
 
 /**
  * `CSVContact` を `Contact` に変換する (インポート時)
@@ -6,22 +8,40 @@ import { Contact, Group, CSVContact } from '../models/types';
  * @param {Contact[]} contacts - 既存の連絡先リスト。
  * @param {Group[]} groups - 既存のグループリスト。
  * @param {(newGroup: Group) => void} addGroup - グループの追加を行う関数。
+ * @param {Set<string>} createdGroups - 作成済みのグループ名のセット。
  * @returns {Contact} CSVファイルのデータを表す連絡先。
  */
 export const csvToContact = (
   csvData: CSVContact,
   contacts: Contact[],
   groups: Group[],
-  addGroup: (groupName: string) => Group
+  addGroup: (groupName: string) => Group,
+  createdGroups: Map<string, Group>,
+  existingContactsSet: Set<string>
 ): Contact => {
   // 既存の連絡先を検索 (IDが一致する場合は既存データ)
   const existingContact = contacts.find((c) => c.id === csvData.contactId);
 
-  // **グループの処理**
+  // CSV内での連絡先の重複チェック
+  if (existingContactsSet.has(csvData.fullName)) {
+    throw new AppError(
+      `${MESSAGES.CSV.VALIDATION_ERROR} (NAME:${csvData.fullName})`
+    );
+  }
+  existingContactsSet.add(csvData.fullName);
+
+  // **グループの処理 -新規の場合のみ作成**
   let group = groups.find((g) => g.name === csvData.groupName);
+
   if (!group && csvData.groupName && csvData.groupName.trim() !== '') {
-    // グループが存在しない場合、新規作成して登録
-    group = addGroup(csvData.groupName);
+    // CSV内でグループを既に作成している場合は、重複しないよう作成する
+    if (createdGroups.has(csvData.groupName)) {
+      group = createdGroups.get(csvData.groupName);
+    } else {
+      // 新規作成
+      group = addGroup(csvData.groupName);
+      createdGroups.set(csvData.groupName, group);
+    }
   }
 
   // **新しい Contact オブジェクトの作成**
