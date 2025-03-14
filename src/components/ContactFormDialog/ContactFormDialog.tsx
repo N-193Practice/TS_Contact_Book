@@ -4,7 +4,7 @@ import { useContacts } from '../../contexts/useContacts';
 import { useGroups } from '../../contexts/useGroups';
 import {
   validateContact,
-  validateName,
+  validateContactForm,
   validatePhone,
 } from '../../utils/validation';
 import { MESSAGES } from '../../utils/message';
@@ -29,7 +29,6 @@ function ContactFormDialog(): JSX.Element {
     openDialog,
     setOpenDialog,
     editContact,
-    setErrorMessage,
     setSuccessMessage,
     errorName,
     setErrorName,
@@ -68,14 +67,12 @@ function ContactFormDialog(): JSX.Element {
       setMemo('');
       setGroupId('');
     }
-    setErrorMessage(null); // ダイアログを開くたびにエラーをリセット
     setSuccessMessage(null); // 成功メッセージもリセット
   }, [
     editContact,
     openDialog,
     groups,
     recentlyCreatedGroupId,
-    setErrorMessage,
     setSuccessMessage,
   ]);
 
@@ -92,24 +89,11 @@ function ContactFormDialog(): JSX.Element {
       groupId: groupId,
     };
 
-    // **重複チェック**
-    const isDuplicate = existingContacts.some(
-      (contact) =>
-        contact.name.toLowerCase() === newContact.name.toLowerCase() &&
-        (!editContact || contact.id !== newContact.id)
-    );
-
-    if (isDuplicate) {
-      setErrorMessage(MESSAGES.VALIDATION.NAME_ALREADY_EXISTS);
-      return;
-    }
-
-    // バリデーションを実行 (エラー時は `setErrorMessage` に渡す)
+    // バリデーションを実行
     const isValid = validateContact(
       newContact,
       existingContacts,
-      !!editContact,
-      setErrorMessage
+      !!editContact
     );
     if (!isValid) return;
 
@@ -132,7 +116,6 @@ function ContactFormDialog(): JSX.Element {
       clearRecentlyCreatedGroupId();
       setOpenDialog(false); // 成功した場合のみフォームを閉じる
     } catch {
-      setErrorMessage(MESSAGES.CONTACT.CREATE_ERROR);
       return;
     }
   };
@@ -171,7 +154,9 @@ function ContactFormDialog(): JSX.Element {
           margin="normal"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          onBlur={() => validateName(name, setErrorName)}
+          onBlur={() =>
+            validateContactForm(name, existingContacts, false, setErrorName)
+          }
         />
         <TextField
           error={!!errorPhone}
